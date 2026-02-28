@@ -210,12 +210,27 @@ export default function App() {
   const [filterText, setFilterText] = useState("");
   const [showThemes, setShowThemes] = useState(false);
   const [expandedTheme, setExpandedTheme] = useState(null);
+  const [dailyQ, setDailyQ] = useState(null);
+  const [showDaily, setShowDaily] = useState(true);
   const cardRef = useRef(null);
 
   const categories = Object.keys(QUESTIONS).sort((a, b) =>
     QUESTIONS[b].length - QUESTIONS[a].length
   );
   const totalQuestions = Object.values(QUESTIONS).reduce((s, v) => s + v.length, 0);
+
+  // Generate a "daily" random question on first load
+  useState(() => {
+    const allQs = [];
+    Object.entries(QUESTIONS).forEach(([cat, qs]) =>
+      qs.forEach((q) => allQs.push({ ...q, cat }))
+    );
+    const seed = new Date().toDateString();
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) hash = ((hash << 5) - hash + seed.charCodeAt(i)) | 0;
+    const picked = allQs[Math.abs(hash) % allQs.length];
+    setDailyQ(picked);
+  });
 
   const toggleCat = (cat) =>
     setSelectedCats((p) => p.includes(cat) ? p.filter((c) => c !== cat) : [...p, cat]);
@@ -304,6 +319,50 @@ export default function App() {
                 <span style={{ fontFamily:"'Space Mono',monospace",color:"var(--accent)",fontWeight:700 }}>{categories.length}</span> topics, sourced from real oral exam reports.
               </p>
             </div>
+
+            {/* Daily Question */}
+            {dailyQ && showDaily && (
+              <div style={{
+                background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+                border: "1px solid #f59e0b40",
+                borderRadius: "16px", padding: "24px", marginBottom: "28px",
+                position: "relative", animation: "fadeIn 0.5s ease",
+                boxShadow: "0 4px 30px rgba(245,158,11,0.08)"
+              }}>
+                <button onClick={() => setShowDaily(false)} style={{
+                  position: "absolute", top: "12px", right: "14px",
+                  background: "none", border: "none", color: "var(--t3)",
+                  fontSize: "18px", cursor: "pointer", lineHeight: 1
+                }}>×</button>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px"
+                }}>
+                  <span style={{ fontSize: "16px" }}>⚡</span>
+                  <span style={{
+                    fontFamily: "'Space Mono',monospace", fontSize: "11px",
+                    letterSpacing: "2px", textTransform: "uppercase",
+                    color: "#f59e0b", fontWeight: 700
+                  }}>Question of the Day</span>
+                </div>
+                <p style={{
+                  fontSize: "clamp(16px, 3vw, 20px)", fontWeight: 500,
+                  lineHeight: 1.5, color: "var(--t1)", marginBottom: "12px"
+                }}>
+                  {dailyQ.q}
+                </p>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: "6px",
+                  background: `${CATEGORY_COLORS[dailyQ.cat] || "#3b82f6"}15`,
+                  borderRadius: "6px", padding: "4px 10px"
+                }}>
+                  <span style={{ fontSize: "12px" }}>{CATEGORY_ICONS[dailyQ.cat] || "📋"}</span>
+                  <span style={{
+                    fontFamily: "'Space Mono',monospace", fontSize: "10px",
+                    color: CATEGORY_COLORS[dailyQ.cat] || "#3b82f6", fontWeight: 700
+                  }}>{dailyQ.cat}</span>
+                </div>
+              </div>
+            )}
 
             {/* Action buttons */}
             <div style={{ display:"flex",justifyContent:"center",gap:"10px",marginBottom:"28px",flexWrap:"wrap" }}>
