@@ -516,45 +516,79 @@ function shuffle(arr) {
 
 // ── PART A DATA ──────────────────────────────────────────────────────────────
 const IMDG_CLASSES = [
-  { id:"1",   name:"Explosives",                  img:"/quiz-images/imdg/class-1-vector.png.webp" },
-  { id:"2",   name:"Gases" },
-  { id:"2.1", name:"Flammable gases",             img:"/quiz-images/imdg/class-2.1.png" },
-  { id:"2.2", name:"Non-flammable, non-toxic gases", img:"/quiz-images/imdg/class-2.2.png" },
-  { id:"2.3", name:"Toxic gases",                 img:"/quiz-images/imdg/class-2.3.png" },
-  { id:"3",   name:"Flammable liquids",           img:"/quiz-images/imdg/class-3.png" },
-  { id:"4",   name:"Flammable solids; substances liable to spontaneous combustion; substances which, in contact with water, emit flammable gases" },
-  { id:"4.1", name:"Flammable solids, self-reactive substances, solid desensitized explosives and polymerizing substances", img:"/quiz-images/imdg/class-4.1.jpg" },
-  { id:"4.2", name:"Substances liable to spontaneous combustion", img:"/quiz-images/imdg/class4.2.webp" },
-  { id:"4.3", name:"Substances which, in contact with water, emit flammable gases", img:"/quiz-images/imdg/class-4.3.jpg" },
-  { id:"5",   name:"Oxidizing substances and organic peroxides" },
-  { id:"5.1", name:"Oxidizing substances",        img:"/quiz-images/imdg/class-5.1.png" },
-  { id:"5.2", name:"Organic peroxides",           img:"/quiz-images/imdg/class-5.2.png" },
-  { id:"6",   name:"Toxic and infectious substances" },
-  { id:"6.1", name:"Toxic substances",            img:"/quiz-images/imdg/class-6.1.png" },
-  { id:"6.2", name:"Infectious substances",       img:"/quiz-images/imdg/class-6.2.png" },
-  { id:"7",   name:"Radioactive material",        img:"/quiz-images/imdg/class-7.jpg" },
-  { id:"8",   name:"Corrosive substances",        img:"/quiz-images/imdg/class-8.png" },
-  { id:"9",   name:"Miscellaneous dangerous substances and articles", img:"/quiz-images/imdg/class-9.png" },
+  { id:"1",   name:"Explosives",                  img:"/quiz-images/imdg/class-1.png",
+    hint:"{Explosives}" },
+  { id:"2",   name:"Gases",
+    hint:"{Gases}" },
+  { id:"2.1", name:"Flammable gases",             img:"/quiz-images/imdg/class-2.1.png",
+    hint:"{Flammable} gases" },
+  { id:"2.2", name:"Non-flammable, non-toxic gases", img:"/quiz-images/imdg/class-2.2.png",
+    hint:"Non-{flammable}, non-{toxic} gases" },
+  { id:"2.3", name:"Toxic gases",                 img:"/quiz-images/imdg/class-2.3.png",
+    hint:"{Toxic} gases" },
+  { id:"3",   name:"Flammable liquids",           img:"/quiz-images/imdg/class-3.png",
+    hint:"{Flammable} {liquids}" },
+  { id:"4.1", name:"Flammable Solids",            img:"/quiz-images/imdg/class-4.1.png",
+    hint:"{Flammable} {Solids}" },
+  { id:"4.2", name:"Substances liable to spontaneous combustion", img:"/quiz-images/imdg/class-4.2.png",
+    hint:"Substances liable to {spontaneous} {combustion}" },
+  { id:"4.3", name:"Substances which, in contact with water, emit flammable gases", img:"/quiz-images/imdg/class-4.3.png",
+    hint:"Substances which, in contact with water, emit {flammable} gases" },
+  { id:"5",   name:"Oxidizing substances and organic peroxides",
+    hint:"{Oxidizing} substances and organic {peroxides}" },
+  { id:"5.1", name:"Oxidizing substances",        img:"/quiz-images/imdg/class-5.1.png",
+    hint:"{Oxidizing} substances" },
+  { id:"5.2", name:"Organic peroxides",           img:"/quiz-images/imdg/class-5.2.png",
+    hint:"Organic {peroxides}" },
+  { id:"6",   name:"Toxic and infectious substances",
+    hint:"{Toxic} and {infectious} substances" },
+  { id:"6.1", name:"Toxic substances",            img:"/quiz-images/imdg/class-6.1.png",
+    hint:"{Toxic} substances" },
+  { id:"6.2", name:"Infectious substances",       img:"/quiz-images/imdg/class-6.2.png",
+    hint:"{Infectious} substances" },
+  { id:"7",   name:"Radioactive material",        img:"/quiz-images/imdg/class-7.png",
+    hint:"{Radioactive} material" },
+  { id:"8",   name:"Corrosive substances",        img:"/quiz-images/imdg/class-8.png",
+    hint:"{Corrosive} substances" },
+  { id:"9",   name:"Miscellaneous dangerous substances and articles", img:"/quiz-images/imdg/class-9.png",
+    hint:"{Miscellaneous} dangerous substances and articles" },
 ];
 
 const SOLAS_CHAPTERS = [
-  { id:"I",     name:"General Provisions" },
-  { id:"II-1",  name:"Construction – Subdivision and Stability, Machinery and Electrical Installations" },
-  { id:"II-2",  name:"Construction – Fire Protection, Fire Detection and Fire Extinction" },
-  { id:"III",   name:"Life-Saving Appliances and Arrangements" },
-  { id:"IV",    name:"Radiocommunications (GMDSS)" },
-  { id:"V",     name:"Safety of Navigation" },
-  { id:"VI",    name:"Carriage of Cargoes and Oil Fuels" },
-  { id:"VII",   name:"Carriage of Dangerous Goods" },
-  { id:"VIII",  name:"Nuclear Ships" },
-  { id:"IX",    name:"Management for the Safe Operation of Ships (ISM Code)" },
-  { id:"X",     name:"Safety Measures for High-Speed Craft" },
-  { id:"XI-1",  name:"Special Measures to Enhance Maritime Safety" },
-  { id:"XI-2",  name:"Special Measures to Enhance Maritime Security (ISPS Code)" },
-  { id:"XII",   name:"Additional Safety Measures for Bulk Carriers" },
-  { id:"XIII",  name:"Verification of Compliance (IMO Member State Audit Scheme)" },
-  { id:"XIV",   name:"Safety Measures for Ships Operating in Polar Waters (Polar Code)" },
-  { id:"XV",    name:"Safety Measures for Ships Carrying Industrial Personnel" },
+  { id:"I",     name:"General Provisions",
+    hint:"General {Provisions}" },
+  { id:"II-1",  name:"Construction – Subdivision and Stability, Machinery and Electrical Installations",
+    hint:"Construction – {Subdivision} and {Stability}, {Machinery} and Electrical {Installations}" },
+  { id:"II-2",  name:"Construction – Fire Protection, Fire Detection and Fire Extinction",
+    hint:"Construction – Fire {Protection}, Fire {Detection} and Fire {Extinction}" },
+  { id:"III",   name:"Life-Saving Appliances and Arrangements",
+    hint:"Life-Saving {Appliances} and {Arrangements}" },
+  { id:"IV",    name:"Radiocommunications (GMDSS)",
+    hint:"{Radiocommunications} (GMDSS)" },
+  { id:"V",     name:"Safety of Navigation",
+    hint:"Safety of {Navigation}" },
+  { id:"VI",    name:"Carriage of Cargoes and Oil Fuels",
+    hint:"Carriage of {Cargoes} and Oil {Fuels}" },
+  { id:"VII",   name:"Carriage of Dangerous Goods",
+    hint:"Carriage of {Dangerous} {Goods}" },
+  { id:"VIII",  name:"Nuclear Ships",
+    hint:"{Nuclear} Ships" },
+  { id:"IX",    name:"Management for the Safe Operation of Ships (ISM Code)",
+    hint:"{Management} for the Safe {Operation} of Ships (ISM Code)" },
+  { id:"X",     name:"Safety Measures for High-Speed Craft",
+    hint:"Safety Measures for {High}-Speed {Craft}" },
+  { id:"XI-1",  name:"Special Measures to Enhance Maritime Safety",
+    hint:"{Special} Measures to Enhance Maritime {Safety}" },
+  { id:"XI-2",  name:"Special Measures to Enhance Maritime Security (ISPS Code)",
+    hint:"{Special} Measures to Enhance Maritime {Security} (ISPS Code)" },
+  { id:"XII",   name:"Additional Safety Measures for Bulk Carriers",
+    hint:"{Additional} Safety Measures for {Bulk} {Carriers}" },
+  { id:"XIII",  name:"Verification of Compliance (IMO Member State Audit Scheme)",
+    hint:"{Verification} of {Compliance} (IMO Member State Audit Scheme)" },
+  { id:"XIV",   name:"Safety Measures for Ships Operating in Polar Waters (Polar Code)",
+    hint:"Safety Measures for Ships {Operating} in {Polar} {Waters} (Polar Code)" },
+  { id:"XV",    name:"Safety Measures for Ships Carrying Industrial Personnel",
+    hint:"Safety Measures for Ships {Carrying} {Industrial} {Personnel}" },
 ];
 
 const PILOT_LADDER_QUIZ = [
@@ -838,6 +872,7 @@ export default function App() {
     try { return JSON.parse(localStorage.getItem("oow-quiz-history") || "{}"); } catch { return {}; }
   });
   const [showPoster, setShowPoster] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const noteKey = useCallback((question) => {
     // Create a stable key from category + question text
@@ -971,6 +1006,7 @@ export default function App() {
     setQuizPos(p => p + 1);
     setQuizAnswer("");
     setQuizFeedback(null);
+    setShowHint(false);
     setTimeout(() => quizInputRef.current?.focus(), 80);
   }, [quizPos, quizOrder, quizId, quizScore]);
 
@@ -1469,6 +1505,12 @@ export default function App() {
     .mc-option-wrong   .mc-letter { background:#ef4444; color:#fff; }
     .mc-opt-text { flex:1; }
 
+    /* SOLAS Hint */
+    .hint-btn { background:none; border:1.5px dashed var(--border); border-radius:20px; padding:5px 14px; font-size:11px; font-family:'Space Mono',monospace; font-weight:600; letter-spacing:0.5px; color:var(--t2); cursor:pointer; transition:all 0.15s; }
+    .hint-btn:hover { border-color:var(--review); color:var(--review); }
+    .hint-card { background:var(--card); border:1.5px dashed var(--review); border-radius:12px; padding:16px 20px; margin-bottom:12px; font-size:15px; line-height:2; color:var(--t2); text-align:center; animation:fadeIn 0.2s ease; }
+    .hint-blank { color:var(--review); font-weight:700; letter-spacing:3px; border-bottom:2px solid var(--review); padding-bottom:1px; }
+
     /* Pilot Ladder Poster */
     .poster-btn { background:none; border:1.5px solid var(--border); border-radius:20px; padding:5px 14px; font-size:11px; font-family:'Space Mono',monospace; font-weight:600; letter-spacing:0.5px; color:var(--t2); cursor:pointer; transition:all 0.15s; }
     .poster-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent)10; }
@@ -1924,6 +1966,26 @@ export default function App() {
                         )}
                         <div className="quiz-class-question">{cfg.question}</div>
                       </div>
+
+                      {/* Hint (SOLAS only) */}
+                      {currentItem.hint && !quizFeedback && (
+                        <div style={{ textAlign:"center", marginBottom:"10px" }}>
+                          <button className="hint-btn" onClick={() => setShowHint(h => !h)}>
+                            {showHint ? "🙈 Hide Hint" : "💡 Show Hint"}
+                          </button>
+                        </div>
+                      )}
+                      {showHint && currentItem.hint && !quizFeedback && (
+                        <div className="hint-card">
+                          {currentItem.hint.split(/(\{[^}]+\})/).map((part, i) => {
+                            if (part.startsWith("{") && part.endsWith("}")) {
+                              const word = part.slice(1, -1);
+                              return <span key={i} className="hint-blank">{"_".repeat(word.length)}</span>;
+                            }
+                            return <span key={i}>{part}</span>;
+                          })}
+                        </div>
+                      )}
 
                       {/* Feedback */}
                       {quizFeedback && (
