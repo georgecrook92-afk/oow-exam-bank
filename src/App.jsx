@@ -225,6 +225,31 @@ const CATEGORY_ICONS = {
   "Ship Joining & Familiarisation": "🚪",
 };
 
+const CATEGORY_PHOTOS = {
+  "Navigation & Passage Planning": "photo-1764726411645-744d48aa4497",
+  "Safety, ISM & SMS": "photo-1761798541154-ba2aca7c00e3",
+  "Cargo Operations (General/Bulk/Container)": "photo-1634638022845-1ab614a94128",
+  "Life Saving Appliances (LSA)": "photo-1536238253361-132d75ef874a",
+  "Watchkeeping & Bridge Procedures": "photo-1641467613990-b74163e280e3",
+  "Radar, ARPA & Plotting": "photo-1547411713-d8b9c8d1eaa7",
+  "COLREGS & Rules of the Road": "photo-1701193550843-e3c79b6ff762",
+  "Compass & Position Fixing": "photo-1566341013452-946caa457784",
+  "SOLAS, Conventions & Certificates": "photo-1554224155-cfa08c2a758f",
+  "ECDIS & Electronic Navigation": "photo-1604355231395-bf02775c357f",
+  "Fire Safety & Fire Fighting": "photo-1563062067-723c14a7c7ba",
+  "Meteorology & Weather": "photo-1762717563045-407f3bfde88f",
+  "GMDSS & Communications": "photo-1758910071619-5bb4bdc5de68",
+  "Lights, Shapes & Buoyage": "photo-1486944936280-f152c82ac151",
+  "Ship Construction & Stability": "photo-1583765748164-627fa5124b49",
+  "Ship Joining & Familiarisation": "photo-1666753762812-830603879d48",
+  "Anchoring & Mooring": "photo-1760027192585-fd7c44c87be0",
+  "Emergencies & SAR": "photo-1531570003789-62d56ed3b271",
+  "MARPOL & Pollution Prevention": "photo-1771250851486-f5f7797393ad",
+  "Tanker Operations (Oil/Chemical/Gas)": "photo-1763887487595-c94a790a9b01",
+  "Dangerous Goods (IMDG)": "photo-1624021097786-e621f5e3d52d",
+  "ISPS & Ship Security": "photo-1508345228704-935cc84bf5e2",
+};
+
 const CATEGORY_COLORS = {
   "Navigation & Passage Planning": "#0ea5e9",
   "ECDIS & Electronic Navigation": "#6366f1",
@@ -489,8 +514,272 @@ function shuffle(arr) {
   return a;
 }
 
+// ── PART A DATA ──────────────────────────────────────────────────────────────
+const IMDG_CLASSES = [
+  { id:"1",   name:"Explosives",                  img:"/quiz-images/imdg/class-1-vector.png.webp" },
+  { id:"2",   name:"Gases" },
+  { id:"2.1", name:"Flammable gases",             img:"/quiz-images/imdg/class-2.1.png" },
+  { id:"2.2", name:"Non-flammable, non-toxic gases", img:"/quiz-images/imdg/class-2.2.png" },
+  { id:"2.3", name:"Toxic gases",                 img:"/quiz-images/imdg/class-2.3.png" },
+  { id:"3",   name:"Flammable liquids",           img:"/quiz-images/imdg/class-3.png" },
+  { id:"4",   name:"Flammable solids; substances liable to spontaneous combustion; substances which, in contact with water, emit flammable gases" },
+  { id:"4.1", name:"Flammable solids, self-reactive substances, solid desensitized explosives and polymerizing substances", img:"/quiz-images/imdg/class-4.1.jpg" },
+  { id:"4.2", name:"Substances liable to spontaneous combustion", img:"/quiz-images/imdg/class4.2.webp" },
+  { id:"4.3", name:"Substances which, in contact with water, emit flammable gases", img:"/quiz-images/imdg/class-4.3.jpg" },
+  { id:"5",   name:"Oxidizing substances and organic peroxides" },
+  { id:"5.1", name:"Oxidizing substances",        img:"/quiz-images/imdg/class-5.1.png" },
+  { id:"5.2", name:"Organic peroxides",           img:"/quiz-images/imdg/class-5.2.png" },
+  { id:"6",   name:"Toxic and infectious substances" },
+  { id:"6.1", name:"Toxic substances",            img:"/quiz-images/imdg/class-6.1.png" },
+  { id:"6.2", name:"Infectious substances",       img:"/quiz-images/imdg/class-6.2.png" },
+  { id:"7",   name:"Radioactive material",        img:"/quiz-images/imdg/class-7.jpg" },
+  { id:"8",   name:"Corrosive substances",        img:"/quiz-images/imdg/class-8.png" },
+  { id:"9",   name:"Miscellaneous dangerous substances and articles", img:"/quiz-images/imdg/class-9.png" },
+];
+
+const SOLAS_CHAPTERS = [
+  { id:"I",     name:"General Provisions" },
+  { id:"II-1",  name:"Construction – Subdivision and Stability, Machinery and Electrical Installations" },
+  { id:"II-2",  name:"Construction – Fire Protection, Fire Detection and Fire Extinction" },
+  { id:"III",   name:"Life-Saving Appliances and Arrangements" },
+  { id:"IV",    name:"Radiocommunications (GMDSS)" },
+  { id:"V",     name:"Safety of Navigation" },
+  { id:"VI",    name:"Carriage of Cargoes and Oil Fuels" },
+  { id:"VII",   name:"Carriage of Dangerous Goods" },
+  { id:"VIII",  name:"Nuclear Ships" },
+  { id:"IX",    name:"Management for the Safe Operation of Ships (ISM Code)" },
+  { id:"X",     name:"Safety Measures for High-Speed Craft" },
+  { id:"XI-1",  name:"Special Measures to Enhance Maritime Safety" },
+  { id:"XI-2",  name:"Special Measures to Enhance Maritime Security (ISPS Code)" },
+  { id:"XII",   name:"Additional Safety Measures for Bulk Carriers" },
+  { id:"XIII",  name:"Verification of Compliance (IMO Member State Audit Scheme)" },
+  { id:"XIV",   name:"Safety Measures for Ships Operating in Polar Waters (Polar Code)" },
+  { id:"XV",    name:"Safety Measures for Ships Carrying Industrial Personnel" },
+];
+
+const PILOT_LADDER_QUIZ = [
+  // ── Freeboard of 9m or less ──────────────────────────────────────────────
+  {
+    id:"q1", section:"Freeboard of 9m or less",
+    q:"What is the minimum diameter of the handhold stanchions?",
+    correct:"32mm minimum, positioned at least 120cm above the bulwark",
+    options:[
+      "28mm minimum, positioned at least 100cm above the bulwark",
+      "32mm minimum, positioned at least 120cm above the bulwark",
+      "40mm minimum, positioned at least 150cm above the bulwark",
+      "25mm minimum, positioned at least 90cm above the bulwark",
+    ]
+  },
+  {
+    id:"q2", section:"Freeboard of 9m or less",
+    q:"What are the handhold size requirements?",
+    correct:"Minimum 70cm, maximum 80cm",
+    options:[
+      "Minimum 70cm, maximum 80cm",
+      "Minimum 60cm, maximum 75cm",
+      "Minimum 80cm, maximum 90cm",
+      "Minimum 65cm, maximum 85cm",
+    ]
+  },
+  {
+    id:"q3", section:"Freeboard of 9m or less",
+    q:"What are the diameter requirements for man-ropes?",
+    correct:"Minimum 28mm, maximum 32mm — only required if requested by the pilot",
+    options:[
+      "Minimum 32mm, maximum 38mm — always required",
+      "Minimum 24mm, maximum 28mm — only if requested by the pilot",
+      "Minimum 28mm, maximum 32mm — only required if requested by the pilot",
+      "Minimum 30mm, maximum 36mm — always required",
+    ]
+  },
+  {
+    id:"q4", section:"Freeboard of 9m or less",
+    q:"What is the minimum diameter for side ropes?",
+    correct:"18mm",
+    options:["14mm", "16mm", "18mm", "22mm"]
+  },
+  {
+    id:"q5", section:"Freeboard of 9m or less",
+    q:"What are the requirements for all steps on the ladder?",
+    correct:"Firmly against ship's side, at least 40cm wide, spaced 31–35cm apart",
+    options:[
+      "Firmly against ship's side, at least 40cm wide, spaced 31–35cm apart",
+      "Firmly against ship's side, at least 45cm wide, spaced 28–32cm apart",
+      "Firmly against ship's side, at least 35cm wide, spaced 30–34cm apart",
+      "Firmly against ship's side, at least 40cm wide, spaced 25–30cm apart",
+    ]
+  },
+  {
+    id:"q6", section:"Freeboard of 9m or less",
+    q:"What is the minimum length of a spreader?",
+    correct:"180cm",
+    options:["150cm", "200cm", "180cm", "160cm"]
+  },
+  {
+    id:"q7", section:"Freeboard of 9m or less",
+    q:"How many steps are allowed between spreaders?",
+    correct:"Maximum 9 steps",
+    options:["Maximum 7 steps", "Maximum 9 steps", "Maximum 12 steps", "Maximum 5 steps"]
+  },
+  {
+    id:"q8", section:"Freeboard of 9m or less",
+    q:"Which step from the bottom must be a spreader?",
+    correct:"The 5th step from the bottom",
+    options:["The 3rd step from the bottom", "The 5th step from the bottom", "The 7th step from the bottom", "The 4th step from the bottom"]
+  },
+  {
+    id:"q9", section:"Freeboard of 9m or less",
+    q:"How much unobstructed ship's side is required?",
+    correct:"6 metres",
+    options:["4 metres", "8 metres", "5 metres", "6 metres"]
+  },
+  {
+    id:"q10", section:"Freeboard of 9m or less",
+    q:"Who determines the required boarding height?",
+    correct:"The Pilot",
+    options:["The Master", "The Pilot", "The Port Authority", "The Harbour Master"]
+  },
+  // ── Combination arrangement — freeboard over 9m ──────────────────────────
+  {
+    id:"q11", section:"Combination arrangement — freeboard over 9m",
+    q:"When is a combination arrangement required?",
+    correct:"When freeboard exceeds 9 metres and no side door is available",
+    options:[
+      "When freeboard exceeds 6 metres and no gangway is available",
+      "When freeboard exceeds 9 metres and no side door is available",
+      "When freeboard exceeds 12 metres regardless of side door availability",
+      "When freeboard exceeds 9 metres and the pilot requests it",
+    ]
+  },
+  {
+    id:"q12", section:"Combination arrangement — freeboard over 9m",
+    q:"How far must the pilot ladder extend above the lower platform?",
+    correct:"At least 2 metres above the lower platform",
+    options:[
+      "At least 1 metre above the lower platform",
+      "At least 1.5 metres above the lower platform",
+      "At least 2 metres above the lower platform",
+      "At least 3 metres above the lower platform",
+    ]
+  },
+  {
+    id:"q13", section:"Combination arrangement — freeboard over 9m",
+    q:"How high above the accommodation platform must the ladder be firmly attached to the ship's side?",
+    correct:"1.5 metres above the accommodation platform",
+    options:[
+      "0.5 metres above the accommodation platform",
+      "1 metre above the accommodation platform",
+      "1.5 metres above the accommodation platform",
+      "2 metres above the accommodation platform",
+    ]
+  },
+  {
+    id:"q14", section:"Combination arrangement — freeboard over 9m",
+    q:"What are the climb requirements for the pilot ladder in a combination arrangement?",
+    correct:"Not less than 1.5 metres and no more than 9 metres",
+    options:[
+      "Not less than 1 metre and no more than 6 metres",
+      "Not less than 1.5 metres and no more than 9 metres",
+      "Not less than 2 metres and no more than 12 metres",
+      "Not less than 1.5 metres and no more than 6 metres",
+    ]
+  },
+  {
+    id:"q15", section:"Combination arrangement — freeboard over 9m",
+    q:"What is the maximum slope allowed for the accommodation ladder?",
+    correct:"45 degrees",
+    options:["30 degrees", "45 degrees", "55 degrees", "60 degrees"]
+  },
+  {
+    id:"q16", section:"Combination arrangement — freeboard over 9m",
+    q:"Which direction should the accommodation ladder lead?",
+    correct:"Aft",
+    options:["Forward", "Aft", "Perpendicular to the ship's side", "Either forward or aft depending on conditions"]
+  },
+  {
+    id:"q17", section:"Combination arrangement — freeboard over 9m",
+    q:"What is the minimum height of the lower platform above the sea?",
+    correct:"5 metres above the sea",
+    options:["3 metres above the sea", "4 metres above the sea", "5 metres above the sea", "6 metres above the sea"]
+  },
+  {
+    id:"q18", section:"Combination arrangement — freeboard over 9m",
+    q:"What must the lower platform be?",
+    correct:"Horizontal",
+    options:[
+      "Horizontal",
+      "At a 5 degree angle to assist boarding",
+      "Inclined at the same angle as the accommodation ladder",
+      "Non-slip but at any angle",
+    ]
+  },
+  {
+    id:"q19", section:"Combination arrangement — freeboard over 9m",
+    q:"What is the recommended freeboard mark measurement?",
+    correct:"9 metres, with 2 metre sections indicated on the gauge",
+    options:[
+      "6 metres, with 1 metre sections indicated on the gauge",
+      "9 metres, with 1 metre sections indicated on the gauge",
+      "9 metres, with 2 metre sections indicated on the gauge",
+      "12 metres, with 3 metre sections indicated on the gauge",
+    ]
+  },
+  {
+    id:"q20", section:"Combination arrangement — freeboard over 9m",
+    q:"How should the accommodation ladder be secured to the ship's side?",
+    correct:"Using an eyepad, magnetic, or pneumatic system",
+    options:[
+      "Using rope lashing or chain systems only",
+      "Using a fixed bracket welded to the ship's side",
+      "Using an eyepad, magnetic, or pneumatic system",
+      "Using a hydraulic or electric stanchion system",
+    ]
+  },
+];
+
+function getQuizData(id) {
+  if (id === "imdg")  return IMDG_CLASSES;
+  if (id === "solas") return SOLAS_CHAPTERS;
+  if (id === "pilot") return PILOT_LADDER_QUIZ;
+  return [];
+}
+
+const QUIZ_CONFIG = {
+  imdg:  { label:"IMDG CLASS",    question:"What is this class called?",   placeholder:"Type the class name…",    backLabel:"← IMDG",  doneText:"All classes nailed!",   type:"text" },
+  solas: { label:"SOLAS CHAPTER", question:"What is this chapter called?",  placeholder:"Type the chapter title…", backLabel:"← SOLAS", doneText:"All chapters nailed!", type:"text" },
+  pilot: { label:"PILOT LADDER",  question:"",                              placeholder:"",                        backLabel:"← PILOT", doneText:"All questions nailed!", type:"mc"   },
+};
+
+const PART_A_QUIZZES = [
+  { id:"imdg",  title:"IMDG Classes",         count:19, icon:"☢️", desc:"Name each IMDG dangerous goods class from its number" },
+  { id:"solas", title:"SOLAS Chapter Titles", count:17, icon:"⚓", desc:"Name each SOLAS chapter from its number" },
+  { id:"pilot", title:"IMPA Pilot Ladder",    count:20, icon:"🪜", desc:"Multiple choice questions on pilot ladder regulations" },
+];
+
+function QuizProgressWheel({ pct, size = 52 }) {
+  const strokeW = 4;
+  const r = (size - strokeW) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ * (1 - pct / 100);
+  const color = pct >= 80 ? "var(--confident)" : pct >= 50 ? "var(--review)" : "#ef4444";
+  return (
+    <div style={{ position:"relative", width:size, height:size }}>
+      <svg width={size} height={size} style={{ transform:"rotate(-90deg)" }}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--border)" strokeWidth={strokeW}/>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={strokeW}
+          strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
+          style={{ transition:"stroke-dashoffset 0.5s ease" }}/>
+      </svg>
+      <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center",
+        fontSize:"10px", fontWeight:700, fontFamily:"'Space Mono',monospace", color }}>
+        {pct}%
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
-  const [view, setView] = useState("home");
+  const [view, setView] = useState("landing");
   const [selectedCats, setSelectedCats] = useState([]);
   const [pool, setPool] = useState([]);
   const [idx, setIdx] = useState(0);
@@ -532,6 +821,23 @@ export default function App() {
   const examCardRef = useRef(null);
   const cardRef = useRef(null);
   const saveTimerRef = useRef(null);
+  // Part A quiz states
+  const [quizId, setQuizId] = useState(null);
+  const [quizMode, setQuizMode] = useState("ordered");
+  const [quizOrder, setQuizOrder] = useState([]);
+  const [quizPos, setQuizPos] = useState(0);
+  const [quizAnswer, setQuizAnswer] = useState("");
+  const [quizFeedback, setQuizFeedback] = useState(null); // null | "correct" | "incorrect"
+  const [quizScore, setQuizScore] = useState({ correct:0, total:0 });
+  const [quizDone, setQuizDone] = useState(false);
+  const quizInputRef = useRef(null);
+  const [quizSelectedId, setQuizSelectedId] = useState(PART_A_QUIZZES[0].id);
+  const [quizSelectedMode, setQuizSelectedMode] = useState("ordered");
+  const quizFeedbackTimeRef = useRef(0);
+  const [quizHistory, setQuizHistory] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("oow-quiz-history") || "{}"); } catch { return {}; }
+  });
+  const [showPoster, setShowPoster] = useState(false);
 
   const noteKey = useCallback((question) => {
     // Create a stable key from category + question text
@@ -615,6 +921,69 @@ export default function App() {
     setViewKey(k => k + 1);
     setView(v);
   }, []);
+
+  // ── Part A quiz handlers ──
+  const startQuiz = useCallback((id, mode) => {
+    const data = getQuizData(id);
+    const indices = [...Array(data.length).keys()];
+    const order = mode === "random"
+      ? indices.sort(() => Math.random() - 0.5)
+      : indices;
+    setQuizId(id);
+    setQuizMode(mode);
+    setQuizOrder(order);
+    setQuizPos(0);
+    setQuizAnswer("");
+    setQuizFeedback(null);
+    setQuizScore({ correct:0, total:0 });
+    setQuizDone(false);
+    setShowPoster(false);
+    setViewKey(k => k + 1);
+    setView("part-a-quiz");
+    setTimeout(() => quizInputRef.current?.focus(), 150);
+  }, []);
+
+  const submitQuizAnswer = useCallback(() => {
+    if (!quizAnswer.trim() || quizFeedback) return;
+    const data = getQuizData(quizId);
+    const item = data[quizOrder[quizPos]];
+    const normalise = s => s.trim().toLowerCase()
+      .replace(/\s*\([^)]*\)/g, "")   // strip parenthetical notes e.g. "(GMDSS)"
+      .replace(/[;,–\-]/g, " ")
+      .replace(/\s+/g, " ").trim();
+    const isCorrect = normalise(quizAnswer) === normalise(item.name);
+    quizFeedbackTimeRef.current = Date.now();
+    setQuizFeedback(isCorrect ? "correct" : "incorrect");
+    setQuizScore(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
+  }, [quizAnswer, quizFeedback, quizId, quizOrder, quizPos]);
+
+  const nextQuizQuestion = useCallback(() => {
+    if (Date.now() - quizFeedbackTimeRef.current < 400) return;
+    if (quizPos + 1 >= quizOrder.length) {
+      setQuizDone(true);
+      setQuizHistory(prev => {
+        const updated = { ...prev, [quizId]: { correct: quizScore.correct, total: quizScore.total } };
+        localStorage.setItem("oow-quiz-history", JSON.stringify(updated));
+        return updated;
+      });
+      return;
+    }
+    setQuizPos(p => p + 1);
+    setQuizAnswer("");
+    setQuizFeedback(null);
+    setTimeout(() => quizInputRef.current?.focus(), 80);
+  }, [quizPos, quizOrder, quizId, quizScore]);
+
+  const selectMCOption = useCallback((optionText) => {
+    if (quizFeedback) return;
+    const data = getQuizData(quizId);
+    const item = data[quizOrder[quizPos]];
+    const isCorrect = optionText === item.correct;
+    quizFeedbackTimeRef.current = Date.now();
+    setQuizAnswer(optionText);
+    setQuizFeedback(isCorrect ? "correct" : "incorrect");
+    setQuizScore(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
+  }, [quizFeedback, quizId, quizOrder, quizPos]);
 
   const toggleCat = (cat) =>
     setSelectedCats((p) => p.includes(cat) ? p.filter((c) => c !== cat) : [...p, cat]);
@@ -939,16 +1308,16 @@ export default function App() {
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Mono:wght@400;700&display=swap');
     * { margin:0; padding:0; box-sizing:border-box; }
     :root {
-      --bg: #0a0e1a; --card: #111827; --card-h: #1a2236;
-      --border: #1e293b; --t1: #f1f5f9; --t2: #94a3b8; --t3: #64748b;
-      --accent: #3b82f6; --dot: #fff; --glow-opacity: 0.12;
-      --h1-from: #f1f5f9; --h1-to: #94a3b8;
-      --daily-bg-from: #1e293b; --daily-bg-to: #0f172a;
+      --bg: #0c1526; --card: #111e33; --card-h: #192d47;
+      --border: #1e3350; --t1: #dde8f5; --t2: #6890b0; --t3: #3e6080;
+      --accent: #20c0c8; --dot: #dde8f5; --glow-opacity: 0.15;
+      --h1-from: #dde8f5; --h1-to: #6890b0;
+      --daily-bg-from: #192d47; --daily-bg-to: #0c1526;
       --tip-bg: #f59e0b08; --tip-border: #f59e0b25;
       --confident: #10b981; --confident-bg: #10b98118; --confident-border: #10b981;
       --review: #f59e0b; --review-bg: #f59e0b18; --review-border: #f59e0b;
-      --bookmark: #3b82f6; --bookmark-bg: #3b82f618; --bookmark-border: #3b82f6;
-      --go-shadow: rgba(59,130,246,0.3);
+      --bookmark: #5b8fd4; --bookmark-bg: #5b8fd415; --bookmark-border: #5b8fd440;
+      --go-shadow: rgba(32,192,200,0.3);
       --daily-border: #f59e0b40;
       --daily-accent: #f59e0b;
     }
@@ -966,6 +1335,12 @@ export default function App() {
       --daily-border: #d4b21240;
       --daily-accent: #d4b212;
     }
+    .dark-pattern {
+      display:block; position:fixed; inset:0; z-index:0; opacity:0.09; pointer-events:none;
+      background-image: url("data:image/svg+xml,%3Csvg width='28' height='28' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1.5' fill='%2320c0c8'/%3E%3C/svg%3E");
+      background-size: 28px 28px;
+    }
+    [data-theme="light"] .dark-pattern { display:none; }
     .light-pattern { display:none; }
     [data-theme="light"] .light-pattern {
       display:block; position:fixed; inset:0; z-index:0; opacity:0.18;
@@ -981,10 +1356,15 @@ export default function App() {
       from { opacity:0; } to { opacity:1; }
     }
     @keyframes viewEnter {
-      from { opacity:0; transform:translateY(18px); }
+      from { opacity:0; transform:translateY(24px); }
       to { opacity:1; transform:translateY(0); }
     }
-    .view-enter { animation: viewEnter 0.35s cubic-bezier(0.22,1,0.36,1) both; }
+    @keyframes examSetupEnter {
+      0% { opacity:0; transform:scale(0.93) translateY(44px); }
+      100% { opacity:1; transform:scale(1) translateY(0); }
+    }
+    .view-enter { animation: viewEnter 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+    .exam-setup-container.view-enter { animation: examSetupEnter 0.6s cubic-bezier(0.16,1,0.3,1) both; }
 
     /* Collapsible sidebar sections */
     .sidebar-header {
@@ -1031,6 +1411,77 @@ export default function App() {
     .tag-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
     .tag-dot.confident { background:var(--confident); }
     .tag-dot.review { background:var(--review); }
+    /* === PART A QUIZ === */
+    .quiz-page { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:32px 20px 60px; position:relative; z-index:1; }
+    .quiz-selection-grid { display:flex; flex-direction:column; gap:14px; width:100%; max-width:560px; margin-top:8px; }
+    .quiz-selection-card { background:var(--card); border:1.5px solid var(--border); border-radius:16px; padding:22px 24px; cursor:pointer; display:flex; align-items:center; gap:18px; transition:all 0.2s; }
+    .quiz-selection-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 28px rgba(32,192,200,0.12); }
+    .quiz-sel-icon { font-size:28px; flex-shrink:0; }
+    .quiz-sel-title { font-size:16px; font-weight:700; color:var(--t1); margin-bottom:4px; }
+    .quiz-sel-desc { font-size:13px; color:var(--t2); line-height:1.5; }
+    .quiz-sel-count { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); font-weight:700; margin-bottom:6px; }
+    .quiz-mode-row { display:flex; gap:10px; margin-top:16px; }
+    .quiz-mode-btn { flex:1; padding:9px 0; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--t2); font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
+    .quiz-mode-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .quiz-mode-btn:not(.active):hover { border-color:var(--t3); }
+    .quiz-start-btn { margin-top:14px; width:100%; padding:14px; border-radius:12px; border:none; background:var(--accent); color:#fff; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; box-shadow:0 4px 20px rgba(32,192,200,0.3); }
+    .quiz-start-btn:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(32,192,200,0.4); }
+    .quiz-container { width:100%; max-width:560px; margin-top:8px; }
+    .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+    .quiz-progress-label { font-family:'Space Mono',monospace; font-size:12px; color:var(--t2); font-weight:600; }
+    .quiz-score-label { font-family:'Space Mono',monospace; font-size:12px; color:var(--accent); font-weight:700; }
+    .quiz-progress-bar { height:4px; background:var(--border); border-radius:2px; overflow:hidden; margin-bottom:32px; }
+    .quiz-progress-fill { height:100%; background:var(--accent); border-radius:2px; transition:width 0.4s ease; }
+    .quiz-question-card { background:var(--card); border:1.5px solid var(--border); border-radius:20px; padding:40px 32px; text-align:center; margin-bottom:24px; animation:slideIn 0.3s cubic-bezier(0.22,1,0.36,1) both; }
+    .quiz-class-label { font-family:'Space Mono',monospace; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--t3); margin-bottom:12px; }
+    .quiz-class-number { font-size:clamp(48px,10vw,80px); font-weight:700; color:var(--accent); line-height:1; margin-bottom:8px; font-family:'Space Mono',monospace; }
+    .quiz-class-img { width:160px; height:160px; object-fit:contain; border-radius:12px; margin:8px auto 12px; display:block; }
+    .quiz-class-question { font-size:18px; color:var(--t2); }
+    .quiz-input { width:100%; padding:16px 18px; background:var(--card); border:1.5px solid var(--border); border-radius:12px; color:var(--t1); font-size:16px; font-family:'DM Sans',sans-serif; outline:none; transition:border-color 0.15s; margin-bottom:12px; }
+    .quiz-input:focus { border-color:var(--accent); }
+    .quiz-input::placeholder { color:var(--t3); }
+    .quiz-input:disabled { opacity:0.5; }
+    .quiz-submit-btn { width:100%; padding:14px; border-radius:12px; border:none; background:var(--accent); color:#fff; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
+    .quiz-submit-btn:hover:not(:disabled) { transform:translateY(-1px); }
+    .quiz-submit-btn:disabled { opacity:0.4; cursor:default; }
+    .quiz-feedback { border-radius:14px; padding:18px 20px; margin-bottom:12px; animation:fadeIn 0.2s ease; }
+    .quiz-feedback.correct { background:var(--confident-bg); border:1.5px solid var(--confident-border); }
+    .quiz-feedback.incorrect { background:#ef444412; border:1.5px solid #ef444430; }
+    .quiz-feedback-icon { font-size:22px; margin-bottom:6px; }
+    .quiz-feedback-answer { font-size:14px; line-height:1.6; }
+    .quiz-next-btn { width:100%; padding:14px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); color:var(--t1); font-size:15px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
+    .quiz-next-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .quiz-done-card { background:var(--card); border:1.5px solid var(--border); border-radius:20px; padding:40px 32px; text-align:center; }
+    .quiz-done-score { font-size:clamp(48px,10vw,72px); font-weight:700; color:var(--accent); font-family:'Space Mono',monospace; line-height:1; margin:16px 0 8px; }
+
+    /* Multiple-choice styles */
+    .mc-question-card { padding:28px 24px 24px; }
+    .mc-section-label { font-size:11px; font-weight:600; font-family:'Space Mono',monospace; letter-spacing:0.5px; color:var(--accent); background:var(--accent)15; border:1px solid var(--accent)30; border-radius:20px; padding:3px 10px; display:inline-block; margin:6px auto 2px; }
+    .mc-question-text { font-size:clamp(15px,2.5vw,18px); font-weight:600; color:var(--t1); line-height:1.55; text-align:center; margin-top:10px; }
+    .mc-options { display:flex; flex-direction:column; gap:10px; margin-bottom:12px; }
+    .mc-option { display:flex; align-items:flex-start; gap:12px; width:100%; padding:14px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); color:var(--t1); font-size:14px; font-weight:500; font-family:'DM Sans',sans-serif; cursor:pointer; text-align:left; transition:all 0.15s; line-height:1.45; }
+    .mc-option:hover:not(:disabled) { border-color:var(--accent); background:var(--card-h); transform:translateX(2px); }
+    .mc-option:disabled { cursor:default; }
+    .mc-option-correct { border-color:var(--confident) !important; background:var(--confident-bg) !important; color:var(--confident) !important; }
+    .mc-option-wrong   { border-color:#ef4444 !important; background:#ef444412 !important; color:#ef4444 !important; }
+    .mc-letter { flex-shrink:0; width:24px; height:24px; border-radius:6px; background:var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; font-family:'Space Mono',monospace; color:var(--t2); transition:inherit; }
+    .mc-option-correct .mc-letter { background:var(--confident); color:#fff; }
+    .mc-option-wrong   .mc-letter { background:#ef4444; color:#fff; }
+    .mc-opt-text { flex:1; }
+
+    /* Pilot Ladder Poster */
+    .poster-btn { background:none; border:1.5px solid var(--border); border-radius:20px; padding:5px 14px; font-size:11px; font-family:'Space Mono',monospace; font-weight:600; letter-spacing:0.5px; color:var(--t2); cursor:pointer; transition:all 0.15s; }
+    .poster-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent)10; }
+    .poster-overlay { position:fixed; inset:0; z-index:9999; display:flex; flex-direction:column; background:rgba(0,0,0,0.97); animation:fadeIn 0.2s ease; }
+    .poster-overlay-header { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.1); flex-shrink:0; }
+    .poster-overlay-title { font-family:'Space Mono',monospace; font-size:12px; font-weight:700; color:#fff; letter-spacing:1px; }
+    .poster-close-btn { background:rgba(255,255,255,0.1); border:none; color:#fff; border-radius:8px; width:34px; height:34px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; transition:background 0.15s; line-height:1; }
+    .poster-close-btn:hover { background:rgba(255,255,255,0.2); }
+    .poster-newtab-btn { font-size:11px; font-family:'Space Mono',monospace; font-weight:600; color:var(--accent); background:none; border:1.5px solid var(--accent); border-radius:8px; padding:5px 12px; cursor:pointer; text-decoration:none; transition:all 0.15s; letter-spacing:0.3px; }
+    .poster-newtab-btn:hover { background:var(--accent); color:#000; }
+    .poster-frame-wrap { flex:1; overflow:hidden; display:flex; }
+    .poster-frame { width:100%; height:100%; border:none; flex:1; }
+
     .confidence-filter { display:flex; align-items:center; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
     .confidence-filter-label { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--t3); font-weight:700; margin-right:4px; }
     .cf-btn { padding:6px 14px; border-radius:20px; border:1.5px solid var(--border); background:var(--card); color:var(--t2); font-size:12px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; display:inline-flex; align-items:center; gap:6px; }
@@ -1060,8 +1511,27 @@ export default function App() {
     .home-header { text-align:center; }
     .home-header p { max-width:500px; margin:0 auto; }
     .daily-card { flex:1; min-width:0; }
+    /* === LANDING PAGE === */
+    .landing-container { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 24px; position:relative; z-index:1; }
+    .landing-title { font-family:'Space Mono',monospace; font-size:11px; letter-spacing:5px; text-transform:uppercase; color:var(--accent); font-weight:700; margin-bottom:20px; }
+    .landing-heading { font-size:clamp(32px,6vw,60px); font-weight:700; text-align:center; margin-bottom:12px; line-height:1.1; color:var(--t1); }
+    .landing-sub { font-size:clamp(14px,2vw,17px); color:var(--t2); text-align:center; margin-bottom:60px; max-width:480px; line-height:1.6; }
+    .landing-cards { display:flex; gap:20px; width:100%; max-width:780px; }
+    @media (max-width:600px) { .landing-cards { flex-direction:column; } }
+    .landing-card { flex:1; border-radius:20px; padding:40px 32px; cursor:pointer; border:1.5px solid var(--border); background:var(--card); transition:all 0.25s cubic-bezier(0.22,1,0.36,1); display:flex; flex-direction:column; gap:14px; position:relative; overflow:hidden; }
+    .landing-card:not(.coming-soon):hover { transform:translateY(-5px); box-shadow:0 12px 40px rgba(32,192,200,0.15); border-color:var(--accent); }
+    .landing-card-badge { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2.5px; text-transform:uppercase; font-weight:700; display:inline-block; padding:5px 12px; border-radius:20px; width:fit-content; }
+    .landing-card-label { font-family:'Space Mono',monospace; font-size:clamp(36px,6vw,52px); font-weight:700; line-height:1; }
+    .landing-card-name { font-size:clamp(16px,2.5vw,20px); font-weight:600; color:var(--t1); }
+    .landing-card-desc { font-size:14px; color:var(--t2); line-height:1.65; flex:1; }
+    .landing-card-arrow { font-size:18px; color:var(--accent); margin-top:8px; transition:transform 0.2s; font-weight:700; }
+    .landing-card:not(.coming-soon):hover .landing-card-arrow { transform:translateX(6px); }
+    .landing-card.coming-soon { opacity:0.5; cursor:default; pointer-events:none; }
+
     .hero-row { display:flex; flex-direction:column; gap:12px; margin-bottom:28px; }
-    .hero-right { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; align-items:center; }
+    .hero-right { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; align-items:stretch; }
+    .hero-btn { color:#fff; border:none; border-radius:12px; padding:16px 20px; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; flex:1 1 0; min-width:0; }
+    .hero-btn-sub { font-size:10px; font-family:'Space Mono',monospace; letter-spacing:2px; text-transform:uppercase; opacity:0.9; }
     .themes-grid { display:flex; flex-direction:column; gap:12px; }
     .theme-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; transition:all 0.2s; }
     .theme-card-header { width:100%; background:none; border:none; padding:18px 22px; cursor:pointer; text-align:left; display:flex; align-items:center; gap:14px; color:var(--t1); font-family:'DM Sans',sans-serif; transition:background 0.15s; }
@@ -1123,11 +1593,12 @@ export default function App() {
     .qa-review { color:var(--review); }
     .qa-bookmarked { color:var(--bookmark); }
     .qa-drill-btn {
-      background:var(--review); border:none; border-radius:8px; padding:8px 16px;
+      background:var(--accent); border:none; border-radius:8px; padding:8px 16px;
       color:#fff; font-size:13px; font-weight:600; cursor:pointer;
-      font-family:'DM Sans',sans-serif; transition:transform 0.15s; white-space:nowrap;
+      font-family:'DM Sans',sans-serif; transition:all 0.15s; white-space:nowrap;
+      box-shadow:0 2px 12px rgba(32,192,200,0.3);
     }
-    .qa-drill-btn:hover { transform:translateY(-1px); }
+    .qa-drill-btn:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(32,192,200,0.4); }
 
     /* Keyboard shortcuts */
     .kbd {
@@ -1136,7 +1607,7 @@ export default function App() {
       color:var(--t2); font-weight:600; min-width:24px; text-align:center;
     }
     .shortcuts-hint-mobile {
-      text-align:center; font-size:11px; color:var(--t3); margin-top:16px;
+      text-align:center; font-size:11px; color:var(--t2); margin-top:16px;
       font-family:'Space Mono',monospace; letter-spacing:0.3px;
     }
     @media (min-width: 1024px) {
@@ -1162,10 +1633,10 @@ export default function App() {
     }
     .topic-stats { display:flex; flex-direction:column; gap:10px; }
     .topic-stat-row { display:flex; align-items:center; gap:12px; }
-    .topic-stat-label { display:flex; align-items:center; gap:8px; min-width:200px; flex-shrink:0; }
+    .topic-stat-label { display:flex; align-items:center; gap:8px; min-width:220px; flex-shrink:0; }
     .topic-stat-name {
       font-size:13px; font-weight:500; color:var(--t1);
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:160px;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:190px;
     }
     .topic-stat-nums { font-family:'Space Mono',monospace; font-size:11px; color:var(--t3); }
     .topic-stat-bar-bg {
@@ -1178,8 +1649,8 @@ export default function App() {
       color:var(--t2); min-width:36px; text-align:right;
     }
     @media (max-width: 1023px) {
-      .topic-stat-label { min-width:120px; }
-      .topic-stat-name { max-width:90px; }
+      .topic-stat-label { min-width:140px; }
+      .topic-stat-name { max-width:110px; }
     }
     /* === EXAM SIMULATION === */
     @keyframes examSlideIn {
@@ -1217,8 +1688,6 @@ export default function App() {
     .exam-review-header { width:100%; background:none; border:none; padding:14px 18px; cursor:pointer; text-align:left; display:flex; align-items:center; gap:10px; color:var(--t1); font-family:'DM Sans',sans-serif; transition:background 0.15s; font-size:14px; }
     .exam-review-header:hover { background:var(--card-h); }
     .exam-review-body { padding:0 18px 18px; border-top:1px solid var(--border); padding-top:14px; }
-    .exam-hero-btn { display:flex; flex-direction:column; align-items:center; gap:6px; width:100%; padding:24px 32px; border:none; border-radius:16px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; color:#fff; }
-    .exam-hero-btn:hover { transform:translateY(-2px); }
     @media (max-width:640px) {
       .exam-info-grid { grid-template-columns:1fr; }
       .exam-confidence-row { flex-direction:column; }
@@ -1245,6 +1714,288 @@ export default function App() {
     </div>
   );
 
+  // LANDING
+  if (view === "landing") {
+    return (
+      <>
+        <style>{styles}</style>
+        <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
+          {themeToggle}
+          <div className="dark-pattern"/><div className="light-pattern"/>
+          <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme==="light" ? `radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)` : `radial-gradient(ellipse at 50% -20%,rgba(32,192,200,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
+
+          <div key={viewKey} className="landing-container view-enter">
+            <div className="landing-title">MCA OOW Unlimited</div>
+            <h1 className="landing-heading">Oral Exam Prep</h1>
+            <p className="landing-sub">Select your exam part to begin studying.</p>
+
+            <div className="landing-cards">
+              {/* Part A — active */}
+              <div className="landing-card" onClick={() => changeView("part-a")} role="button" tabIndex={0}
+                onKeyDown={e => e.key === "Enter" && changeView("part-a")}>
+                <div className="landing-card-badge" style={{ background:"var(--accent)18", color:"var(--accent)" }}>Available Now</div>
+                <div className="landing-card-label" style={{ color:"var(--accent)" }}>Part A</div>
+                <div className="landing-card-desc">Helpful mini quizzes covering Part A topics to test and reinforce your knowledge ahead of the oral exam.</div>
+                <div className="landing-card-arrow">→</div>
+              </div>
+
+              {/* Part B — active */}
+              <div className="landing-card" onClick={() => changeView("home")} role="button" tabIndex={0}
+                onKeyDown={e => e.key === "Enter" && changeView("home")}>
+                <div className="landing-card-badge" style={{ background:"var(--accent)18", color:"var(--accent)" }}>Available Now</div>
+                <div className="landing-card-label" style={{ color:"var(--accent)" }}>Part B</div>
+                <div className="landing-card-desc">869 oral exam questions across 22 topics, sourced from real MCA examiner reports.</div>
+                <div className="landing-card-arrow">→</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // PART A — quiz selection
+  if (view === "part-a") {
+    return (
+      <>
+        <style>{styles}</style>
+        <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
+          {themeToggle}
+          <div className="dark-pattern"/><div className="light-pattern"/>
+          <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme==="light"?`radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)`:`radial-gradient(ellipse at 50% -20%,rgba(32,192,200,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
+          <div key={viewKey} className="quiz-page view-enter">
+            <button onClick={() => changeView("landing")} style={{ alignSelf:"flex-start", background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:"0 0 28px 0", transition:"color 0.15s" }}
+              onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+              ← PART A
+            </button>
+            <div className="landing-title" style={{ marginBottom:"6px" }}>Part A Quizzes</div>
+            <h1 style={{ fontSize:"clamp(22px,4vw,32px)", fontWeight:700, marginBottom:"28px", color:"var(--t1)" }}>Choose a Quiz</h1>
+
+            <div className="quiz-selection-grid">
+              {PART_A_QUIZZES.map(quiz => {
+                const hist = quizHistory[quiz.id];
+                const histPct = hist ? Math.round((hist.correct / hist.total) * 100) : null;
+                return (
+                  <div key={quiz.id} className={`quiz-selection-card${quizSelectedId===quiz.id?" active":""}`}
+                    onClick={() => setQuizSelectedId(quiz.id)}
+                    style={{ borderColor: quizSelectedId===quiz.id ? "var(--accent)" : "var(--border)", boxShadow: quizSelectedId===quiz.id ? "0 4px 20px rgba(32,192,200,0.15)" : "none" }}>
+                    <div className="quiz-sel-icon">{quiz.icon}</div>
+                    <div style={{ flex:1 }}>
+                      <div className="quiz-sel-count">{quiz.count} Questions</div>
+                      <div className="quiz-sel-title">{quiz.title}</div>
+                      <div className="quiz-sel-desc">{quiz.desc}</div>
+                    </div>
+                    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"4px", minWidth:"52px" }}>
+                      {histPct !== null && <QuizProgressWheel pct={histPct} />}
+                      {quizSelectedId === quiz.id && (
+                        <span style={{ color:"var(--accent)", fontSize:"16px", lineHeight:1 }}>✓</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              <div style={{ background:"var(--card)", border:"1.5px solid var(--border)", borderRadius:"14px", padding:"18px 20px" }}>
+                <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700, marginBottom:"10px" }}>Mode</div>
+                <div className="quiz-mode-row">
+                  <button className={`quiz-mode-btn${quizSelectedMode==="ordered"?" active":""}`} onClick={() => setQuizSelectedMode("ordered")}>In Order</button>
+                  <button className={`quiz-mode-btn${quizSelectedMode==="random"?" active":""}`} onClick={() => setQuizSelectedMode("random")}>Random</button>
+                </div>
+              </div>
+
+              <button className="quiz-start-btn" onClick={() => startQuiz(quizSelectedId, quizSelectedMode)}>
+                Start Quiz →
+              </button>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // PART A — QUIZ (generic: IMDG, SOLAS, etc.)
+  if (view === "part-a-quiz") {
+    const data = getQuizData(quizId);
+    const cfg  = QUIZ_CONFIG[quizId] || QUIZ_CONFIG.imdg;
+    const currentItem = quizDone ? null : data[quizOrder[quizPos]];
+    const pct = quizDone ? 100 : Math.round((quizPos / quizOrder.length) * 100);
+    return (
+      <>
+        <style>{styles}</style>
+        <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
+          {themeToggle}
+          <div className="dark-pattern"/><div className="light-pattern"/>
+          <div key={viewKey} className="quiz-page view-enter" style={{ paddingTop:"40px" }}>
+            <div className="quiz-container">
+              {/* Header */}
+              <div className="quiz-header">
+                <button onClick={() => changeView("part-a")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
+                  onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+                  {cfg.backLabel}
+                </button>
+                {!quizDone && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
+                <div className="quiz-score-label">{quizScore.correct} / {quizScore.total} correct</div>
+              </div>
+
+              {/* Progress bar */}
+              {!quizDone && (
+                <div className="quiz-progress-bar">
+                  <div className="quiz-progress-fill" style={{ width:`${pct}%` }}/>
+                </div>
+              )}
+
+              {quizDone ? (
+                /* Results screen */
+                <div className="quiz-done-card" style={{ animation:"examSetupEnter 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
+                  <div style={{ fontSize:"36px", marginBottom:"8px" }}>{quizScore.correct === quizScore.total ? "🎉" : quizScore.correct >= quizScore.total * 0.7 ? "👍" : "📖"}</div>
+                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--t3)", marginBottom:"4px" }}>Final Score</div>
+                  <div className="quiz-done-score">{quizScore.correct}<span style={{ fontSize:"0.5em", color:"var(--t2)" }}>/{quizScore.total}</span></div>
+                  <div style={{ color:"var(--t2)", marginBottom:"28px", fontSize:"14px" }}>
+                    {quizScore.correct === quizScore.total ? `Perfect — ${cfg.doneText}` : `${Math.round((quizScore.correct/quizScore.total)*100)}% correct`}
+                  </div>
+                  <div style={{ display:"flex", gap:"10px" }}>
+                    <button onClick={() => startQuiz(quizId, quizMode)} style={{ flex:1, padding:"12px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>Try Again</button>
+                    <button onClick={() => startQuiz(quizId, quizMode==="ordered"?"random":"ordered")} style={{ flex:1, padding:"12px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
+                      {quizMode==="ordered" ? "Try Random" : "Try In Order"}
+                    </button>
+                  </div>
+                  <button onClick={() => changeView("part-a")} style={{ marginTop:"10px", width:"100%", padding:"10px", borderRadius:"10px", border:"none", background:"none", color:"var(--t3)", fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>← Back to Quizzes</button>
+                </div>
+              ) : (
+                <>
+                  {cfg.type === "mc" ? (
+                    /* ── MULTIPLE CHOICE MODE ── */
+                    <>
+                      {quizId === "pilot" && (
+                        <div style={{ textAlign:"center", marginBottom:"10px" }}>
+                          <button className="poster-btn" onClick={() => setShowPoster(true)}>
+                            📋 Show IMPA Poster
+                          </button>
+                        </div>
+                      )}
+                      <div className="quiz-question-card mc-question-card" key={quizPos}>
+                        <div className="quiz-class-label">{cfg.label}</div>
+                        {currentItem.section && (
+                          <div className="mc-section-label">{currentItem.section}</div>
+                        )}
+                        <div className="mc-question-text">{currentItem.q}</div>
+                      </div>
+
+                      <div className="mc-options">
+                        {currentItem.options.map((opt, i) => {
+                          let state = "idle";
+                          if (quizFeedback) {
+                            if (opt === currentItem.correct) state = "correct";
+                            else if (opt === quizAnswer)      state = "wrong";
+                          }
+                          return (
+                            <button key={i} className={`mc-option mc-option-${state}`}
+                              onClick={() => selectMCOption(opt)}
+                              disabled={!!quizFeedback}>
+                              <span className="mc-letter">{["A","B","C","D"][i]}</span>
+                              <span className="mc-opt-text">{opt}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {quizFeedback && (
+                        <>
+                          <div className={`quiz-feedback ${quizFeedback}`}>
+                            <div className="quiz-feedback-icon">{quizFeedback==="correct" ? "✅" : "❌"}</div>
+                            <div className="quiz-feedback-answer" style={{ color: quizFeedback==="correct" ? "var(--confident)" : "#ef4444", fontWeight:600 }}>
+                              {quizFeedback==="correct" ? "Correct!" : "Not quite — the correct answer is highlighted above."}
+                            </div>
+                          </div>
+                          <button className="quiz-next-btn" onClick={nextQuizQuestion}>
+                            {quizPos + 1 >= quizOrder.length ? "See Results →" : "Next →"}
+                          </button>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    /* ── TEXT INPUT MODE ── */
+                    <>
+                      <div className="quiz-question-card" key={quizPos}>
+                        <div className="quiz-class-label">{cfg.label}</div>
+                        <div className="quiz-class-number">{currentItem.id}</div>
+                        {currentItem.img && (
+                          <img src={currentItem.img} alt={`Class ${currentItem.id} placard`} className="quiz-class-img" />
+                        )}
+                        <div className="quiz-class-question">{cfg.question}</div>
+                      </div>
+
+                      {/* Feedback */}
+                      {quizFeedback && (
+                        <div className={`quiz-feedback ${quizFeedback}`}>
+                          <div className="quiz-feedback-icon">{quizFeedback==="correct" ? "✅" : "❌"}</div>
+                          <div className="quiz-feedback-answer" style={{ color: quizFeedback==="correct" ? "var(--confident)" : "#ef4444", fontWeight:600, marginBottom:quizFeedback==="incorrect"?6:0 }}>
+                            {quizFeedback==="correct" ? "Correct!" : "Not quite."}
+                          </div>
+                          {quizFeedback==="incorrect" && (
+                            <div style={{ fontSize:"14px", color:"var(--t1)", lineHeight:1.55 }}>
+                              <span style={{ color:"var(--t3)", fontSize:"12px" }}>Correct answer: </span><br/>
+                              <strong>{currentItem.name}</strong>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {!quizFeedback ? (
+                        <>
+                          <input
+                            ref={quizInputRef}
+                            className="quiz-input"
+                            type="text"
+                            placeholder={cfg.placeholder}
+                            value={quizAnswer}
+                            onChange={e => setQuizAnswer(e.target.value)}
+                            onKeyDown={e => { if (e.key === "Enter") submitQuizAnswer(); }}
+                            autoFocus
+                          />
+                          <button className="quiz-submit-btn" onClick={submitQuizAnswer} disabled={!quizAnswer.trim()}>
+                            Submit
+                          </button>
+                        </>
+                      ) : (
+                        <button className="quiz-next-btn" onClick={nextQuizQuestion}>
+                          {quizPos + 1 >= quizOrder.length ? "See Results →" : "Next →"}
+                        </button>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* ── IMPA Poster Overlay ── */}
+          {showPoster && (
+            <div className="poster-overlay">
+              <div className="poster-overlay-header">
+                <span className="poster-overlay-title">📋 IMPA Pilot Ladder Poster</span>
+                <div style={{ display:"flex", gap:"10px", alignItems:"center" }}>
+                  <a href="https://www.impahq.org/sites/default/files/2021-04/Pilot%20Ladder%20Poster.pdf"
+                    target="_blank" rel="noopener noreferrer" className="poster-newtab-btn">
+                    Open in new tab ↗
+                  </a>
+                  <button onClick={() => setShowPoster(false)} className="poster-close-btn">✕</button>
+                </div>
+              </div>
+              <div className="poster-frame-wrap">
+                <iframe
+                  src="/quiz-images/pilot-ladder-poster.pdf"
+                  className="poster-frame"
+                  title="IMPA Pilot Ladder Poster"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </>
+    );
+  }
+
   // HOME
   if (view === "home") {
     return (
@@ -1253,10 +2004,16 @@ export default function App() {
         <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
           {themeToggle}
           <div style={{ position:"fixed",inset:0,opacity:0.03,zIndex:0, backgroundImage:`radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0)`, backgroundSize:"32px 32px" }}/>
-          <div className="light-pattern"/>
-          <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme === "light" ? `radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)` : `radial-gradient(ellipse at 50% -20%,rgba(59,130,246,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
+          <div className="dark-pattern"/><div className="light-pattern"/>
+          <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme === "light" ? `radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)` : `radial-gradient(ellipse at 50% -20%,rgba(32,192,200,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
 
           <div key={viewKey} className="home-container view-enter">
+            {/* Back to landing */}
+            <button onClick={() => changeView("landing")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:"0 0 24px 0", display:"flex", alignItems:"center", gap:"6px", transition:"color 0.15s" }}
+              onMouseOver={e=>e.currentTarget.style.color="var(--t2)"}
+              onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+              ← PART B
+            </button>
             {/* Title + Daily Question side by side on desktop */}
             <div className="header-row">
               <div className="home-header">
@@ -1280,84 +2037,99 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Daily Question - inline with header on desktop */}
-              {dailyQ && showDaily && (
-                <div className="daily-card">
-                  <div style={{
-                    background: "linear-gradient(135deg, var(--daily-bg-from) 0%, var(--daily-bg-to) 100%)",
-                    border: `1px solid ${theme === "light" ? "#d4b21240" : "#f59e0b40"}`,
-                    borderRadius: "16px", padding: "20px 22px", height: "100%",
-                    position: "relative", animation: "fadeIn 0.5s ease",
-                    boxShadow: theme === "light" ? "0 4px 30px rgba(196,154,32,0.10)" : "0 4px 30px rgba(245,158,11,0.08)",
-                    display: "flex", flexDirection: "column", justifyContent: "center"
-                  }}>
-                    <button onClick={() => setShowDaily(false)} style={{
-                      position: "absolute", top: "10px", right: "12px",
-                      background: "none", border: "none", color: "var(--t3)",
-                      fontSize: "18px", cursor: "pointer", lineHeight: 1
-                    }}>×</button>
-                    <div style={{
-                      display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px"
+              {/* Daily Question with stock photo background */}
+              {dailyQ && showDaily && (() => {
+                const photoId = CATEGORY_PHOTOS[dailyQ.cat];
+                const photoUrl = photoId
+                  ? `https://images.unsplash.com/${photoId}?auto=format&fit=crop&w=900&q=75`
+                  : null;
+                return (
+                  <div className="daily-card">
+                    <div className="daily-card-inner" style={{
+                      backgroundImage: photoUrl
+                        ? `linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.65) 100%), url(${photoUrl})`
+                        : "linear-gradient(135deg, var(--daily-bg-from) 0%, var(--daily-bg-to) 100%)",
+                      backgroundSize: "cover", backgroundPosition: "center",
+                      border: photoUrl ? "none" : `1px solid ${theme === "light" ? "#d4b21240" : "#f59e0b40"}`,
+                      borderRadius: "14px", padding: "18px 20px", height: "100%",
+                      position: "relative", animation: "fadeIn 0.5s ease",
+                      boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
+                      display: "flex", flexDirection: "column", justifyContent: "center"
                     }}>
-                      <span style={{ fontSize: "14px" }}>⚡</span>
-                      <span style={{
-                        fontFamily: "'Space Mono',monospace", fontSize: "10px",
-                        letterSpacing: "2px", textTransform: "uppercase",
-                        color: theme === "light" ? "#d4b212" : "#f59e0b", fontWeight: 700
-                      }}>Question of the Day</span>
-                    </div>
-                    <p style={{
-                      fontSize: "clamp(14px, 2.5vw, 17px)", fontWeight: 500,
-                      lineHeight: 1.5, color: "var(--t1)", marginBottom: "10px"
-                    }}>
-                      {dailyQ.q}
-                    </p>
-                    <div style={{
-                      display: "inline-flex", alignItems: "center", gap: "6px",
-                      background: `${CATEGORY_COLORS[dailyQ.cat] || "#3b82f6"}15`,
-                      borderRadius: "6px", padding: "4px 10px", alignSelf: "flex-start"
-                    }}>
-                      <span style={{ fontSize: "12px" }}>{CATEGORY_ICONS[dailyQ.cat] || "📋"}</span>
-                      <span style={{
-                        fontFamily: "'Space Mono',monospace", fontSize: "10px",
-                        color: CATEGORY_COLORS[dailyQ.cat] || "#3b82f6", fontWeight: 700
-                      }}>{dailyQ.cat}</span>
+                      <button onClick={() => setShowDaily(false)} style={{
+                        position: "absolute", top: "10px", right: "12px",
+                        background: "none", border: "none", color: photoUrl ? "rgba(255,255,255,0.7)" : "var(--t3)",
+                        fontSize: "18px", cursor: "pointer", lineHeight: 1
+                      }}>×</button>
+                      <div style={{
+                        display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px"
+                      }}>
+                        <span style={{ fontSize: "14px" }}>⚡</span>
+                        <span style={{
+                          fontFamily: "'Space Mono',monospace", fontSize: "10px",
+                          letterSpacing: "2px", textTransform: "uppercase",
+                          color: photoUrl ? "#fbbf24" : (theme === "light" ? "#d4b212" : "#f59e0b"), fontWeight: 700
+                        }}>Question of the Day</span>
+                      </div>
+                      <p style={{
+                        fontSize: "clamp(14px, 2.5vw, 17px)", fontWeight: 600,
+                        lineHeight: 1.5, color: photoUrl ? "#fff" : "var(--t1)", marginBottom: "10px",
+                        textShadow: photoUrl ? "0 1px 4px rgba(0,0,0,0.4)" : "none"
+                      }}>
+                        {dailyQ.q}
+                      </p>
+                      <div style={{
+                        display: "inline-flex", alignItems: "center", gap: "6px",
+                        background: photoUrl ? "rgba(255,255,255,0.15)" : `${CATEGORY_COLORS[dailyQ.cat] || "#3b82f6"}15`,
+                        backdropFilter: photoUrl ? "blur(8px)" : "none",
+                        borderRadius: "6px", padding: "4px 10px", alignSelf: "flex-start"
+                      }}>
+                        <span style={{ fontSize: "12px" }}>{CATEGORY_ICONS[dailyQ.cat] || "📋"}</span>
+                        <span style={{
+                          fontFamily: "'Space Mono',monospace", fontSize: "10px",
+                          color: photoUrl ? "#fff" : (CATEGORY_COLORS[dailyQ.cat] || "#3b82f6"), fontWeight: 700
+                        }}>{dailyQ.cat}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
 
             {/* Action buttons row */}
             <div className="hero-row">
               <div className="hero-right">
-                <button onClick={startPractice} style={{
-                  background:"var(--accent)",color:"#fff",border:"none",borderRadius:"10px",
-                  padding:"14px 32px",fontSize:"15px",fontWeight:600,cursor:"pointer",
-                  fontFamily:"'DM Sans',sans-serif",boxShadow:theme === "light" ? "0 4px 20px rgba(51,87,101,0.25)" : "0 4px 20px rgba(59,130,246,0.3)",
-                  transition:"transform 0.15s", flex: "1"
+                <button className="hero-btn" onClick={startPractice} style={{
+                  background:"var(--accent)",
+                  boxShadow:theme === "light" ? "0 4px 20px rgba(51,87,101,0.25)" : "0 4px 20px rgba(32,192,200,0.3)"
                 }}
-                onMouseOver={e=>e.target.style.transform="translateY(-1px)"}
-                onMouseOut={e=>e.target.style.transform="none"}>
-                  {confidenceFilter !== "all"
+                onMouseOver={e=>e.currentTarget.style.transform="translateY(-2px)"}
+                onMouseOut={e=>e.currentTarget.style.transform="none"}>
+                  <span>{confidenceFilter !== "all"
                     ? `Go — ${selectedCount} ${confidenceFilter === "review" ? "Review" : confidenceFilter === "confident" ? "Confident" : confidenceFilter === "bookmarked" ? "Bookmarked" : "Untagged"} Questions`
-                    : selectedCats.length > 0 ? `Go — ${selectedCount} Questions` : `Go — All ${totalQuestions} Questions`}
+                    : selectedCats.length > 0 ? `Go — ${selectedCount} Questions` : `Go — All ${totalQuestions} Questions`}</span>
                 </button>
-                <button onClick={() => { setShowThemes(!showThemes); setExpandedTheme(null); }} style={{
+                <button className="hero-btn" onClick={() => { setShowThemes(!showThemes); setExpandedTheme(null); }} style={{
                   background: showThemes
-                    ? (theme === "light" ? "#d4b212" : "#f59e0b")
-                    : (theme === "light" ? "linear-gradient(135deg, #e8a824 0%, #d4652a 100%)" : "linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)"),
-                  color: "#fff", border: "none", borderRadius: "12px",
-                  padding: "16px 32px", fontSize: "16px", fontWeight: 700, cursor: "pointer",
-                  fontFamily: "'DM Sans',sans-serif",
-                  boxShadow: showThemes ? "none" : (theme === "light" ? "0 4px 24px rgba(232,168,36,0.35)" : "0 4px 24px rgba(245,158,11,0.35)"),
-                  transition: "all 0.2s", display: "flex", flexDirection: "column", alignItems: "center", gap: "2px",
-                  flex: "1"
+                    ? (theme === "light" ? "#d4b212" : "#0e7090")
+                    : (theme === "light" ? "linear-gradient(135deg, #e8a824 0%, #d4652a 100%)" : "linear-gradient(135deg, #0e7090 0%, #18a8c0 100%)"),
+                  boxShadow: showThemes ? "none" : (theme === "light" ? "0 4px 24px rgba(232,168,36,0.35)" : "0 4px 24px rgba(14,112,144,0.4)")
                 }}
                 onMouseOver={e=>{ if(!showThemes) e.currentTarget.style.transform="translateY(-2px)"; }}
                 onMouseOut={e=>e.currentTarget.style.transform="none"}>
                   <span>{showThemes ? "Hide Themes & References" : "📚 Major Themes & References"}</span>
-                  {!showThemes && <span style={{ fontSize: "10px", fontFamily: "'Space Mono',monospace", letterSpacing: "2px", textTransform: "uppercase", opacity: 0.9 }}>⚠ MUST READ!</span>}
+                  {!showThemes && <span className="hero-btn-sub">⚠ MUST READ!</span>}
+                </button>
+                <button className="hero-btn" onClick={() => changeView("exam-setup")} style={{
+                  background: theme === "light"
+                    ? "linear-gradient(135deg, #335765 0%, #1a7a6d 50%, #2d8a6e 100%)"
+                    : "linear-gradient(135deg, #1e3880 0%, #3a5ec8 100%)",
+                  boxShadow: theme === "light" ? "0 4px 20px rgba(51,87,101,0.25)" : "0 4px 20px rgba(30,56,128,0.4)"
+                }}
+                onMouseOver={e=>e.currentTarget.style.transform="translateY(-2px)"}
+                onMouseOut={e=>e.currentTarget.style.transform="none"}>
+                  <span>🎯 Exam Simulation</span>
+                  <span className="hero-btn-sub">20 Qs · 30 Min · Weighted</span>
                 </button>
               </div>
             </div>
@@ -1435,7 +2207,7 @@ export default function App() {
               </div>
             )}
 
-            {/* Confidence filter — show whenever any tags exist globally or a filter is active */}
+            {/* Confidence filter */}
             {(hasAnyTags || confidenceFilter !== "all") && (
               <div className="confidence-filter">
                 <span className="confidence-filter-label">Filter:</span>
@@ -1559,21 +2331,6 @@ export default function App() {
                 );
               })}
             </div>
-            {/* Exam Simulation Hero */}
-            <div style={{ marginTop:"36px", marginBottom:"12px", animation:"fadeIn 0.8s ease" }}>
-              <button className="exam-hero-btn" onClick={() => changeView("exam-setup")} style={{
-                background: theme === "light"
-                  ? "linear-gradient(135deg, #335765 0%, #1a7a6d 50%, #2d8a6e 100%)"
-                  : "linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%)",
-                boxShadow: theme === "light" ? "0 8px 40px rgba(51,87,101,0.3)" : "0 8px 40px rgba(59,130,246,0.25)"
-              }}>
-                <span style={{ fontSize:"28px" }}>🎯</span>
-                <span style={{ fontSize:"20px", fontWeight:700, letterSpacing:"0.5px" }}>Start Exam Simulation</span>
-                <span style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", opacity:0.85 }}>
-                  20 Questions · 30 Minutes · Weighted Intelligence
-                </span>
-              </button>
-            </div>
           </div>
         </div>
       </>
@@ -1614,8 +2371,8 @@ export default function App() {
         <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", transition:"background 0.3s, color 0.3s" }}>
           {themeToggle}
           <div style={{ position:"fixed",inset:0,opacity:0.03,zIndex:0, backgroundImage:`radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0)`, backgroundSize:"32px 32px" }}/>
-          <div className="light-pattern"/>
-          <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme === "light" ? `radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)` : `radial-gradient(ellipse at 50% -20%,rgba(59,130,246,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
+          <div className="dark-pattern"/><div className="light-pattern"/>
+          <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme === "light" ? `radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)` : `radial-gradient(ellipse at 50% -20%,rgba(32,192,200,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
           <div key={viewKey} className="home-container view-enter">
             <button onClick={() => changeView("home")} style={{
               background:"var(--card)", border:"1px solid var(--border)", borderRadius:"8px",
@@ -1638,11 +2395,11 @@ export default function App() {
                 <div className="stat-label">Questions Seen</div>
               </div>
               <div className="stat-card">
-                <div className="stat-value" style={{ color:theme === "light" ? "#d4b212" : "#f59e0b" }}>{streak}</div>
+                <div className="stat-value" style={{ color:"var(--accent)" }}>{streak}</div>
                 <div className="stat-label">Day Streak</div>
               </div>
               <div className="stat-card">
-                <div className="stat-value" style={{ color:theme === "light" ? "#2d8a6e" : "#10b981" }}>
+                <div className="stat-value" style={{ color:"var(--confident)" }}>
                   {totalQuestions > 0 ? Math.round((Object.values(allTags).filter(t => t === "confident").length / totalQuestions) * 100) : 0}%
                 </div>
                 <div className="stat-label">Overall Confident</div>
@@ -1684,8 +2441,8 @@ export default function App() {
         <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", transition:"background 0.3s, color 0.3s" }}>
           {themeToggle}
           <div style={{ position:"fixed",inset:0,opacity:0.03,zIndex:0, backgroundImage:`radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0)`, backgroundSize:"32px 32px" }}/>
-          <div className="light-pattern"/>
-          <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme === "light" ? `radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)` : `radial-gradient(ellipse at 50% -20%,rgba(59,130,246,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
+          <div className="dark-pattern"/><div className="light-pattern"/>
+          <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme === "light" ? `radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)` : `radial-gradient(ellipse at 50% -20%,rgba(32,192,200,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
           <div key={viewKey} className="exam-setup-container view-enter">
             <button onClick={() => changeView("home")} style={{
               background:"var(--card)", border:"1px solid var(--border)", borderRadius:"8px",
@@ -1731,7 +2488,7 @@ export default function App() {
                 : "linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%)",
               color:"#fff", border:"none", borderRadius:"14px", padding:"18px 48px",
               fontSize:"18px", fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif",
-              boxShadow: theme === "light" ? "0 6px 30px rgba(51,87,101,0.3)" : "0 6px 30px rgba(59,130,246,0.3)",
+              boxShadow: theme === "light" ? "0 6px 30px rgba(51,87,101,0.3)" : "0 6px 30px rgba(32,192,200,0.3)",
               transition:"all 0.2s", letterSpacing:"0.5px"
             }}
             onMouseOver={e=>e.currentTarget.style.transform="translateY(-2px)"}
@@ -1760,7 +2517,7 @@ export default function App() {
         <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", transition:"background 0.3s, color 0.3s" }}>
           {themeToggle}
           <div style={{ position:"fixed",inset:0,opacity:0.03,zIndex:0, backgroundImage:`radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0)`, backgroundSize:"32px 32px" }}/>
-          <div className="light-pattern"/>
+          <div className="dark-pattern"/><div className="light-pattern"/>
           <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:`radial-gradient(ellipse at 50% -20%,${eqColor}18 0%,transparent 70%)`, zIndex:0,transition:"background 0.5s" }}/>
           <div key={viewKey} className="exam-container view-enter">
             {/* Top bar */}
@@ -1876,8 +2633,8 @@ export default function App() {
         <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", transition:"background 0.3s, color 0.3s" }}>
           {themeToggle}
           <div style={{ position:"fixed",inset:0,opacity:0.03,zIndex:0, backgroundImage:`radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0)`, backgroundSize:"32px 32px" }}/>
-          <div className="light-pattern"/>
-          <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme === "light" ? `radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)` : `radial-gradient(ellipse at 50% -20%,rgba(59,130,246,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
+          <div className="dark-pattern"/><div className="light-pattern"/>
+          <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme === "light" ? `radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)` : `radial-gradient(ellipse at 50% -20%,rgba(32,192,200,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
           <div key={viewKey} className="exam-results-container view-enter">
             <div style={{ textAlign:"center", marginBottom:"32px", animation:"fadeIn 0.5s ease" }}>
               <div style={{ fontSize:"48px", marginBottom:"12px" }}>🏁</div>
@@ -2034,7 +2791,7 @@ export default function App() {
       <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif",background:"var(--bg)",minHeight:"100vh",color:"var(--t1)",position:"relative",transition:"background 0.3s, color 0.3s" }}>
         {themeToggle}
         <div style={{ position:"fixed",inset:0,opacity:0.03,zIndex:0, backgroundImage:`radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0)`, backgroundSize:"32px 32px" }}/>
-        <div className="light-pattern"/>
+        <div className="dark-pattern"/><div className="light-pattern"/>
         <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:`radial-gradient(ellipse at 50% -20%,${color}18 0%,transparent 70%)`, zIndex:0,transition:"background 0.5s" }}/>
 
         <div key={viewKey} className="practice-container view-enter">
@@ -2050,8 +2807,8 @@ export default function App() {
             </div>
           </div>
 
-          <div style={{ height:"3px",background:"var(--border)",borderRadius:"2px",marginBottom:"32px",overflow:"hidden" }}>
-            <div style={{ height:"100%",width:`${((idx+1)/pool.length)*100}%`,background:color,borderRadius:"2px",transition:"width 0.3s ease,background 0.5s" }}/>
+          <div style={{ height:"5px",background:"var(--border)",borderRadius:"3px",marginBottom:"32px",overflow:"hidden" }}>
+            <div style={{ height:"100%",width:`${((idx+1)/pool.length)*100}%`,background:color,borderRadius:"3px",transition:"width 0.3s ease,background 0.5s" }}/>
           </div>
 
           <div className="practice-layout">
@@ -2192,13 +2949,13 @@ export default function App() {
 
               <div style={{ display:"flex",gap:"10px" }}>
                 <button onClick={prev} disabled={idx===0} style={{
-                  flex:1,background:"var(--card)",border:"1px solid var(--border)",borderRadius:"10px",
-                  padding:"14px",color:idx===0?"var(--t3)":"var(--t2)",fontSize:"15px",fontWeight:500,
+                  flex:1,background:"var(--card)",border:`1px solid ${idx===0?"var(--border)":"var(--t3)"}`,borderRadius:"10px",
+                  padding:"14px",color:idx===0?"var(--t3)":"var(--t1)",fontSize:"15px",fontWeight:500,
                   cursor:idx===0?"default":"pointer",fontFamily:"'DM Sans',sans-serif",
-                  transition:"all 0.15s",opacity:idx===0?0.4:1
+                  transition:"all 0.15s",opacity:idx===0?0.35:1
                 }}
-                onMouseOver={e=>{if(idx>0)e.currentTarget.style.borderColor="var(--t3)"}}
-                onMouseOut={e=>e.currentTarget.style.borderColor="var(--border)"}>
+                onMouseOver={e=>{if(idx>0)e.currentTarget.style.borderColor="var(--t2)"}}
+                onMouseOut={e=>e.currentTarget.style.borderColor=idx===0?"var(--border)":"var(--t3)"}>
                   ← Previous
                 </button>
                 <button onClick={next} style={{
