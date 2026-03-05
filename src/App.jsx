@@ -593,15 +593,10 @@ const SOLAS_CHAPTERS = [
 
 // ── SOLAS Numbers Game: title → roman numeral (MC) ──────────────────────────
 const SOLAS_NUMBERS_QUIZ = (() => {
-  const ids = SOLAS_CHAPTERS.map(c => c.id);
-  return SOLAS_CHAPTERS.map((ch, i) => {
-    // 3 deterministic distractors spread evenly around the 17-chapter list
-    const distractors = [3, 7, 11].map(off => ids[(i + off) % ids.length]);
-    // Place the correct answer at position i%4 so it rotates A/B/C/D across questions
-    const opts = [...distractors];
-    opts.splice(i % 4, 0, ch.id);
-    return { id:`sn-${i}`, q:ch.name, correct:ch.id, options:opts };
-  });
+  const allIds = SOLAS_CHAPTERS.map(c => c.id);
+  return SOLAS_CHAPTERS.map((ch, i) => ({
+    id:`sn-${i}`, q:ch.name, correct:ch.id, options:allIds
+  }));
 })();
 
 const PILOT_LADDER_QUIZ = [
@@ -1511,6 +1506,12 @@ export default function App() {
     .mc-section-label { font-size:11px; font-weight:600; font-family:'Space Mono',monospace; letter-spacing:0.5px; color:var(--accent); background:var(--accent)15; border:1px solid var(--accent)30; border-radius:20px; padding:3px 10px; display:inline-block; margin:6px auto 2px; }
     .mc-question-text { font-size:clamp(15px,2.5vw,18px); font-weight:600; color:var(--t1); line-height:1.55; text-align:center; margin-top:10px; }
     .mc-options { display:flex; flex-direction:column; gap:10px; margin-bottom:12px; }
+    .solas-num-grid { display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; margin-bottom:16px; }
+    .solas-num-btn { padding:12px 4px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--t1); font-family:'Space Mono',monospace; font-size:13px; font-weight:700; cursor:pointer; text-align:center; transition:all 0.15s; line-height:1.2; }
+    .solas-num-btn:hover:not(:disabled) { border-color:var(--accent); background:var(--card-h); color:var(--accent); }
+    .solas-num-btn:disabled { cursor:default; }
+    .solas-num-btn-correct { border-color:var(--confident) !important; background:var(--confident-bg) !important; color:var(--confident) !important; }
+    .solas-num-btn-wrong   { border-color:#ef4444 !important; background:#ef444412 !important; color:#ef4444 !important; }
     .mc-option { display:flex; align-items:flex-start; gap:12px; width:100%; padding:14px 16px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); color:var(--t1); font-size:14px; font-weight:500; font-family:'DM Sans',sans-serif; cursor:pointer; text-align:left; transition:all 0.15s; line-height:1.45; }
     .mc-option:hover:not(:disabled) { border-color:var(--accent); background:var(--card-h); transform:translateX(2px); }
     .mc-option:disabled { cursor:default; }
@@ -1939,23 +1940,44 @@ export default function App() {
                         <div className="mc-question-text">{currentItem.q}</div>
                       </div>
 
-                      <div className="mc-options">
-                        {currentItem.options.map((opt, i) => {
-                          let state = "idle";
-                          if (quizFeedback) {
-                            if (opt === currentItem.correct) state = "correct";
-                            else if (opt === quizAnswer)      state = "wrong";
-                          }
-                          return (
-                            <button key={i} className={`mc-option mc-option-${state}`}
-                              onClick={() => selectMCOption(opt)}
-                              disabled={!!quizFeedback}>
-                              <span className="mc-letter">{["A","B","C","D"][i]}</span>
-                              <span className="mc-opt-text">{opt}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
+                      {quizId === "solas-numbers" ? (
+                        /* ── SOLAS Numbers: full 17-option grid ── */
+                        <div className="solas-num-grid">
+                          {currentItem.options.map((opt, i) => {
+                            let cls = "solas-num-btn";
+                            if (quizFeedback) {
+                              if (opt === currentItem.correct) cls += " solas-num-btn-correct";
+                              else if (opt === quizAnswer)     cls += " solas-num-btn-wrong";
+                            }
+                            return (
+                              <button key={i} className={cls}
+                                onClick={() => selectMCOption(opt)}
+                                disabled={!!quizFeedback}>
+                                {opt}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        /* ── Standard 4-option vertical list ── */
+                        <div className="mc-options">
+                          {currentItem.options.map((opt, i) => {
+                            let state = "idle";
+                            if (quizFeedback) {
+                              if (opt === currentItem.correct) state = "correct";
+                              else if (opt === quizAnswer)      state = "wrong";
+                            }
+                            return (
+                              <button key={i} className={`mc-option mc-option-${state}`}
+                                onClick={() => selectMCOption(opt)}
+                                disabled={!!quizFeedback}>
+                                <span className="mc-letter">{["A","B","C","D"][i]}</span>
+                                <span className="mc-opt-text">{opt}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
 
                       {quizFeedback && (
                         <>
