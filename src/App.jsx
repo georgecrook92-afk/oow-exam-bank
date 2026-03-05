@@ -779,26 +779,283 @@ const PILOT_LADDER_QUIZ = [
   },
 ];
 
+// ─── MARPOL ANNEX 1 ──────────────────────────────────────────────────────────
+const MARPOL_ANNEX1 = [
+  // DEFINITIONS
+  { id:"ma1", type:"flashcard",
+    front:"What is the MARPOL Annex 1 definition of crude oil?",
+    back:"Any liquid hydrocarbon mixture occurring naturally in the earth, whether or not treated to render it suitable for transportation." },
+  { id:"ma2", type:"flashcard",
+    front:"What is the MARPOL Annex 1 definition of an oily mixture?",
+    back:"A mixture with any oil content. There is no minimum threshold — any amount of oil qualifies." },
+  { id:"ma3", type:"mc",
+    q:"'A mixture with any oil content' — which term does this define?",
+    correct:"Oily mixture",
+    options:["Crude oil","Oily mixture","Oil residue","Dirty ballast"] },
+  // EXCEPTION CLAUSE
+  { id:"ma4", type:"mc",
+    q:"In what circumstances do the standard oil discharge rules NOT apply?",
+    correct:"Security, safety, or saving life at sea — or from damage to the ship, provided all reasonable measures were taken",
+    options:[
+      "Security, safety, or saving life at sea — or from damage to the ship, provided all reasonable measures were taken",
+      "Force majeure, bad weather, or port authority approval",
+      "Flag state exemption, or when the nearest port is more than 200nm away",
+      "Captain's discretion, or when sea state exceeds Beaufort 8",
+    ] },
+  { id:"ma5", type:"tf",
+    q:"The exception to discharge rules is void if the master or owner acted recklessly, even if the situation was a genuine emergency.",
+    correct:true,
+    explanation:"Correct. The exception is void if the master or owner acted recklessly or with intent to cause harm or damage. This prevents deliberate misuse of the exception." },
+  { id:"ma6", type:"tf",
+    q:"The discharge exception for safety/security applies even if the master intentionally caused the situation that made it necessary.",
+    correct:false,
+    explanation:"False. The exception is void if the master or owner acted recklessly or with intent to cause harm or damage. Intentionally causing the situation removes the protection entirely." },
+  { id:"ma7", type:"multi",
+    q:"Select BOTH: (a) the circumstance where discharge rules do not apply, AND (b) the condition that makes this exception void.",
+    correct:[
+      "Discharge relating to security, safety, or saving life at sea, or from damage to the ship",
+      "Void if the master or owner acted recklessly or with intent to cause harm or damage",
+    ],
+    options:[
+      "Discharge relating to security, safety, or saving life at sea, or from damage to the ship",
+      "Void if the master or owner acted recklessly or with intent to cause harm or damage",
+      "Discharge when at anchor in a sheltered bay approved by port authority",
+      "Void if discharge not reported to coastal state within 24 hours",
+      "Discharge when sea state exceeds Beaufort force 7",
+    ] },
+  // SPECIAL AREAS
+  { id:"ma8", type:"select-all",
+    q:"Select ALL MARPOL Annex 1 special areas:",
+    correct:[
+      "Mediterranean Sea area","Baltic Sea area","Black Sea area","Red Sea area",
+      "Gulfs area","Gulf of Aden area","Antarctic areas",
+      "North West European waters","Oman area of the Arabian Sea","Southern South African waters",
+    ],
+    options:[
+      "Mediterranean Sea area","English Channel","Baltic Sea area","Bay of Biscay",
+      "Black Sea area","Red Sea area","Gulfs area","Gulf of Aden area",
+      "Antarctic areas","North West European waters","Oman area of the Arabian Sea",
+      "Southern South African waters","Strait of Malacca","Caribbean Sea",
+    ] },
+  { id:"ma9", type:"mc",
+    q:"Which of these is NOT a MARPOL Annex 1 special area?",
+    correct:"English Channel",
+    options:["Mediterranean Sea area","English Channel","Red Sea area","Gulf of Aden area"] },
+  { id:"ma10", type:"tf",
+    q:"The Arctic Ocean is listed as a MARPOL Annex 1 special area.",
+    correct:false,
+    explanation:"The Arctic is NOT a named special area. The rules say 'outside/inside special area except in arctic waters' — meaning arctic waters have their own separate, stricter regime independent of the special area system." },
+  // MACHINERY SPACE DISCHARGE
+  { id:"ma11", type:"mc",
+    q:"What is the maximum permitted oil content of effluent discharged from machinery spaces?",
+    correct:"15 ppm",
+    options:["5 ppm","15 ppm","30 ppm","50 ppm"] },
+  { id:"ma12", type:"mc",
+    q:"Machinery space bilge discharge restrictions apply to ships other than oil tankers of what minimum gross tonnage?",
+    correct:"400 GT and above",
+    options:["150 GT and above","250 GT and above","400 GT and above","500 GT and above"] },
+  { id:"ma13", type:"mc",
+    q:"Four of the five conditions for machinery space discharge outside a special area are: ship enroute, effluent under 15ppm, mixture not from cargo pump-room bilges (tankers), mixture not mixed with cargo residues (tankers). What is the missing fifth condition?",
+    correct:"The oily mixture must be processed through approved oil filtering equipment",
+    options:[
+      "Discharge must be reported to the nearest coastal state",
+      "The oily mixture must be processed through approved oil filtering equipment",
+      "The ship must be more than 12 nautical miles from nearest land",
+      "Discharge must take place during daylight hours only",
+    ] },
+  { id:"ma14", type:"tf",
+    q:"Inside a special area, the maximum permitted oil content of effluent from machinery spaces drops to 5ppm (versus 15ppm outside).",
+    correct:false,
+    explanation:"False. The 15ppm limit applies both inside AND outside special areas. The only difference is the standard the filtering equipment must meet — a stricter standard is required inside a special area." },
+  { id:"ma15", type:"multi",
+    q:"When discharging bilge water, TWO conditions apply specifically to oil tankers (beyond those for all ships). Select both.",
+    correct:[
+      "The oily mixture must not originate from cargo pump-room bilges",
+      "The oily mixture must not be mixed with oil cargo residues",
+    ],
+    options:[
+      "The ship must be more than 50nm from the nearest land",
+      "The oily mixture must not originate from cargo pump-room bilges",
+      "The effluent must not exceed 15ppm",
+      "The oily mixture must not be mixed with oil cargo residues",
+      "The ship must be proceeding enroute",
+    ] },
+  { id:"ma16", type:"sort",
+    q:"Sort these bilge water discharge conditions — do they apply to ALL ships, or OIL TANKERS ONLY?",
+    categories:["All ships","Oil tankers only"],
+    items:[
+      { text:"Ship must be proceeding enroute", cat:"All ships" },
+      { text:"Effluent must not exceed 15ppm", cat:"All ships" },
+      { text:"Must pass through approved filtering equipment", cat:"All ships" },
+      { text:"Must not originate from cargo pump-room bilges", cat:"Oil tankers only" },
+      { text:"Must not be mixed with oil cargo residues", cat:"Oil tankers only" },
+    ] },
+  { id:"ma17", type:"mc",
+    q:"When discharging bilge water, what is the ONLY difference between the conditions required inside a special area versus outside?",
+    correct:"The filtering equipment must meet a stricter standard inside a special area",
+    options:[
+      "The maximum oil content drops to 5ppm inside vs 15ppm outside",
+      "The filtering equipment must meet a stricter standard inside a special area",
+      "The ship must be more than 50nm from land inside a special area",
+      "Additional reporting to port state is required inside a special area",
+    ] },
+  { id:"ma18", type:"tf",
+    q:"A 500 GT cargo ship is underway in the Mediterranean, discharging bilge water at 12ppm through its approved filter. The mixture is from the engine room only. This discharge is lawful.",
+    correct:false,
+    explanation:"The Mediterranean is a special area. Inside special areas, the filtering equipment must meet a stricter standard. The scenario says 'approved filter' but does not confirm it meets the higher special area standard — and the distinction is critical." },
+  // TANKER CARGO DISCHARGE
+  { id:"ma19", type:"tf",
+    q:"An oil tanker may discharge cargo residues inside a special area, provided all the required conditions are satisfied.",
+    correct:false,
+    explanation:"False. Discharge of cargo residues from the cargo area is simply prohibited inside special areas — there are no conditions that permit it. This is stricter than machinery space rules, which do have conditions for inside special areas." },
+  { id:"ma20", type:"mc",
+    q:"When discharging tanker cargo residues outside a special area, what is the minimum required distance from the nearest land?",
+    correct:"More than 50 nautical miles",
+    options:["More than 12 nautical miles","More than 25 nautical miles","More than 50 nautical miles","More than 100 nautical miles"] },
+  { id:"ma21", type:"mc",
+    q:"What is the maximum instantaneous rate of discharge for oil tanker cargo residues?",
+    correct:"30 litres per nautical mile",
+    options:["15 litres per nautical mile","30 litres per nautical mile","60 litres per nautical mile","100 litres per nautical mile"] },
+  { id:"ma22", type:"mc",
+    q:"The total quantity of cargo residues discharged must not exceed what fraction of the total cargo carried?",
+    correct:"1/30,000",
+    options:["1/3,000","1/15,000","1/30,000","1/60,000"] },
+  { id:"ma23", type:"sort",
+    q:"Sort these discharge conditions — MACHINERY SPACE bilge discharge, or TANKER CARGO AREA discharge?",
+    categories:["Machinery space","Tanker cargo area"],
+    items:[
+      { text:"Ship proceeding enroute", cat:"Machinery space" },
+      { text:"Effluent does not exceed 15ppm", cat:"Machinery space" },
+      { text:"Passes through approved oil filtering equipment", cat:"Machinery space" },
+      { text:"More than 50nm from nearest land", cat:"Tanker cargo area" },
+      { text:"Instantaneous rate ≤ 30 litres per nautical mile", cat:"Tanker cargo area" },
+      { text:"Total quantity ≤ 1/30,000 of total cargo", cat:"Tanker cargo area" },
+    ] },
+  // OIL RECORD BOOK PART 1
+  { id:"ma24", type:"mc",
+    q:"Oil Record Book Part 1 (machinery space operations) is required on oil tankers of what minimum gross tonnage?",
+    correct:"150 GT and above",
+    options:["100 GT and above","150 GT and above","300 GT and above","400 GT and above"] },
+  { id:"ma25", type:"mc",
+    q:"Oil Record Book Part 1 is required on ships other than oil tankers of what minimum gross tonnage?",
+    correct:"400 GT and above",
+    options:["150 GT and above","250 GT and above","400 GT and above","500 GT and above"] },
+  { id:"ma26", type:"mc",
+    q:"A general cargo ship of 600 GT — which Oil Record Books is it required to carry?",
+    correct:"ORB Part 1 only",
+    options:["ORB Part 1 only","ORB Part 2 only","Both ORB Part 1 and ORB Part 2","None — ORBs are only required on tankers"] },
+  { id:"ma27", type:"select-all",
+    q:"Select ALL operations that must be recorded in Oil Record Book Part 1:",
+    correct:[
+      "Ballasting or cleaning of oil fuel tanks",
+      "Discharge of dirty ballast or cleaning water from oil fuel tanks",
+      "Collection and disposal of oil residues (sludge)",
+      "Discharge overboard of bilge water from machinery spaces",
+      "Bunkering of fuel or bulk lubricating oil",
+    ],
+    options:[
+      "Ballasting or cleaning of oil fuel tanks",
+      "Loading of oil cargo",
+      "Discharge of dirty ballast or cleaning water from oil fuel tanks",
+      "Crude oil washing of cargo tanks",
+      "Collection and disposal of oil residues (sludge)",
+      "Ballasting of cargo tanks",
+      "Discharge overboard of bilge water from machinery spaces",
+      "Discharge of water from slop tanks",
+      "Bunkering of fuel or bulk lubricating oil",
+    ] },
+  // OIL RECORD BOOK PART 2
+  { id:"ma28", type:"mc",
+    q:"Oil Record Book Part 2 (cargo/ballast operations) is required on oil tankers of what minimum gross tonnage?",
+    correct:"150 GT and above",
+    options:["100 GT and above","150 GT and above","300 GT and above","400 GT and above"] },
+  { id:"ma29", type:"mc",
+    q:"An oil tanker of 200 GT — which Oil Record Books is it required to carry?",
+    correct:"Both ORB Part 1 and ORB Part 2",
+    options:["ORB Part 1 only","ORB Part 2 only","Both ORB Part 1 and ORB Part 2","Neither — it is below the threshold for both"] },
+  { id:"ma30", type:"mc",
+    q:"Which ballast operation does NOT need to be recorded in Oil Record Book Part 2?",
+    correct:"Discharge of ballast from segregated ballast tanks",
+    options:[
+      "Ballasting of cargo tanks",
+      "Discharge of ballast from segregated ballast tanks",
+      "Ballasting of dedicated clean ballast tanks",
+      "Discharge of water from slop tanks",
+    ] },
+  { id:"ma31", type:"mc",
+    q:"How many Oil Record Book Part 2 entries does a slop tank discharge generate, and what are they?",
+    correct:"Two — discharge of water from slop tanks, then closing of all applicable valves",
+    options:[
+      "One — the discharge event only",
+      "Two — discharge of water from slop tanks, then closing of all applicable valves",
+      "Two — pump start and pump stop events",
+      "Three — start, discharge volume, and completion report",
+    ] },
+  { id:"ma32", type:"sort",
+    q:"Sort these operations into the correct Oil Record Book:",
+    categories:["ORB Part 1","ORB Part 2"],
+    items:[
+      { text:"Bunkering of fuel or bulk lubricating oil", cat:"ORB Part 1" },
+      { text:"Collection and disposal of sludge", cat:"ORB Part 1" },
+      { text:"Discharge of dirty ballast from oil fuel tanks", cat:"ORB Part 1" },
+      { text:"Discharge of bilge water from machinery spaces", cat:"ORB Part 1" },
+      { text:"Loading of oil cargo", cat:"ORB Part 2" },
+      { text:"Internal transfer of oil cargo during voyage", cat:"ORB Part 2" },
+      { text:"Crude oil washing of cargo tanks", cat:"ORB Part 2" },
+      { text:"Disposal of cargo residues", cat:"ORB Part 2" },
+    ] },
+  { id:"ma33", type:"select-all",
+    q:"Select ALL operations that must be recorded in Oil Record Book Part 2:",
+    correct:[
+      "Loading of oil cargo",
+      "Internal transfer of oil cargo during voyage",
+      "Unloading of oil cargo",
+      "Ballasting of cargo tanks and dedicated clean ballast tanks",
+      "Cleaning of cargo tanks including crude oil washing",
+      "Discharge of ballast except from segregated ballast tanks",
+      "Discharge of water from slop tanks",
+      "Closing of all applicable valves after slop tank discharge",
+      "Disposal of residues",
+    ],
+    options:[
+      "Loading of oil cargo",
+      "Bunkering of fuel oil",
+      "Internal transfer of oil cargo during voyage",
+      "Collection and disposal of sludge",
+      "Unloading of oil cargo",
+      "Discharge of bilge water from machinery spaces",
+      "Ballasting of cargo tanks and dedicated clean ballast tanks",
+      "Cleaning of cargo tanks including crude oil washing",
+      "Discharge of ballast except from segregated ballast tanks",
+      "Discharge of water from slop tanks",
+      "Closing of all applicable valves after slop tank discharge",
+      "Disposal of residues",
+    ] },
+];
+
 function getQuizData(id) {
-  if (id === "imdg")         return IMDG_CLASSES;
-  if (id === "solas")        return SOLAS_CHAPTERS;
+  if (id === "imdg")          return IMDG_CLASSES;
+  if (id === "solas")         return SOLAS_CHAPTERS;
   if (id === "solas-numbers") return SOLAS_NUMBERS_QUIZ;
-  if (id === "pilot")        return PILOT_LADDER_QUIZ;
+  if (id === "pilot")         return PILOT_LADDER_QUIZ;
+  if (id === "marpol")        return MARPOL_ANNEX1;
   return [];
 }
 
 const QUIZ_CONFIG = {
-  imdg:           { label:"IMDG CLASS",    question:"What is this class called?",   placeholder:"Type the class name…",    backLabel:"← IMDG",  doneText:"All classes nailed!",   type:"text" },
-  solas:          { label:"SOLAS CHAPTER", question:"What is this chapter called?",  placeholder:"Type the chapter title…", backLabel:"← SOLAS", doneText:"All chapters nailed!", type:"text" },
-  "solas-numbers":{ label:"SOLAS CHAPTER", question:"",                              placeholder:"",                        backLabel:"← SOLAS", doneText:"All chapters matched!", type:"mc"   },
-  pilot:          { label:"PILOT LADDER",  question:"",                              placeholder:"",                        backLabel:"← PILOT", doneText:"All questions nailed!", type:"mc"   },
+  imdg:           { label:"IMDG CLASS",     question:"What is this class called?",   placeholder:"Type the class name…",    backLabel:"← IMDG",   doneText:"All classes nailed!",       type:"text"   },
+  solas:          { label:"SOLAS CHAPTER",  question:"What is this chapter called?",  placeholder:"Type the chapter title…", backLabel:"← SOLAS",  doneText:"All chapters nailed!",      type:"text"   },
+  "solas-numbers":{ label:"SOLAS CHAPTER",  question:"",                              placeholder:"",                        backLabel:"← SOLAS",  doneText:"All chapters matched!",     type:"mc"     },
+  pilot:          { label:"PILOT LADDER",   question:"",                              placeholder:"",                        backLabel:"← PILOT",  doneText:"All questions nailed!",     type:"mc"     },
+  marpol:         { label:"MARPOL ANNEX 1", question:"",                              placeholder:"",                        backLabel:"← MARPOL", doneText:"MARPOL Annex 1 complete!",  type:"marpol" },
 };
 
 const PART_A_QUIZZES = [
-  { id:"imdg",          title:"IMDG Classes",             count:18, icon:"☢️", desc:"Name each IMDG dangerous goods class from its number" },
-  { id:"solas",         title:"SOLAS Chapter Titles",     count:17, icon:"⚓", desc:"Name each SOLAS chapter from its roman numeral" },
-  { id:"solas-numbers", title:"SOLAS Numbers Game",       count:17, icon:"🔢", desc:"Match each chapter title to its roman numeral" },
-  { id:"pilot",         title:"IMPA Pilot Ladder",        count:20, icon:"🪜", desc:"Multiple choice questions on pilot ladder regulations" },
+  { id:"imdg",          title:"IMDG Classes",           count:18, icon:"☢️",  desc:"Name each IMDG dangerous goods class from its number" },
+  { id:"solas",         title:"SOLAS Chapter Titles",   count:17, icon:"⚓",  desc:"Name each SOLAS chapter from its roman numeral" },
+  { id:"solas-numbers", title:"SOLAS Numbers Game",     count:17, icon:"🔢", desc:"Match each chapter title to its roman numeral" },
+  { id:"pilot",         title:"IMPA Pilot Ladder",      count:20, icon:"🪜", desc:"Multiple choice questions on pilot ladder regulations" },
+  { id:"marpol",        title:"MARPOL Annex 1 — Oil",   count:33, icon:"🛢️", desc:"Definitions, special areas, discharge conditions, and Oil Record Books" },
 ];
 
 function QuizProgressWheel({ pct, size = 52 }) {
@@ -884,6 +1141,14 @@ export default function App() {
   });
   const [showPoster, setShowPoster] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  // MARPOL-specific state
+  const [marpolFlipped, setMarpolFlipped] = useState(false);
+  const [marpolSelected, setMarpolSelected] = useState([]);
+  const [marpolSortState, setMarpolSortState] = useState({});
+  const [marpolFeedback, setMarpolFeedback] = useState(null);
+  const [marpolScore, setMarpolScore] = useState({ correct:0, total:0 });
+  const marpolScoreRef = useRef({ correct:0, total:0 });
+  const marpolFeedbackTimeRef = useRef(0);
 
   const noteKey = useCallback((question) => {
     // Create a stable key from category + question text
@@ -984,6 +1249,12 @@ export default function App() {
     setQuizScore({ correct:0, total:0 });
     setQuizDone(false);
     setShowPoster(false);
+    setMarpolFlipped(false);
+    setMarpolSelected([]);
+    setMarpolSortState({});
+    setMarpolFeedback(null);
+    setMarpolScore({ correct:0, total:0 });
+    marpolScoreRef.current = { correct:0, total:0 };
     setViewKey(k => k + 1);
     setView("part-a-quiz");
     setTimeout(() => quizInputRef.current?.focus(), 150);
@@ -1031,6 +1302,81 @@ export default function App() {
     setQuizFeedback(isCorrect ? "correct" : "incorrect");
     setQuizScore(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
   }, [quizFeedback, quizId, quizOrder, quizPos]);
+
+  // ── MARPOL quiz handlers ──
+  const marpolRecordScore = (isCorrect) => {
+    setMarpolScore(s => {
+      const next = { correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 };
+      marpolScoreRef.current = next;
+      return next;
+    });
+  };
+
+  const marpolNext = useCallback(() => {
+    if (Date.now() - marpolFeedbackTimeRef.current < 400) return;
+    const nextPos = quizPos + 1;
+    if (nextPos >= quizOrder.length) {
+      setQuizDone(true);
+      setQuizHistory(prev => {
+        const sc = marpolScoreRef.current;
+        const updated = { ...prev, marpol: { correct: sc.correct, total: sc.total } };
+        try { localStorage.setItem("oow-quiz-history", JSON.stringify(updated)); } catch {}
+        return updated;
+      });
+      return;
+    }
+    setQuizPos(nextPos);
+    setMarpolFlipped(false);
+    setMarpolSelected([]);
+    setMarpolSortState({});
+    setMarpolFeedback(null);
+  }, [quizPos, quizOrder]);
+
+  const marpolSelectMC = useCallback((opt) => {
+    if (marpolFeedback) return;
+    const item = MARPOL_ANNEX1[quizOrder[quizPos]];
+    const isCorrect = opt === item.correct;
+    marpolFeedbackTimeRef.current = Date.now();
+    setMarpolSelected([opt]);
+    setMarpolFeedback(isCorrect ? "correct" : "incorrect");
+    marpolRecordScore(isCorrect);
+  }, [marpolFeedback, quizOrder, quizPos]);
+
+  const marpolSelectTF = useCallback((label, val) => {
+    if (marpolFeedback) return;
+    const item = MARPOL_ANNEX1[quizOrder[quizPos]];
+    const isCorrect = val === item.correct;
+    marpolFeedbackTimeRef.current = Date.now();
+    setMarpolSelected([label]);
+    setMarpolFeedback(isCorrect ? "correct" : "incorrect");
+    marpolRecordScore(isCorrect);
+  }, [marpolFeedback, quizOrder, quizPos]);
+
+  const marpolSubmitMulti = useCallback(() => {
+    const item = MARPOL_ANNEX1[quizOrder[quizPos]];
+    const cSet = new Set(item.correct);
+    const isCorrect = marpolSelected.length === item.correct.length && marpolSelected.every(s => cSet.has(s));
+    marpolFeedbackTimeRef.current = Date.now();
+    setMarpolFeedback(isCorrect ? "correct" : "incorrect");
+    marpolRecordScore(isCorrect);
+  }, [marpolSelected, quizOrder, quizPos]);
+
+  const marpolSubmitSelectAll = useCallback(() => {
+    const item = MARPOL_ANNEX1[quizOrder[quizPos]];
+    const cSet = new Set(item.correct);
+    const isCorrect = marpolSelected.length === item.correct.length && marpolSelected.every(s => cSet.has(s));
+    marpolFeedbackTimeRef.current = Date.now();
+    setMarpolFeedback(isCorrect ? "correct" : "incorrect");
+    marpolRecordScore(isCorrect);
+  }, [marpolSelected, quizOrder, quizPos]);
+
+  const marpolSubmitSort = useCallback(() => {
+    const item = MARPOL_ANNEX1[quizOrder[quizPos]];
+    const isCorrect = item.items.every((it, i) => marpolSortState[i] === it.cat);
+    marpolFeedbackTimeRef.current = Date.now();
+    setMarpolFeedback(isCorrect ? "correct" : "incorrect");
+    marpolRecordScore(isCorrect);
+  }, [marpolSortState, quizOrder, quizPos]);
 
   const toggleCat = (cat) =>
     setSelectedCats((p) => p.includes(cat) ? p.filter((c) => c !== cat) : [...p, cat]);
@@ -1878,6 +2224,253 @@ export default function App() {
   }
 
   // PART A — QUIZ (generic: IMDG, SOLAS, etc.)
+  if (view === "part-a-quiz" && quizId === "marpol") {
+    const item = quizDone ? null : MARPOL_ANNEX1[quizOrder[quizPos]];
+    const pct  = quizDone ? 100 : Math.round((quizPos / quizOrder.length) * 100);
+    const allSortAssigned = item?.type === "sort" && item.items.every((_, i) => marpolSortState[i] !== undefined);
+    const accentBtn = { padding:"12px 20px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
+    const outlineBtn = { padding:"12px 20px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
+
+    const renderFeedbackBar = (fbk, correctLabel) => (
+      <div className={`quiz-feedback ${fbk}`}>
+        <div className="quiz-feedback-icon">{fbk === "correct" ? "✅" : "❌"}</div>
+        <div className="quiz-feedback-answer" style={{ color: fbk === "correct" ? "var(--confident)" : "#ef4444", fontWeight:600, marginBottom: correctLabel ? 6 : 0 }}>
+          {fbk === "correct" ? "Correct!" : correctLabel ? `Incorrect — ${correctLabel}` : "Not quite — correct answers highlighted above."}
+        </div>
+        {item?.explanation && <div style={{ fontSize:"13px", color:"var(--t2)", lineHeight:1.55, marginTop:4 }}>{item.explanation}</div>}
+      </div>
+    );
+
+    return (
+      <>
+        <style>{styles}</style>
+        <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
+          {themeToggle}
+          <div className="dark-pattern"/><div className="light-pattern"/>
+          <div key={viewKey} className="quiz-page view-enter" style={{ paddingTop:"40px" }}>
+            <div className="quiz-container">
+              <div className="quiz-header">
+                <button onClick={() => changeView("part-a")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
+                  onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+                  ← MARPOL
+                </button>
+                {!quizDone && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
+                <div className="quiz-score-label">{marpolScore.correct} / {marpolScore.total} correct</div>
+              </div>
+              {!quizDone && <div className="quiz-progress-bar"><div className="quiz-progress-fill" style={{ width:`${pct}%` }}/></div>}
+
+              {quizDone ? (
+                <div className="quiz-done-card" style={{ animation:"examSetupEnter 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
+                  <div style={{ fontSize:"36px", marginBottom:"8px" }}>{marpolScore.correct === marpolScore.total ? "🎉" : marpolScore.correct >= marpolScore.total * 0.7 ? "👍" : "📖"}</div>
+                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--t3)", marginBottom:"4px" }}>Final Score</div>
+                  <div className="quiz-done-score">{marpolScore.correct}<span style={{ fontSize:"0.5em", color:"var(--t2)" }}>/{marpolScore.total}</span></div>
+                  <div style={{ color:"var(--t2)", marginBottom:"28px", fontSize:"14px" }}>
+                    {marpolScore.total === 0 ? "All flashcards reviewed!" : marpolScore.correct === marpolScore.total ? "Perfect — MARPOL Annex 1 mastered!" : `${Math.round((marpolScore.correct/marpolScore.total)*100)}% correct`}
+                  </div>
+                  <div style={{ display:"flex", gap:"10px" }}>
+                    <button onClick={() => startQuiz("marpol","ordered")} style={{ ...accentBtn, flex:1 }}>Try Again</button>
+                    <button onClick={() => startQuiz("marpol","random")}  style={{ ...outlineBtn, flex:1 }}>Try Random</button>
+                  </div>
+                  <button onClick={() => changeView("part-a")} style={{ marginTop:"10px", width:"100%", padding:"10px", borderRadius:"10px", border:"none", background:"none", color:"var(--t3)", fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>← Back to Quizzes</button>
+                </div>
+              ) : (
+                <>
+                  {/* ── FLASHCARD ── */}
+                  {item.type === "flashcard" && (
+                    <>
+                      <div className="quiz-question-card" key={quizPos} style={{ minHeight:"170px", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", textAlign:"center", gap:"14px" }}>
+                        <div className="quiz-class-label">FLASHCARD</div>
+                        {!marpolFlipped ? (
+                          <>
+                            <div style={{ fontSize:"17px", fontWeight:600, lineHeight:1.55, color:"var(--t1)", padding:"0 8px" }}>{item.front}</div>
+                            <button onClick={() => setMarpolFlipped(true)} style={{ padding:"9px 22px", borderRadius:"10px", border:"1.5px solid var(--accent)", background:"transparent", color:"var(--accent)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
+                              Reveal Answer
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <div style={{ fontSize:"12px", color:"var(--t3)", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", textTransform:"uppercase" }}>Answer</div>
+                            <div style={{ fontSize:"15px", fontWeight:600, lineHeight:1.65, color:"var(--confident)", padding:"0 8px" }}>{item.back}</div>
+                          </>
+                        )}
+                      </div>
+                      {marpolFlipped && <button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button>}
+                    </>
+                  )}
+
+                  {/* ── MULTIPLE CHOICE ── */}
+                  {item.type === "mc" && (
+                    <>
+                      <div className="quiz-question-card mc-question-card" key={quizPos}>
+                        <div className="quiz-class-label">MARPOL ANNEX 1</div>
+                        <div className="mc-question-text">{item.q}</div>
+                      </div>
+                      <div className="mc-options">
+                        {item.options.map((opt,i) => {
+                          let state = "idle";
+                          if (marpolFeedback) { if (opt === item.correct) state = "correct"; else if (opt === marpolSelected[0]) state = "wrong"; }
+                          return (
+                            <button key={i} className={`mc-option mc-option-${state}`} onClick={() => marpolSelectMC(opt)} disabled={!!marpolFeedback}>
+                              <span className="mc-letter">{["A","B","C","D"][i]}</span>
+                              <span className="mc-opt-text">{opt}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {marpolFeedback && <>{renderFeedbackBar(marpolFeedback, null)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
+                    </>
+                  )}
+
+                  {/* ── TRUE / FALSE ── */}
+                  {item.type === "tf" && (
+                    <>
+                      <div className="quiz-question-card mc-question-card" key={quizPos}>
+                        <div className="quiz-class-label">TRUE OR FALSE</div>
+                        <div className="mc-question-text">{item.q}</div>
+                      </div>
+                      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px" }}>
+                        {[{ label:"True", val:true },{ label:"False", val:false }].map(({ label, val }) => {
+                          let state = "idle";
+                          if (marpolFeedback) { if (val === item.correct) state = "correct"; else if (marpolSelected[0] === label) state = "wrong"; }
+                          return (
+                            <button key={label} className={`mc-option mc-option-${state}`} onClick={() => marpolSelectTF(label, val)} disabled={!!marpolFeedback} style={{ justifyContent:"center", fontSize:"16px", fontWeight:700 }}>
+                              {label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {marpolFeedback && <>{renderFeedbackBar(marpolFeedback, `the answer is ${item.correct ? "True" : "False"}.`)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
+                    </>
+                  )}
+
+                  {/* ── MULTI-SELECT (select exactly N) ── */}
+                  {item.type === "multi" && (
+                    <>
+                      <div className="quiz-question-card mc-question-card" key={quizPos}>
+                        <div className="quiz-class-label">SELECT {item.correct.length}</div>
+                        <div className="mc-question-text">{item.q}</div>
+                      </div>
+                      <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
+                        {item.options.map((opt,i) => {
+                          const sel = marpolSelected.includes(opt);
+                          const isCorrectOpt = item.correct.includes(opt);
+                          let bc = sel ? "var(--accent)" : "var(--border)";
+                          let bg = sel ? "color-mix(in srgb, var(--accent) 12%, transparent)" : "var(--card)";
+                          let tc = sel ? "var(--accent)" : "var(--t1)";
+                          if (marpolFeedback) { if (isCorrectOpt) { bc="#22c55e"; bg="#22c55e15"; tc="#22c55e"; } else if (sel) { bc="#ef4444"; bg="#ef444415"; tc="#ef4444"; } else { bc="var(--border)"; bg="var(--card)"; tc="var(--t2)"; } }
+                          return (
+                            <button key={i} onClick={() => { if (marpolFeedback) return; setMarpolSelected(p => p.includes(opt) ? p.filter(x=>x!==opt) : [...p,opt]); }} disabled={!!marpolFeedback}
+                              style={{ padding:"12px 16px", borderRadius:"10px", border:`1.5px solid ${bc}`, background:bg, color:tc, fontWeight:500, fontSize:"14px", cursor:"pointer", textAlign:"left", fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", gap:"10px", transition:"all 0.15s" }}>
+                              <span style={{ width:"18px", height:"18px", borderRadius:"4px", border:`2px solid ${bc}`, display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0, background: sel ? bc : "transparent" }}>
+                                {sel && <span style={{ color:"#fff", fontSize:"11px", lineHeight:1 }}>✓</span>}
+                              </span>
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {!marpolFeedback && (
+                        <button onClick={marpolSubmitMulti} disabled={marpolSelected.length !== item.correct.length}
+                          style={{ marginTop:"12px", ...accentBtn, width:"100%", opacity: marpolSelected.length !== item.correct.length ? 0.45 : 1 }}>
+                          {marpolSelected.length === item.correct.length ? "Check Answers" : `Select ${item.correct.length - marpolSelected.length} more`}
+                        </button>
+                      )}
+                      {marpolFeedback && <>{renderFeedbackBar(marpolFeedback, null)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
+                    </>
+                  )}
+
+                  {/* ── SELECT ALL ── */}
+                  {item.type === "select-all" && (
+                    <>
+                      <div className="quiz-question-card mc-question-card" key={quizPos}>
+                        <div className="quiz-class-label">SELECT ALL THAT APPLY</div>
+                        <div className="mc-question-text">{item.q}</div>
+                      </div>
+                      <div style={{ display:"flex", flexWrap:"wrap", gap:"8px" }}>
+                        {item.options.map((opt,i) => {
+                          const sel = marpolSelected.includes(opt);
+                          const isCorrectOpt = item.correct.includes(opt);
+                          let bc = sel ? "var(--accent)" : "var(--border)";
+                          let bg = sel ? "color-mix(in srgb, var(--accent) 12%, transparent)" : "var(--card)";
+                          let tc = sel ? "var(--accent)" : "var(--t1)";
+                          if (marpolFeedback) { if (isCorrectOpt) { bc="#22c55e"; bg="#22c55e15"; tc="#22c55e"; } else if (sel) { bc="#ef4444"; bg="#ef444415"; tc="#ef4444"; } else { bc="var(--border)"; bg="var(--card)"; tc="var(--t2)"; } }
+                          return (
+                            <button key={i} onClick={() => { if (marpolFeedback) return; setMarpolSelected(p => p.includes(opt) ? p.filter(x=>x!==opt) : [...p,opt]); }} disabled={!!marpolFeedback}
+                              style={{ padding:"8px 14px", borderRadius:"8px", border:`1.5px solid ${bc}`, background:bg, color:tc, fontWeight:500, fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif", transition:"all 0.15s" }}>
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {!marpolFeedback && (
+                        <button onClick={marpolSubmitSelectAll} disabled={marpolSelected.length === 0}
+                          style={{ marginTop:"12px", ...accentBtn, width:"100%", opacity: marpolSelected.length === 0 ? 0.45 : 1 }}>
+                          {marpolSelected.length === 0 ? "Tap options to select" : `Check ${marpolSelected.length} selected`}
+                        </button>
+                      )}
+                      {marpolFeedback && (
+                        <>
+                          {renderFeedbackBar(marpolFeedback, null)}
+                          {marpolFeedback === "incorrect" && (
+                            <div style={{ fontSize:"12px", color:"var(--t3)", marginTop:"-6px", marginBottom:"8px" }}>Green = correct answer &nbsp;·&nbsp; Red = wrong selection</div>
+                          )}
+                          <button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button>
+                        </>
+                      )}
+                    </>
+                  )}
+
+                  {/* ── SORT ── */}
+                  {item.type === "sort" && (
+                    <>
+                      <div className="quiz-question-card mc-question-card" key={quizPos}>
+                        <div className="quiz-class-label">SORT IT</div>
+                        <div className="mc-question-text">{item.q}</div>
+                      </div>
+                      <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
+                        {item.items.map((si, i) => {
+                          const assigned = marpolSortState[i];
+                          let cardBorder = assigned ? "var(--accent)" : "var(--border)";
+                          if (marpolFeedback) cardBorder = assigned === si.cat ? "#22c55e" : "#ef4444";
+                          return (
+                            <div key={i} style={{ padding:"12px 14px", borderRadius:"10px", border:`1.5px solid ${cardBorder}`, background:"var(--card)", transition:"border-color 0.15s" }}>
+                              <div style={{ fontSize:"13px", fontWeight:500, color:"var(--t1)", marginBottom: marpolFeedback ? 6 : 8 }}>{si.text}</div>
+                              {!marpolFeedback ? (
+                                <div style={{ display:"flex", gap:"6px" }}>
+                                  {item.categories.map(cat => (
+                                    <button key={cat} onClick={() => setMarpolSortState(p => ({ ...p, [i]:cat }))}
+                                      style={{ flex:1, padding:"5px 8px", borderRadius:"7px", border:"none", background: assigned===cat ? "var(--accent)" : "var(--border)", color: assigned===cat ? "#fff" : "var(--t2)", fontSize:"12px", fontWeight:600, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", transition:"all 0.15s" }}>
+                                      {cat}
+                                    </button>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div style={{ fontSize:"12px", fontWeight:600, color: assigned===si.cat ? "#22c55e" : "#ef4444" }}>
+                                  {assigned===si.cat ? `✓ ${assigned}` : `✗ ${assigned || "unassigned"} → correct: ${si.cat}`}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {!marpolFeedback && (
+                        <button onClick={marpolSubmitSort} disabled={!allSortAssigned}
+                          style={{ marginTop:"12px", ...accentBtn, width:"100%", opacity: allSortAssigned ? 1 : 0.45 }}>
+                          {allSortAssigned ? "Check Answers" : "Assign all items to continue"}
+                        </button>
+                      )}
+                      {marpolFeedback && <>{renderFeedbackBar(marpolFeedback, null)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   if (view === "part-a-quiz") {
     const data = getQuizData(quizId);
     const cfg  = QUIZ_CONFIG[quizId] || QUIZ_CONFIG.imdg;
