@@ -1471,6 +1471,7 @@ export default function App() {
     .quiz-mode-btn { flex:1; padding:9px 0; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--t2); font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
     .quiz-mode-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
     .quiz-mode-btn:not(.active):hover { border-color:var(--t3); }
+    .quiz-mode-btn:disabled { opacity:0.35; cursor:not-allowed; border-style:dashed; }
     .quiz-start-btn { margin-top:14px; width:100%; padding:14px; border-radius:12px; border:none; background:var(--accent); color:#fff; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; box-shadow:0 4px 20px rgba(32,192,200,0.3); }
     .quiz-start-btn:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(32,192,200,0.4); }
     .quiz-container { width:100%; max-width:560px; margin-top:8px; }
@@ -1857,12 +1858,16 @@ export default function App() {
               <div style={{ background:"var(--card)", border:"1.5px solid var(--border)", borderRadius:"14px", padding:"18px 20px" }}>
                 <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700, marginBottom:"10px" }}>Mode</div>
                 <div className="quiz-mode-row">
-                  <button className={`quiz-mode-btn${quizSelectedMode==="ordered"?" active":""}`} onClick={() => setQuizSelectedMode("ordered")}>In Order</button>
-                  <button className={`quiz-mode-btn${quizSelectedMode==="random"?" active":""}`} onClick={() => setQuizSelectedMode("random")}>Random</button>
+                  <button className={`quiz-mode-btn${quizSelectedMode==="ordered" && quizSelectedId!=="solas-numbers"?" active":""}`}
+                    onClick={() => setQuizSelectedMode("ordered")}
+                    disabled={quizSelectedId==="solas-numbers"}
+                    title={quizSelectedId==="solas-numbers" ? "This quiz is always randomised" : ""}>In Order</button>
+                  <button className={`quiz-mode-btn${quizSelectedMode==="random" || quizSelectedId==="solas-numbers"?" active":""}`}
+                    onClick={() => setQuizSelectedMode("random")}>Random</button>
                 </div>
               </div>
 
-              <button className="quiz-start-btn" onClick={() => startQuiz(quizSelectedId, quizSelectedMode)}>
+              <button className="quiz-start-btn" onClick={() => startQuiz(quizSelectedId, quizSelectedId==="solas-numbers" ? "random" : quizSelectedMode)}>
                 Start Quiz →
               </button>
             </div>
@@ -1914,9 +1919,11 @@ export default function App() {
                   </div>
                   <div style={{ display:"flex", gap:"10px" }}>
                     <button onClick={() => startQuiz(quizId, quizMode)} style={{ flex:1, padding:"12px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>Try Again</button>
-                    <button onClick={() => startQuiz(quizId, quizMode==="ordered"?"random":"ordered")} style={{ flex:1, padding:"12px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
-                      {quizMode==="ordered" ? "Try Random" : "Try In Order"}
-                    </button>
+                    {quizId !== "solas-numbers" && (
+                      <button onClick={() => startQuiz(quizId, quizMode==="ordered"?"random":"ordered")} style={{ flex:1, padding:"12px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
+                        {quizMode==="ordered" ? "Try Random" : "Try In Order"}
+                      </button>
+                    )}
                   </div>
                   <button onClick={() => changeView("part-a")} style={{ marginTop:"10px", width:"100%", padding:"10px", borderRadius:"10px", border:"none", background:"none", color:"var(--t3)", fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>← Back to Quizzes</button>
                 </div>
