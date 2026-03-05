@@ -591,6 +591,19 @@ const SOLAS_CHAPTERS = [
     hint:"Safety Measures for Ships {Carrying} {Industrial} {Personnel}" },
 ];
 
+// ── SOLAS Numbers Game: title → roman numeral (MC) ──────────────────────────
+const SOLAS_NUMBERS_QUIZ = (() => {
+  const ids = SOLAS_CHAPTERS.map(c => c.id);
+  return SOLAS_CHAPTERS.map((ch, i) => {
+    // 3 deterministic distractors spread evenly around the 17-chapter list
+    const distractors = [3, 7, 11].map(off => ids[(i + off) % ids.length]);
+    // Place the correct answer at position i%4 so it rotates A/B/C/D across questions
+    const opts = [...distractors];
+    opts.splice(i % 4, 0, ch.id);
+    return { id:`sn-${i}`, q:ch.name, correct:ch.id, options:opts };
+  });
+})();
+
 const PILOT_LADDER_QUIZ = [
   // ── Freeboard of 9m or less ──────────────────────────────────────────────
   {
@@ -772,22 +785,25 @@ const PILOT_LADDER_QUIZ = [
 ];
 
 function getQuizData(id) {
-  if (id === "imdg")  return IMDG_CLASSES;
-  if (id === "solas") return SOLAS_CHAPTERS;
-  if (id === "pilot") return PILOT_LADDER_QUIZ;
+  if (id === "imdg")         return IMDG_CLASSES;
+  if (id === "solas")        return SOLAS_CHAPTERS;
+  if (id === "solas-numbers") return SOLAS_NUMBERS_QUIZ;
+  if (id === "pilot")        return PILOT_LADDER_QUIZ;
   return [];
 }
 
 const QUIZ_CONFIG = {
-  imdg:  { label:"IMDG CLASS",    question:"What is this class called?",   placeholder:"Type the class name…",    backLabel:"← IMDG",  doneText:"All classes nailed!",   type:"text" },
-  solas: { label:"SOLAS CHAPTER", question:"What is this chapter called?",  placeholder:"Type the chapter title…", backLabel:"← SOLAS", doneText:"All chapters nailed!", type:"text" },
-  pilot: { label:"PILOT LADDER",  question:"",                              placeholder:"",                        backLabel:"← PILOT", doneText:"All questions nailed!", type:"mc"   },
+  imdg:           { label:"IMDG CLASS",    question:"What is this class called?",   placeholder:"Type the class name…",    backLabel:"← IMDG",  doneText:"All classes nailed!",   type:"text" },
+  solas:          { label:"SOLAS CHAPTER", question:"What is this chapter called?",  placeholder:"Type the chapter title…", backLabel:"← SOLAS", doneText:"All chapters nailed!", type:"text" },
+  "solas-numbers":{ label:"SOLAS CHAPTER", question:"",                              placeholder:"",                        backLabel:"← SOLAS", doneText:"All chapters matched!", type:"mc"   },
+  pilot:          { label:"PILOT LADDER",  question:"",                              placeholder:"",                        backLabel:"← PILOT", doneText:"All questions nailed!", type:"mc"   },
 };
 
 const PART_A_QUIZZES = [
-  { id:"imdg",  title:"IMDG Classes",         count:19, icon:"☢️", desc:"Name each IMDG dangerous goods class from its number" },
-  { id:"solas", title:"SOLAS Chapter Titles", count:17, icon:"⚓", desc:"Name each SOLAS chapter from its number" },
-  { id:"pilot", title:"IMPA Pilot Ladder",    count:20, icon:"🪜", desc:"Multiple choice questions on pilot ladder regulations" },
+  { id:"imdg",          title:"IMDG Classes",             count:18, icon:"☢️", desc:"Name each IMDG dangerous goods class from its number" },
+  { id:"solas",         title:"SOLAS Chapter Titles",     count:17, icon:"⚓", desc:"Name each SOLAS chapter from its roman numeral" },
+  { id:"solas-numbers", title:"SOLAS Numbers Game",       count:17, icon:"🔢", desc:"Match each chapter title to its roman numeral" },
+  { id:"pilot",         title:"IMPA Pilot Ladder",        count:20, icon:"🪜", desc:"Multiple choice questions on pilot ladder regulations" },
 ];
 
 function QuizProgressWheel({ pct, size = 52 }) {
