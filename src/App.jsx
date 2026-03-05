@@ -1032,6 +1032,14 @@ const MARPOL_ANNEX1 = [
       "Disposal of residues",
     ] },
 ];
+// Shuffle options/items once at module load so correct answers aren't predictably positioned
+(function shuffleMarpolOptions() {
+  function fy(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } }
+  MARPOL_ANNEX1.forEach(item => {
+    if (item.options) fy(item.options);   // mc, multi, select-all
+    if (item.items)   fy(item.items);     // sort
+  });
+})();
 
 function getQuizData(id) {
   if (id === "imdg")          return IMDG_CLASSES;
