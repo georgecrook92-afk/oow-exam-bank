@@ -1072,6 +1072,7 @@ function getQuizData(id) {
   if (id === "marpol")        return MARPOL_ANNEX1;
   if (id === "iala-buoyage")  return IALA_BUOYAGE;
   if (id === "flags")         return FLAG_DATA;
+  if (id === "met")           return MET_QUIZ;
   return [];
 }
 
@@ -1083,7 +1084,167 @@ const QUIZ_CONFIG = {
   marpol:         { label:"MARPOL ANNEX 1", question:"",                              placeholder:"",                        backLabel:"← MARPOL", doneText:"MARPOL Annex 1 complete!",  type:"marpol" },
   "iala-buoyage": { label:"IALA BUOYAGE",   question:"",                              placeholder:"",                        backLabel:"← Buoyage", doneText:"IALA Buoyage complete!",    type:"buoy"   },
   "flags":        { label:"CODE FLAGS",     question:"",                              placeholder:"",                        backLabel:"← Flags",   doneText:"All flags complete!",       type:"flags"  },
+  "met":          { label:"METEOROLOGY",    question:"",                              placeholder:"",                        backLabel:"← Met",     doneText:"Meteorology complete!",     type:"marpol" },
 };
+
+// ── Meteorology Quiz ─────────────────────────────────────────────────────────
+const MET_QUIZ = [
+  {
+    type: "tf",
+    q: "Buys Ballot's Law (Northern Hemisphere): if you stand with your back to the wind, low pressure is on your left.",
+    correct: true,
+    explanation: "Buys Ballot's Law (NH): back to wind → low pressure on left, high on right. Reversed in the Southern Hemisphere."
+  },
+  {
+    type: "mc",
+    q: "A wind is said to 'veer' when it changes direction:",
+    options: ["Clockwise (e.g. SW → W → NW)", "Anti-clockwise (e.g. W → SW → S)", "From sea to land", "From land to sea"],
+    correct: "Clockwise (e.g. SW → W → NW)",
+    explanation: "Veering = clockwise shift. Backing = anti-clockwise shift. In the NH, winds typically veer as fronts pass."
+  },
+  {
+    type: "select-all",
+    q: "Which of the following are recognised warning signs of an approaching Tropical Revolving Storm (TRS)?",
+    options: [
+      "Long, low swell from an unusual direction",
+      "Rapid fall in barometric pressure",
+      "Unusual high cloud formations (e.g. cirrus mare's tails)",
+      "Unusually high sea surface temperature",
+      "Loss of normal diurnal variation in the barometer",
+      "Increasing sea depth on the echo sounder"
+    ],
+    correct: [
+      "Long, low swell from an unusual direction",
+      "Rapid fall in barometric pressure",
+      "Unusual high cloud formations (e.g. cirrus mare's tails)",
+      "Loss of normal diurnal variation in the barometer"
+    ],
+    explanation: "TRS warning signs: long low swell from unusual direction, rapid pressure fall, unusual cirrus, and loss of normal twice-daily barometer variation. High SST is a background condition, not a warning sign."
+  },
+  {
+    type: "sort",
+    q: "Sort the following cloud types into the order they appear as a warm front approaches (FIRST to LAST).",
+    items: [
+      { text: "Cirrus — thin wispy high cloud, up to 1,000 nm ahead", cat: "1st" },
+      { text: "Cirrostratus — milky veil, halo around sun or moon", cat: "2nd" },
+      { text: "Altostratus — grey sheet, sun barely visible", cat: "3rd" },
+      { text: "Nimbostratus — continuous rain or snow begins", cat: "4th" },
+    ],
+    categories: ["1st", "2nd", "3rd", "4th"],
+    explanation: "Ci → Cs → As → Ns — the classic warm front cloud sequence. Cirrus is the first sign; rain begins when nimbostratus arrives."
+  },
+  {
+    type: "mc",
+    q: "As a warm front approaches and passes, what happens to barometric pressure?",
+    options: [
+      "Falls steadily ahead of the front, then steadies after passage",
+      "Rises steeply as the front approaches",
+      "Remains constant throughout",
+      "Falls sharply then rises sharply immediately after"
+    ],
+    correct: "Falls steadily ahead of the front, then steadies after passage",
+    explanation: "Pressure falls ahead of a warm front. After the front passes and you enter the warm sector, the fall slows or steadies."
+  },
+  {
+    type: "tf",
+    q: "A cold front typically moves faster than a warm front and brings a rapid improvement in visibility after it passes.",
+    correct: true,
+    explanation: "Cold fronts are steeper and move faster (~25–35 kn vs ~15–25 kn). After passage, polar air replaces warm moist air, bringing rapid clearing and a rise in pressure."
+  },
+  {
+    type: "mc",
+    q: "Which instrument is used to measure atmospheric humidity?",
+    options: ["Hygrometer (psychrometer)", "Barometer", "Anemometer", "Hydrometer"],
+    correct: "Hygrometer (psychrometer)",
+    explanation: "A hygrometer (wet and dry bulb psychrometer) measures humidity. A barometer measures atmospheric pressure; an anemometer measures wind speed."
+  },
+  {
+    type: "tf",
+    q: "The geostrophic wind blows parallel to isobars, with lower pressure on its left in the Northern Hemisphere.",
+    correct: true,
+    explanation: "Geostrophic wind results from balance between pressure gradient force and Coriolis force. It flows parallel to isobars with low pressure on the left (NH). Actual surface winds are deflected slightly across isobars toward low pressure."
+  },
+  {
+    type: "mc",
+    q: "In the Northern Hemisphere, which is the 'dangerous semicircle' of a Tropical Revolving Storm?",
+    options: [
+      "The right-hand side of the storm's track (facing direction of travel)",
+      "The left-hand side of the storm's track",
+      "The area directly ahead of the storm",
+      "The area directly behind the storm"
+    ],
+    correct: "The right-hand side of the storm's track (facing direction of travel)",
+    explanation: "In the NH dangerous semicircle = right side. The storm's forward speed ADDS to wind speed here, and vessels risk being drawn into the storm track. In the SH it is reversed (left side is dangerous)."
+  },
+  {
+    type: "mc",
+    q: "After a warm front passes in the Northern Hemisphere, the surface wind typically:",
+    options: [
+      "Veers (shifts clockwise, e.g. SE → S → SW)",
+      "Backs (shifts anti-clockwise, e.g. W → SW → S)",
+      "Increases significantly in speed",
+      "Backs then veers rapidly"
+    ],
+    correct: "Veers (shifts clockwise, e.g. SE → S → SW)",
+    explanation: "In the NH, wind veers as a warm front passes (and again as the cold front passes). Wind in the warm sector is typically southwesterly."
+  },
+  {
+    type: "mc",
+    q: "Sea fog (advection fog) is most likely to form when:",
+    options: [
+      "Warm moist air moves over a colder sea surface",
+      "Cold dry air moves over a warmer sea surface",
+      "Wind speed rises above Beaufort force 6",
+      "A cold front passes"
+    ],
+    correct: "Warm moist air moves over a colder sea surface",
+    explanation: "Advection fog forms when warm moist air is advected over a colder surface, cooling the air to its dewpoint. Common in spring/summer, e.g. Grand Banks, North Sea."
+  },
+  {
+    type: "mc",
+    q: "Beaufort force 8 is classified as:",
+    options: [
+      "Gale — mean wind 34–40 knots",
+      "Near gale — mean wind 28–33 knots",
+      "Severe gale — mean wind 41–47 knots",
+      "Storm — mean wind 48–55 knots"
+    ],
+    correct: "Gale — mean wind 34–40 knots",
+    explanation: "BF 7 = Near gale (28–33 kn), BF 8 = Gale (34–40 kn), BF 9 = Severe gale (41–47 kn), BF 10 = Storm (48–55 kn)."
+  },
+  {
+    type: "mc",
+    q: "On a NAVTEX message, what does subject indicator 'B' represent?",
+    options: ["Meteorological warnings", "Navigational warnings", "Ice reports", "SAR information"],
+    correct: "Meteorological warnings",
+    explanation: "NAVTEX subject indicators: A = Navigational warnings, B = Meteorological warnings, C = Ice reports, D = SAR. A and B are mandatory (cannot be masked)."
+  },
+  {
+    type: "tf",
+    q: "In a Northern Hemisphere mid-latitude depression, surface winds circulate anti-clockwise around the centre.",
+    correct: true,
+    explanation: "NH low pressure (depression / cyclone): anti-clockwise circulation due to Coriolis effect. SH low: clockwise circulation."
+  },
+  {
+    type: "mc",
+    q: "An occluded front forms when:",
+    options: [
+      "A cold front catches up with a warm front, lifting the warm air off the surface",
+      "Two warm fronts merge into one",
+      "A warm front moves faster than the cold front",
+      "High pressure pushes between two fronts"
+    ],
+    correct: "A cold front catches up with a warm front, lifting the warm air off the surface",
+    explanation: "As a depression matures, the faster-moving cold front catches the warm front. The warm air is lifted entirely off the surface forming an occluded front; the depression then fills."
+  }
+];
+(function shuffleMetOptions() {
+  function fy(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } }
+  MET_QUIZ.forEach(item => {
+    if (item.options) fy(item.options);
+    if (item.items)   fy(item.items);
+  });
+})();
 
 // ── Maritime Code Flags ──────────────────────────────────────────────────────
 const FLAG_DATA = [
@@ -1130,6 +1291,8 @@ const PART_A_QUIZZES = [
   { id:"iala-buoyage",  title:"IALA Buoyage",              count:11, icon:"🚢", desc:"Identify shape, colour, light pattern and top mark for all IALA marks", comingSoon:true },
   // ── Flags
   { id:"flags",         title:"Code Flags",                count:26, icon:"🚩", desc:"Identify each International Code of Signals flag by letter or meaning" },
+  // ── Meteorology
+  { id:"met",           title:"Meteorology",               count:15, icon:"🌦️", desc:"Buys Ballot, TRS, fronts, fog and weather instruments" },
 ];
 
 function QuizProgressWheel({ pct, size = 52 }) {
@@ -2712,8 +2875,10 @@ export default function App() {
   }
 
   // PART A — QUIZ (generic: IMDG, SOLAS, etc.)
-  if (view === "part-a-quiz" && quizId === "marpol") {
-    const item = quizDone ? null : MARPOL_ANNEX1[quizOrder[quizPos]];
+  if (view === "part-a-quiz" && QUIZ_CONFIG[quizId]?.type === "marpol") {
+    const _marpolData = getQuizData(quizId);
+    const _marpolCfg  = QUIZ_CONFIG[quizId];
+    const item = quizDone ? null : _marpolData[quizOrder[quizPos]];
     const pct  = quizDone ? 100 : Math.round((quizPos / quizOrder.length) * 100);
     const allSortAssigned = item?.type === "sort" && item.items.every((_, i) => marpolSortState[i] !== undefined);
     const accentBtn = { padding:"12px 20px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
@@ -2740,7 +2905,7 @@ export default function App() {
               <div className="quiz-header">
                 <button onClick={() => changeView("part-a")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
                   onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
-                  ← MARPOL
+                  {_marpolCfg.backLabel}
                 </button>
                 {!quizDone && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
                 <div className="quiz-score-label">{marpolScore.correct} / {marpolScore.total} correct</div>
@@ -2753,11 +2918,11 @@ export default function App() {
                   <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--t3)", marginBottom:"4px" }}>Final Score</div>
                   <div className="quiz-done-score">{marpolScore.correct}<span style={{ fontSize:"0.5em", color:"var(--t2)" }}>/{marpolScore.total}</span></div>
                   <div style={{ color:"var(--t2)", marginBottom:"28px", fontSize:"14px" }}>
-                    {marpolScore.total === 0 ? "All flashcards reviewed!" : marpolScore.correct === marpolScore.total ? "Perfect — MARPOL Annex 1 mastered!" : `${Math.round((marpolScore.correct/marpolScore.total)*100)}% correct`}
+                    {marpolScore.total === 0 ? "All flashcards reviewed!" : marpolScore.correct === marpolScore.total ? `Perfect — ${_marpolCfg.doneText}` : `${Math.round((marpolScore.correct/marpolScore.total)*100)}% correct`}
                   </div>
                   <div style={{ display:"flex", gap:"10px" }}>
-                    <button onClick={() => startQuiz("marpol","ordered")} style={{ ...accentBtn, flex:1 }}>Try Again</button>
-                    <button onClick={() => startQuiz("marpol","random")}  style={{ ...outlineBtn, flex:1 }}>Try Random</button>
+                    <button onClick={() => startQuiz(quizId,"ordered")} style={{ ...accentBtn, flex:1 }}>Try Again</button>
+                    <button onClick={() => startQuiz(quizId,"random")}  style={{ ...outlineBtn, flex:1 }}>Try Random</button>
                   </div>
                   <button onClick={() => changeView("part-a")} style={{ marginTop:"10px", width:"100%", padding:"10px", borderRadius:"10px", border:"none", background:"none", color:"var(--t3)", fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>← Back to Quizzes</button>
                 </div>
@@ -2790,7 +2955,7 @@ export default function App() {
                   {item.type === "mc" && (
                     <>
                       <div className="quiz-question-card mc-question-card" key={quizPos}>
-                        <div className="quiz-class-label">MARPOL ANNEX 1</div>
+                        <div className="quiz-class-label">{_marpolCfg.label}</div>
                         <div className="mc-question-text">{item.q}</div>
                       </div>
                       <div className="mc-options">
