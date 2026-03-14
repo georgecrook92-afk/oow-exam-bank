@@ -2393,16 +2393,16 @@ export default function App() {
                 <div style={{ background:"var(--card)", border:"1.5px solid var(--border)", borderRadius:"12px", padding:"14px 18px", flex:"1", minWidth:"200px" }}>
                   <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700, marginBottom:"10px" }}>Mode</div>
                   <div className="quiz-mode-row" style={{ marginTop:0 }}>
-                    <button className={`quiz-mode-btn${quizSelectedMode==="ordered" && quizSelectedId!=="solas-numbers"?" active":""}`}
+                    <button className={`quiz-mode-btn${quizSelectedMode==="ordered" && quizSelectedId!=="solas-numbers" && quizSelectedId!=="flags"?" active":""}`}
                       onClick={() => setQuizSelectedMode("ordered")}
-                      disabled={quizSelectedId==="solas-numbers"}
-                      title={quizSelectedId==="solas-numbers" ? "This quiz is always randomised" : ""}>In Order</button>
-                    <button className={`quiz-mode-btn${quizSelectedMode==="random" || quizSelectedId==="solas-numbers"?" active":""}`}
+                      disabled={quizSelectedId==="solas-numbers" || quizSelectedId==="flags"}
+                      title={quizSelectedId==="solas-numbers" || quizSelectedId==="flags" ? "This quiz is always randomised" : ""}>In Order</button>
+                    <button className={`quiz-mode-btn${quizSelectedMode==="random" || quizSelectedId==="solas-numbers" || quizSelectedId==="flags"?" active":""}`}
                       onClick={() => setQuizSelectedMode("random")}>Random</button>
                   </div>
                 </div>
                 <button className="quiz-start-btn" style={{ flex:"2", minWidth:"160px", margin:0 }}
-                  onClick={() => startQuiz(quizSelectedId, quizSelectedId==="solas-numbers" ? "random" : quizSelectedMode)}>
+                  onClick={() => startQuiz(quizSelectedId, (quizSelectedId==="solas-numbers" || quizSelectedId==="flags") ? "random" : quizSelectedMode)}>
                   Start Quiz →
                 </button>
               </div>
