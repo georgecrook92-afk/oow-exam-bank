@@ -1187,6 +1187,7 @@ export default function App() {
   const [buoyFeedback, setBuoyFeedback] = useState(null);
   const [buoyScore, setBuoyScore] = useState({ correct:0, total:0 });
   const buoyScoreRef = useRef({ correct:0, total:0 });
+  const [showPartAInfo, setShowPartAInfo] = useState(false);
   // MARPOL-specific state
   const [marpolFlipped, setMarpolFlipped] = useState(false);
   const [marpolSelected, setMarpolSelected] = useState([]);
@@ -2262,7 +2263,11 @@ export default function App() {
             </button>
             <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"4px", textTransform:"uppercase", color:"var(--accent)", marginBottom:"8px", fontWeight:700, alignSelf:"flex-start" }}>PART A</div>
             <h1 style={{ fontSize:"clamp(24px,4vw,36px)", fontWeight:700, marginBottom:"6px", color:"var(--t1)", alignSelf:"flex-start" }}>Quizzes</h1>
-            <p style={{ color:"var(--t2)", fontSize:"14px", marginBottom:"28px", alignSelf:"flex-start" }}>Select a quiz and choose your mode to begin.</p>
+            <p style={{ color:"var(--t2)", fontSize:"14px", marginBottom:"20px", alignSelf:"flex-start" }}>Select a quiz and choose your mode to begin.</p>
+
+            <button onClick={() => setShowPartAInfo(true)} style={{ alignSelf:"flex-start", marginBottom:"28px", background:"var(--accent)", color:"#fff", border:"none", borderRadius:"12px", padding:"11px 20px", fontSize:"14px", fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", gap:"8px", boxShadow:"0 4px 16px rgba(32,192,200,0.3)", letterSpacing:"0.2px" }}>
+              <span style={{ fontSize:"16px" }}>❓</span> What is Part A?
+            </button>
 
             <div className="quiz-selection-grid">
               {PART_A_QUIZZES.map((quiz, i) => {
@@ -2313,6 +2318,53 @@ export default function App() {
             </div>
           </div>
         </div>
+
+        {/* What is Part A? modal */}
+        {showPartAInfo && (
+          <div onClick={() => setShowPartAInfo(false)} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.72)", display:"flex", alignItems:"center", justifyContent:"center", padding:"16px" }}>
+            <div onClick={e => e.stopPropagation()} style={{ background:"var(--card)", border:"1px solid var(--border)", borderRadius:"16px", maxWidth:"560px", width:"100%", maxHeight:"85vh", overflowY:"auto", padding:"28px 28px 32px", position:"relative" }}>
+              <button onClick={() => setShowPartAInfo(false)} style={{ position:"absolute", top:"16px", right:"16px", background:"var(--border)", border:"none", color:"var(--t2)", borderRadius:"8px", width:"32px", height:"32px", cursor:"pointer", fontSize:"16px", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',sans-serif" }}>✕</button>
+
+              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--accent)", marginBottom:"6px", fontWeight:700 }}>MCA OOW UNLIMITED</div>
+              <h2 style={{ fontSize:"22px", fontWeight:700, marginBottom:"16px", color:"var(--t1)", lineHeight:1.2 }}>What is Part A?</h2>
+
+              <p style={{ fontSize:"14px", color:"var(--t2)", lineHeight:1.6, marginBottom:"16px" }}>
+                Part A is a <strong style={{ color:"var(--t1)" }}>40-minute computer-based test</strong> taken before the oral exam. It consists of around <strong style={{ color:"var(--t1)" }}>15 questions</strong>, each with approximately 4 sub-questions — roughly 60 individual items in total. It is <strong style={{ color:"var(--t1)" }}>closed-book</strong>, and all answers are selected rather than written.
+              </p>
+
+              <p style={{ fontSize:"14px", color:"var(--t2)", lineHeight:1.6, marginBottom:"20px" }}>
+                The exam is designed to test broad knowledge across the full scope of the OOW syllabus in a short time. You'll need to recognise correct information quickly rather than recall it from scratch.
+              </p>
+
+              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700, marginBottom:"10px" }}>Question Formats</div>
+              <ul style={{ fontSize:"14px", color:"var(--t2)", lineHeight:1.8, marginBottom:"20px", paddingLeft:"18px" }}>
+                <li>True / False statements</li>
+                <li>Fill in the blank (4 multiple-choice options)</li>
+                <li>Drag-and-drop matching</li>
+                <li>Visual identification (lights, buoys, flags, vessels)</li>
+                <li>Select correct items from a list</li>
+              </ul>
+
+              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700, marginBottom:"10px" }}>What It Covers</div>
+              <ul style={{ fontSize:"14px", color:"var(--t2)", lineHeight:1.8, marginBottom:"24px", paddingLeft:"18px" }}>
+                <li><strong style={{ color:"var(--t1)" }}>COLREGS</strong> — light configurations, day shapes, vessel classifications (NUC, CBD, RAM, PDV, trawling), rules of the road, sound signals, restricted visibility (Rule 19)</li>
+                <li><strong style={{ color:"var(--t1)" }}>IALA Buoyage</strong> — all mark types, topmarks, light colours, light patterns, Region A vs B lateral marks</li>
+                <li><strong style={{ color:"var(--t1)" }}>Maritime Flags</strong> — match flag to meaning (Alpha, Bravo, Hotel, Oscar, November, NC, etc.)</li>
+                <li><strong style={{ color:"var(--t1)" }}>MARPOL</strong> — Annex I & V discharge criteria, special areas, record book requirements</li>
+                <li><strong style={{ color:"var(--t1)" }}>ARPA / Radar</strong> — performance standards, safe speed factors, plotting limitations</li>
+                <li><strong style={{ color:"var(--t1)" }}>ECDIS</strong> — mandatory alarms, safety contour, datum, ENC update procedures</li>
+                <li><strong style={{ color:"var(--t1)" }}>Meteorology</strong> — Buys Ballot's law, TRS signs, fronts, instruments</li>
+                <li><strong style={{ color:"var(--t1)" }}>Tides</strong> — flood/ebb/slack/springs/neaps, standard vs secondary ports</li>
+                <li><strong style={{ color:"var(--t1)" }}>GMDSS / Communications</strong> — NAVTEX subject indicators, DSC, SART, sea areas</li>
+                <li><strong style={{ color:"var(--t1)" }}>Watch Handover</strong> — what information must be passed</li>
+                <li><strong style={{ color:"var(--t1)" }}>Emergency Equipment</strong> — lifeboat, EPIRB, TPA, MOB manoeuvres (Williamson, Anderson, Scharnow)</li>
+                <li><strong style={{ color:"var(--t1)" }}>Stability</strong> — GM, metacentre, free surface effect, tonnage definitions</li>
+              </ul>
+
+              <button onClick={() => setShowPartAInfo(false)} style={{ width:"100%", padding:"12px", background:"var(--accent)", color:"#fff", border:"none", borderRadius:"10px", fontSize:"14px", fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>Got it</button>
+            </div>
+          </div>
+        )}
       </>
     );
   }
