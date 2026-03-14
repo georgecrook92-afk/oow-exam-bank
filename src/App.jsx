@@ -1127,7 +1127,7 @@ export default function App() {
   const [dailyQ, setDailyQ] = useState(null);
   const [showDaily, setShowDaily] = useState(true);
   const [theme, setTheme] = useState(() => {
-    try { return localStorage.getItem("oow-theme") || "dark"; } catch { return "dark"; }
+    try { return localStorage.getItem("oow-theme") || "light"; } catch { return "light"; }
   });
   const [showNotes, setShowNotes] = useState(() => typeof window !== "undefined" && window.innerWidth >= 1024);
   const [noteText, setNoteText] = useState("");
