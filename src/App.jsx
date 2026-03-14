@@ -1084,12 +1084,18 @@ const QUIZ_CONFIG = {
 };
 
 const PART_A_QUIZZES = [
-  { id:"imdg",          title:"IMDG Classes",           count:18, icon:"☢️",  desc:"Name each IMDG dangerous goods class from its number" },
-  { id:"solas",         title:"SOLAS Chapter Titles",   count:17, icon:"⚓",  desc:"Name each SOLAS chapter from its roman numeral" },
-  { id:"solas-numbers", title:"SOLAS Numbers Game",     count:17, icon:"🔢", desc:"Match each chapter title to its roman numeral" },
-  { id:"pilot",         title:"IMPA Pilot Ladder",      count:20, icon:"🪜", desc:"Multiple choice questions on pilot ladder regulations" },
-  { id:"marpol",        title:"MARPOL Annex 1 — Oil",   count:33, icon:"🛢️", desc:"Definitions, special areas, discharge conditions, and Oil Record Books" },
-  { id:"iala-buoyage",  title:"IALA Buoyage",           count:11, icon:"🚢", desc:"Identify shape, colour, light pattern and top mark for all IALA marks" },
+  // ── SOLAS
+  { id:"solas",         title:"SOLAS Chapter Titles",      count:17, icon:"⚓",  desc:"Name each SOLAS chapter from its roman numeral" },
+  { id:"solas-numbers", title:"SOLAS Numbers Game",        count:17, icon:"🔢", desc:"Match each chapter title to its roman numeral" },
+  // ── MARPOL
+  { id:"marpol",        title:"MARPOL Annex I — Oil",      count:33, icon:"🛢️", desc:"Definitions, special areas, discharge conditions, and Oil Record Books" },
+  { id:"marpol-4",      title:"MARPOL Annex IV — Sewage",  count:0,  icon:"🚽", desc:"Sewage discharge requirements and special areas", comingSoon:true },
+  { id:"marpol-5",      title:"MARPOL Annex V — Garbage",  count:0,  icon:"🗑️", desc:"Garbage management plans, placards, and discharge rules", comingSoon:true },
+  // ── Cargo & Safety
+  { id:"imdg",          title:"IMDG Classes",              count:18, icon:"☢️",  desc:"Name each IMDG dangerous goods class from its number" },
+  // ── Practical & Navigation
+  { id:"pilot",         title:"IMPA Pilot Ladder",         count:20, icon:"🪜", desc:"Multiple choice questions on pilot ladder regulations" },
+  { id:"iala-buoyage",  title:"IALA Buoyage",              count:11, icon:"🚢", desc:"Identify shape, colour, light pattern and top mark for all IALA marks", comingSoon:true },
 ];
 
 function QuizProgressWheel({ pct, size = 52 }) {
@@ -2263,16 +2269,18 @@ export default function App() {
                 const hist = quizHistory[quiz.id];
                 const histPct = hist ? Math.round((hist.correct / hist.total) * 100) : null;
                 const sel = quizSelectedId === quiz.id;
+                const cs = !!quiz.comingSoon;
                 return (
                   <div key={quiz.id} className="quiz-selection-card"
-                    onClick={() => setQuizSelectedId(quiz.id)}
-                    style={{ borderColor: sel ? "var(--accent)" : "var(--border)", boxShadow: sel ? "0 4px 20px rgba(32,192,200,0.15)" : "none", animation:`fadeIn 0.4s ease ${i*0.04}s both` }}>
-                    {sel && <div style={{ position:"absolute", top:"12px", right:"14px", width:"20px", height:"20px", borderRadius:"6px", background:"var(--accent)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"11px", color:"#fff", fontWeight:700 }}>✓</div>}
+                    onClick={() => !cs && setQuizSelectedId(quiz.id)}
+                    style={{ borderColor: cs ? "var(--border)" : sel ? "var(--accent)" : "var(--border)", boxShadow: sel ? "0 4px 20px rgba(32,192,200,0.15)" : "none", animation:`fadeIn 0.4s ease ${i*0.04}s both`, opacity: cs ? 0.6 : 1, cursor: cs ? "default" : "pointer" }}>
+                    {cs && <div style={{ position:"absolute", top:"10px", right:"12px", background:"var(--border)", color:"var(--t3)", fontSize:"9px", fontFamily:"'Space Mono',monospace", letterSpacing:"1.5px", textTransform:"uppercase", fontWeight:700, padding:"3px 7px", borderRadius:"5px" }}>Coming Soon</div>}
+                    {sel && !cs && <div style={{ position:"absolute", top:"12px", right:"14px", width:"20px", height:"20px", borderRadius:"6px", background:"var(--accent)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"11px", color:"#fff", fontWeight:700 }}>✓</div>}
                     <div className="quiz-sel-icon">{quiz.icon}</div>
-                    <div className="quiz-sel-count">{quiz.count} Questions</div>
+                    {!cs && <div className="quiz-sel-count">{quiz.count} Questions</div>}
                     <div className="quiz-sel-title">{quiz.title}</div>
                     <div className="quiz-sel-desc">{quiz.desc}</div>
-                    {histPct !== null && (
+                    {!cs && histPct !== null && (
                       <div style={{ marginTop:"10px", display:"flex", alignItems:"center", gap:"8px" }}>
                         <div style={{ flex:1, height:"3px", borderRadius:"2px", background:"var(--border)", overflow:"hidden" }}>
                           <div style={{ width:`${histPct}%`, height:"100%", background: histPct>=80?"var(--confident)":histPct>=50?"var(--review)":"#ef4444", borderRadius:"2px", transition:"width 0.3s" }}/>
