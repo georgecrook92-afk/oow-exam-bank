@@ -1885,19 +1885,19 @@ export default function App() {
     .tag-dot.review { background:var(--review); }
     /* === PART A QUIZ === */
     .quiz-page { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:32px 20px 60px; position:relative; z-index:1; }
-    .quiz-selection-grid { display:flex; flex-direction:column; gap:14px; width:100%; max-width:560px; margin-top:8px; }
-    .quiz-selection-card { background:var(--card); border:1.5px solid var(--border); border-radius:16px; padding:22px 24px; cursor:pointer; display:flex; align-items:center; gap:18px; transition:all 0.2s; }
+    .quiz-selection-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; width:100%; max-width:680px; margin-top:8px; }
+    .quiz-selection-card { background:var(--card); border:1.5px solid var(--border); border-radius:14px; padding:18px 18px 16px; cursor:pointer; display:flex; flex-direction:column; gap:0; transition:all 0.2s; position:relative; overflow:hidden; }
     .quiz-selection-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 28px rgba(32,192,200,0.12); }
-    .quiz-sel-icon { font-size:28px; flex-shrink:0; }
-    .quiz-sel-title { font-size:16px; font-weight:700; color:var(--t1); margin-bottom:4px; }
-    .quiz-sel-desc { font-size:13px; color:var(--t2); line-height:1.5; }
+    .quiz-sel-icon { font-size:24px; margin-bottom:10px; }
+    .quiz-sel-title { font-size:15px; font-weight:700; color:var(--t1); margin-bottom:5px; line-height:1.3; }
+    .quiz-sel-desc { font-size:12px; color:var(--t2); line-height:1.5; flex:1; }
     .quiz-sel-count { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); font-weight:700; margin-bottom:6px; }
     .quiz-mode-row { display:flex; gap:10px; margin-top:16px; }
     .quiz-mode-btn { flex:1; padding:9px 0; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--t2); font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
     .quiz-mode-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
     .quiz-mode-btn:not(.active):hover { border-color:var(--t3); }
     .quiz-mode-btn:disabled { opacity:0.35; cursor:not-allowed; border-style:dashed; }
-    .quiz-start-btn { margin-top:14px; width:100%; padding:14px; border-radius:12px; border:none; background:var(--accent); color:#fff; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; box-shadow:0 4px 20px rgba(32,192,200,0.3); }
+    .quiz-start-btn { padding:14px 20px; border-radius:12px; border:none; background:var(--accent); color:#fff; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; box-shadow:0 4px 20px rgba(32,192,200,0.3); }
     .quiz-start-btn:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(32,192,200,0.4); }
     .quiz-container { width:100%; max-width:560px; margin-top:8px; }
     .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
@@ -2246,55 +2246,62 @@ export default function App() {
         <style>{styles}</style>
         <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
           {themeToggle}
+          <div style={{ position:"fixed",inset:0,opacity:0.03,zIndex:0, backgroundImage:`radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0)`, backgroundSize:"32px 32px" }}/>
           <div className="dark-pattern"/><div className="light-pattern"/>
           <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme==="light"?`radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)`:`radial-gradient(ellipse at 50% -20%,rgba(32,192,200,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
           <div key={viewKey} className="quiz-page view-enter">
-            <button onClick={() => changeView("landing")} style={{ alignSelf:"flex-start", background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:"0 0 28px 0", transition:"color 0.15s" }}
+            <button onClick={() => changeView("landing")} style={{ alignSelf:"flex-start", background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:"0 0 24px 0", transition:"color 0.15s" }}
               onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
               ← PART A
             </button>
-            <div className="landing-title" style={{ marginBottom:"6px" }}>Part A Quizzes</div>
-            <h1 style={{ fontSize:"clamp(22px,4vw,32px)", fontWeight:700, marginBottom:"28px", color:"var(--t1)" }}>Choose a Quiz</h1>
+            <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"4px", textTransform:"uppercase", color:"var(--accent)", marginBottom:"8px", fontWeight:700, alignSelf:"flex-start" }}>PART A</div>
+            <h1 style={{ fontSize:"clamp(24px,4vw,36px)", fontWeight:700, marginBottom:"6px", color:"var(--t1)", alignSelf:"flex-start" }}>Quizzes</h1>
+            <p style={{ color:"var(--t2)", fontSize:"14px", marginBottom:"28px", alignSelf:"flex-start" }}>Select a quiz and choose your mode to begin.</p>
 
             <div className="quiz-selection-grid">
-              {PART_A_QUIZZES.map(quiz => {
+              {PART_A_QUIZZES.map((quiz, i) => {
                 const hist = quizHistory[quiz.id];
                 const histPct = hist ? Math.round((hist.correct / hist.total) * 100) : null;
+                const sel = quizSelectedId === quiz.id;
                 return (
-                  <div key={quiz.id} className={`quiz-selection-card${quizSelectedId===quiz.id?" active":""}`}
+                  <div key={quiz.id} className="quiz-selection-card"
                     onClick={() => setQuizSelectedId(quiz.id)}
-                    style={{ borderColor: quizSelectedId===quiz.id ? "var(--accent)" : "var(--border)", boxShadow: quizSelectedId===quiz.id ? "0 4px 20px rgba(32,192,200,0.15)" : "none" }}>
+                    style={{ borderColor: sel ? "var(--accent)" : "var(--border)", boxShadow: sel ? "0 4px 20px rgba(32,192,200,0.15)" : "none", animation:`fadeIn 0.4s ease ${i*0.04}s both` }}>
+                    {sel && <div style={{ position:"absolute", top:"12px", right:"14px", width:"20px", height:"20px", borderRadius:"6px", background:"var(--accent)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"11px", color:"#fff", fontWeight:700 }}>✓</div>}
                     <div className="quiz-sel-icon">{quiz.icon}</div>
-                    <div style={{ flex:1 }}>
-                      <div className="quiz-sel-count">{quiz.count} Questions</div>
-                      <div className="quiz-sel-title">{quiz.title}</div>
-                      <div className="quiz-sel-desc">{quiz.desc}</div>
-                    </div>
-                    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"4px", minWidth:"52px" }}>
-                      {histPct !== null && <QuizProgressWheel pct={histPct} />}
-                      {quizSelectedId === quiz.id && (
-                        <span style={{ color:"var(--accent)", fontSize:"16px", lineHeight:1 }}>✓</span>
-                      )}
-                    </div>
+                    <div className="quiz-sel-count">{quiz.count} Questions</div>
+                    <div className="quiz-sel-title">{quiz.title}</div>
+                    <div className="quiz-sel-desc">{quiz.desc}</div>
+                    {histPct !== null && (
+                      <div style={{ marginTop:"10px", display:"flex", alignItems:"center", gap:"8px" }}>
+                        <div style={{ flex:1, height:"3px", borderRadius:"2px", background:"var(--border)", overflow:"hidden" }}>
+                          <div style={{ width:`${histPct}%`, height:"100%", background: histPct>=80?"var(--confident)":histPct>=50?"var(--review)":"#ef4444", borderRadius:"2px", transition:"width 0.3s" }}/>
+                        </div>
+                        <span style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", color:"var(--t3)", whiteSpace:"nowrap" }}>{histPct}%</span>
+                      </div>
+                    )}
                   </div>
                 );
               })}
 
-              <div style={{ background:"var(--card)", border:"1.5px solid var(--border)", borderRadius:"14px", padding:"18px 20px" }}>
-                <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700, marginBottom:"10px" }}>Mode</div>
-                <div className="quiz-mode-row">
-                  <button className={`quiz-mode-btn${quizSelectedMode==="ordered" && quizSelectedId!=="solas-numbers"?" active":""}`}
-                    onClick={() => setQuizSelectedMode("ordered")}
-                    disabled={quizSelectedId==="solas-numbers"}
-                    title={quizSelectedId==="solas-numbers" ? "This quiz is always randomised" : ""}>In Order</button>
-                  <button className={`quiz-mode-btn${quizSelectedMode==="random" || quizSelectedId==="solas-numbers"?" active":""}`}
-                    onClick={() => setQuizSelectedMode("random")}>Random</button>
+              {/* Mode + Start — span full grid width */}
+              <div style={{ gridColumn:"1/-1", display:"flex", gap:"12px", alignItems:"stretch", flexWrap:"wrap" }}>
+                <div style={{ background:"var(--card)", border:"1.5px solid var(--border)", borderRadius:"12px", padding:"14px 18px", flex:"1", minWidth:"200px" }}>
+                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700, marginBottom:"10px" }}>Mode</div>
+                  <div className="quiz-mode-row" style={{ marginTop:0 }}>
+                    <button className={`quiz-mode-btn${quizSelectedMode==="ordered" && quizSelectedId!=="solas-numbers"?" active":""}`}
+                      onClick={() => setQuizSelectedMode("ordered")}
+                      disabled={quizSelectedId==="solas-numbers"}
+                      title={quizSelectedId==="solas-numbers" ? "This quiz is always randomised" : ""}>In Order</button>
+                    <button className={`quiz-mode-btn${quizSelectedMode==="random" || quizSelectedId==="solas-numbers"?" active":""}`}
+                      onClick={() => setQuizSelectedMode("random")}>Random</button>
+                  </div>
                 </div>
+                <button className="quiz-start-btn" style={{ flex:"2", minWidth:"160px", margin:0 }}
+                  onClick={() => startQuiz(quizSelectedId, quizSelectedId==="solas-numbers" ? "random" : quizSelectedMode)}>
+                  Start Quiz →
+                </button>
               </div>
-
-              <button className="quiz-start-btn" onClick={() => startQuiz(quizSelectedId, quizSelectedId==="solas-numbers" ? "random" : quizSelectedMode)}>
-                Start Quiz →
-              </button>
             </div>
           </div>
         </div>
