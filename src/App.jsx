@@ -1674,49 +1674,49 @@ export default function App() {
 
   const marpolSelectMC = useCallback((opt) => {
     if (marpolFeedback) return;
-    const item = MARPOL_ANNEX1[quizOrder[quizPos]];
+    const item = getQuizData(quizId)[quizOrder[quizPos]];
     const isCorrect = opt === item.correct;
     marpolFeedbackTimeRef.current = Date.now();
     setMarpolSelected([opt]);
     setMarpolFeedback(isCorrect ? "correct" : "incorrect");
     marpolRecordScore(isCorrect);
-  }, [marpolFeedback, quizOrder, quizPos]);
+  }, [marpolFeedback, quizId, quizOrder, quizPos]);
 
   const marpolSelectTF = useCallback((label, val) => {
     if (marpolFeedback) return;
-    const item = MARPOL_ANNEX1[quizOrder[quizPos]];
+    const item = getQuizData(quizId)[quizOrder[quizPos]];
     const isCorrect = val === item.correct;
     marpolFeedbackTimeRef.current = Date.now();
     setMarpolSelected([label]);
     setMarpolFeedback(isCorrect ? "correct" : "incorrect");
     marpolRecordScore(isCorrect);
-  }, [marpolFeedback, quizOrder, quizPos]);
+  }, [marpolFeedback, quizId, quizOrder, quizPos]);
 
   const marpolSubmitMulti = useCallback(() => {
-    const item = MARPOL_ANNEX1[quizOrder[quizPos]];
+    const item = getQuizData(quizId)[quizOrder[quizPos]];
     const cSet = new Set(item.correct);
     const isCorrect = marpolSelected.length === item.correct.length && marpolSelected.every(s => cSet.has(s));
     marpolFeedbackTimeRef.current = Date.now();
     setMarpolFeedback(isCorrect ? "correct" : "incorrect");
     marpolRecordScore(isCorrect);
-  }, [marpolSelected, quizOrder, quizPos]);
+  }, [marpolSelected, quizId, quizOrder, quizPos]);
 
   const marpolSubmitSelectAll = useCallback(() => {
-    const item = MARPOL_ANNEX1[quizOrder[quizPos]];
+    const item = getQuizData(quizId)[quizOrder[quizPos]];
     const cSet = new Set(item.correct);
     const isCorrect = marpolSelected.length === item.correct.length && marpolSelected.every(s => cSet.has(s));
     marpolFeedbackTimeRef.current = Date.now();
     setMarpolFeedback(isCorrect ? "correct" : "incorrect");
     marpolRecordScore(isCorrect);
-  }, [marpolSelected, quizOrder, quizPos]);
+  }, [marpolSelected, quizId, quizOrder, quizPos]);
 
   const marpolSubmitSort = useCallback(() => {
-    const item = MARPOL_ANNEX1[quizOrder[quizPos]];
+    const item = getQuizData(quizId)[quizOrder[quizPos]];
     const isCorrect = item.items.every((it, i) => marpolSortState[i] === it.cat);
     marpolFeedbackTimeRef.current = Date.now();
     setMarpolFeedback(isCorrect ? "correct" : "incorrect");
     marpolRecordScore(isCorrect);
-  }, [marpolSortState, quizOrder, quizPos]);
+  }, [marpolSortState, quizId, quizOrder, quizPos]);
 
   const toggleCat = (cat) =>
     setSelectedCats((p) => p.includes(cat) ? p.filter((c) => c !== cat) : [...p, cat]);
