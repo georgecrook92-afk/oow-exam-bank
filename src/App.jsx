@@ -1041,12 +1041,36 @@ const MARPOL_ANNEX1 = [
   });
 })();
 
+// ─── IALA BUOYAGE ─────────────────────────────────────────────────────────────
+const IALA_OPTIONS = {
+  shape:        ["Can / Cylindrical","Conical","Spherical","Pillar","Spar","Any shape"],
+  colour:       ["Red","Green","Yellow","Black over Yellow","Yellow over Black","Black–Yellow–Black bands","Yellow–Black–Yellow bands","Black with Red band(s)","Red & White vertical stripes"],
+  lightColour:  ["Red","Green","White","Yellow"],
+  lightPattern: ["Any rhythm","Q (continuous)","VQ (continuous)","Q(3) 10s","VQ(3) 5s","Q(6) + LFl 15s","VQ(6) + LFl 10s","Q(9) 15s","VQ(9) 10s","Fl(2)","Fl(2+1)","Iso","Oc","LFl 10s","Mo(A)"],
+  topMark:      ["Single cylinder","Single cone (point up)","2 cones — points up ▲▲","2 cones — points down ▼▼","2 cones — base to base ◆","2 cones — point to point ◇","2 black spheres","Single red sphere","Yellow X (saltire)"],
+};
+const IALA_CAT_LABELS = { shape:"Shape", colour:"Body Colour", lightColour:"Light Colour", lightPattern:"Light Pattern", topMark:"Top Mark" };
+const IALA_BUOYAGE = [
+  { id:"iala1",  q:"IALA Region A — Port Lateral Mark",      correct:{ shape:["Can / Cylindrical"], colour:["Red"],                       lightColour:["Red"],   lightPattern:["Any rhythm"],                              topMark:["Single cylinder"]             } },
+  { id:"iala2",  q:"IALA Region A — Starboard Lateral Mark", correct:{ shape:["Conical"],           colour:["Green"],                     lightColour:["Green"], lightPattern:["Any rhythm"],                              topMark:["Single cone (point up)"]      } },
+  { id:"iala3",  q:"IALA Region B — Port Lateral Mark",      correct:{ shape:["Can / Cylindrical"], colour:["Green"],                     lightColour:["Green"], lightPattern:["Any rhythm"],                              topMark:["Single cylinder"]             } },
+  { id:"iala4",  q:"IALA Region B — Starboard Lateral Mark", correct:{ shape:["Conical"],           colour:["Red"],                       lightColour:["Red"],   lightPattern:["Any rhythm"],                              topMark:["Single cone (point up)"]      } },
+  { id:"iala5",  q:"North Cardinal Mark",                    correct:{ shape:["Pillar","Spar"],      colour:["Black over Yellow"],         lightColour:["White"], lightPattern:["Q (continuous)","VQ (continuous)"],         topMark:["2 cones — points up ▲▲"]     } },
+  { id:"iala6",  q:"South Cardinal Mark",                    correct:{ shape:["Pillar","Spar"],      colour:["Yellow over Black"],         lightColour:["White"], lightPattern:["Q(6) + LFl 15s","VQ(6) + LFl 10s"],       topMark:["2 cones — points down ▼▼"]   } },
+  { id:"iala7",  q:"East Cardinal Mark",                     correct:{ shape:["Pillar","Spar"],      colour:["Black–Yellow–Black bands"],  lightColour:["White"], lightPattern:["Q(3) 10s","VQ(3) 5s"],                    topMark:["2 cones — base to base ◆"]   } },
+  { id:"iala8",  q:"West Cardinal Mark",                     correct:{ shape:["Pillar","Spar"],      colour:["Yellow–Black–Yellow bands"], lightColour:["White"], lightPattern:["Q(9) 15s","VQ(9) 10s"],                   topMark:["2 cones — point to point ◇"] } },
+  { id:"iala9",  q:"Isolated Danger Mark",                   correct:{ shape:["Pillar","Spar"],      colour:["Black with Red band(s)"],    lightColour:["White"], lightPattern:["Fl(2)"],                                   topMark:["2 black spheres"]             } },
+  { id:"iala10", q:"Safe Water Mark",                        correct:{ shape:["Spherical","Pillar","Spar"], colour:["Red & White vertical stripes"], lightColour:["White"], lightPattern:["Iso","Oc","LFl 10s","Mo(A)"], topMark:["Single red sphere"]      } },
+  { id:"iala11", q:"Special Mark",                           correct:{ shape:["Any shape"],          colour:["Yellow"],                    lightColour:["Yellow"], lightPattern:["Any rhythm"],                             topMark:["Yellow X (saltire)"]          } },
+];
+
 function getQuizData(id) {
   if (id === "imdg")          return IMDG_CLASSES;
   if (id === "solas")         return SOLAS_CHAPTERS;
   if (id === "solas-numbers") return SOLAS_NUMBERS_QUIZ;
   if (id === "pilot")         return PILOT_LADDER_QUIZ;
   if (id === "marpol")        return MARPOL_ANNEX1;
+  if (id === "iala-buoyage")  return IALA_BUOYAGE;
   return [];
 }
 
@@ -1056,6 +1080,7 @@ const QUIZ_CONFIG = {
   "solas-numbers":{ label:"SOLAS CHAPTER",  question:"",                              placeholder:"",                        backLabel:"← SOLAS",  doneText:"All chapters matched!",     type:"mc"     },
   pilot:          { label:"PILOT LADDER",   question:"",                              placeholder:"",                        backLabel:"← PILOT",  doneText:"All questions nailed!",     type:"mc"     },
   marpol:         { label:"MARPOL ANNEX 1", question:"",                              placeholder:"",                        backLabel:"← MARPOL", doneText:"MARPOL Annex 1 complete!",  type:"marpol" },
+  "iala-buoyage": { label:"IALA BUOYAGE",   question:"",                              placeholder:"",                        backLabel:"← Buoyage", doneText:"IALA Buoyage complete!",    type:"buoy"   },
 };
 
 const PART_A_QUIZZES = [
@@ -1064,6 +1089,7 @@ const PART_A_QUIZZES = [
   { id:"solas-numbers", title:"SOLAS Numbers Game",     count:17, icon:"🔢", desc:"Match each chapter title to its roman numeral" },
   { id:"pilot",         title:"IMPA Pilot Ladder",      count:20, icon:"🪜", desc:"Multiple choice questions on pilot ladder regulations" },
   { id:"marpol",        title:"MARPOL Annex 1 — Oil",   count:33, icon:"🛢️", desc:"Definitions, special areas, discharge conditions, and Oil Record Books" },
+  { id:"iala-buoyage",  title:"IALA Buoyage",           count:11, icon:"🚢", desc:"Identify shape, colour, light pattern and top mark for all IALA marks" },
 ];
 
 function QuizProgressWheel({ pct, size = 52 }) {
@@ -1149,6 +1175,12 @@ export default function App() {
   });
   const [showPoster, setShowPoster] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  // IALA Buoyage state
+  const EMPTY_BUOY_SEL = { shape:[], colour:[], lightColour:[], lightPattern:[], topMark:[] };
+  const [buoySelected, setBuoySelected] = useState(EMPTY_BUOY_SEL);
+  const [buoyFeedback, setBuoyFeedback] = useState(null);
+  const [buoyScore, setBuoyScore] = useState({ correct:0, total:0 });
+  const buoyScoreRef = useRef({ correct:0, total:0 });
   // MARPOL-specific state
   const [marpolFlipped, setMarpolFlipped] = useState(false);
   const [marpolSelected, setMarpolSelected] = useState([]);
@@ -1257,6 +1289,10 @@ export default function App() {
     setQuizScore({ correct:0, total:0 });
     setQuizDone(false);
     setShowPoster(false);
+    setBuoySelected({ shape:[], colour:[], lightColour:[], lightPattern:[], topMark:[] });
+    setBuoyFeedback(null);
+    setBuoyScore({ correct:0, total:0 });
+    buoyScoreRef.current = { correct:0, total:0 };
     setMarpolFlipped(false);
     setMarpolSelected([]);
     setMarpolSortState({});
@@ -1338,6 +1374,41 @@ export default function App() {
     setMarpolSelected([]);
     setMarpolSortState({});
     setMarpolFeedback(null);
+  }, [quizPos, quizOrder]);
+
+  // ── IALA Buoyage handlers ──
+  const buoyToggle = useCallback((cat, opt) => {
+    if (buoyFeedback) return;
+    setBuoySelected(p => ({ ...p, [cat]: p[cat].includes(opt) ? p[cat].filter(x => x !== opt) : [...p[cat], opt] }));
+  }, [buoyFeedback]);
+
+  const buoySubmit = useCallback(() => {
+    const item = IALA_BUOYAGE[quizOrder[quizPos]];
+    const isCorrect = Object.keys(item.correct).every(cat => {
+      const cSet = new Set(item.correct[cat]);
+      const sArr = buoySelected[cat] || [];
+      return sArr.length === cSet.size && sArr.every(x => cSet.has(x));
+    });
+    buoyScoreRef.current = { correct: buoyScoreRef.current.correct + (isCorrect ? 1 : 0), total: buoyScoreRef.current.total + 1 };
+    setBuoyScore({ ...buoyScoreRef.current });
+    setBuoyFeedback(isCorrect ? "correct" : "incorrect");
+  }, [buoySelected, quizOrder, quizPos]);
+
+  const buoyNext = useCallback(() => {
+    const nextPos = quizPos + 1;
+    if (nextPos >= quizOrder.length) {
+      setQuizDone(true);
+      setQuizHistory(prev => {
+        const sc = buoyScoreRef.current;
+        const updated = { ...prev, "iala-buoyage": { correct: sc.correct, total: sc.total } };
+        try { localStorage.setItem("oow-quiz-history", JSON.stringify(updated)); } catch {}
+        return updated;
+      });
+      return;
+    }
+    setQuizPos(nextPos);
+    setBuoySelected({ shape:[], colour:[], lightColour:[], lightPattern:[], topMark:[] });
+    setBuoyFeedback(null);
   }, [quizPos, quizOrder]);
 
   const marpolSelectMC = useCallback((opt) => {
@@ -2224,6 +2295,125 @@ export default function App() {
               <button className="quiz-start-btn" onClick={() => startQuiz(quizSelectedId, quizSelectedId==="solas-numbers" ? "random" : quizSelectedMode)}>
                 Start Quiz →
               </button>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // PART A — IALA Buoyage quiz
+  if (view === "part-a-quiz" && quizId === "iala-buoyage") {
+    const item   = quizDone ? null : IALA_BUOYAGE[quizOrder[quizPos]];
+    const pct    = quizDone ? 100 : Math.round((quizPos / quizOrder.length) * 100);
+    const CATS   = ["shape","colour","lightColour","lightPattern","topMark"];
+    const accentBtn = { padding:"12px 20px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
+    const outlineBtn = { padding:"12px 20px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
+
+    // All 5 categories must have ≥1 selection to enable submit
+    const canSubmit = !buoyFeedback && CATS.every(c => (buoySelected[c] || []).length > 0);
+
+    const chipStyle = (cat, opt) => {
+      const sel = (buoySelected[cat] || []).includes(opt);
+      const isCorrectOpt = item && item.correct[cat].includes(opt);
+      if (!buoyFeedback) {
+        return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:500, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", transition:"all 0.12s", border: sel ? "1.5px solid var(--accent)" : "1.5px solid var(--border)", background: sel ? "color-mix(in srgb, var(--accent) 12%, transparent)" : "var(--card)", color: sel ? "var(--accent)" : "var(--t1)" };
+      }
+      if (isCorrectOpt && sel)  return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:600, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid #22c55e", background:"#22c55e15", color:"#22c55e" };
+      if (isCorrectOpt && !sel) return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:600, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid #f59e0b", background:"#f59e0b15", color:"#f59e0b" };
+      if (!isCorrectOpt && sel) return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:600, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid #ef4444", background:"#ef444415", color:"#ef4444" };
+      return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:400, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t3)", opacity:0.5 };
+    };
+
+    const catLabelColor = (cat) => {
+      if (!buoyFeedback || !item) return "var(--t3)";
+      const cSet = new Set(item.correct[cat]);
+      const sArr = buoySelected[cat] || [];
+      return sArr.length === cSet.size && sArr.every(x => cSet.has(x)) ? "#22c55e" : "#ef4444";
+    };
+
+    return (
+      <>
+        <style>{styles}</style>
+        <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
+          {themeToggle}
+          <div className="dark-pattern"/><div className="light-pattern"/>
+          <div key={viewKey} className="quiz-page view-enter" style={{ paddingTop:"40px" }}>
+            <div className="quiz-container">
+              <div className="quiz-header">
+                <button onClick={() => changeView("part-a")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
+                  onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+                  ← Buoyage
+                </button>
+                {!quizDone && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
+                <div className="quiz-score-label">{buoyScore.correct} / {buoyScore.total} correct</div>
+              </div>
+              {!quizDone && <div className="quiz-progress-bar"><div className="quiz-progress-fill" style={{ width:`${pct}%` }}/></div>}
+
+              {quizDone ? (
+                <div className="quiz-done-card" style={{ animation:"examSetupEnter 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
+                  <div style={{ fontSize:"36px", marginBottom:"8px" }}>{buoyScore.correct === buoyScore.total ? "🎉" : buoyScore.correct >= buoyScore.total * 0.7 ? "👍" : "📖"}</div>
+                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--t3)", marginBottom:"4px" }}>Final Score</div>
+                  <div className="quiz-done-score">{buoyScore.correct}<span style={{ fontSize:"0.5em", color:"var(--t2)" }}>/{buoyScore.total}</span></div>
+                  <div style={{ color:"var(--t2)", marginBottom:"28px", fontSize:"14px" }}>
+                    {buoyScore.correct === buoyScore.total ? "Perfect — all marks identified!" : `${Math.round((buoyScore.correct/buoyScore.total)*100)}% correct`}
+                  </div>
+                  <div style={{ display:"flex", gap:"10px" }}>
+                    <button onClick={() => startQuiz("iala-buoyage","ordered")} style={{ ...accentBtn, flex:1 }}>Try Again</button>
+                    <button onClick={() => startQuiz("iala-buoyage","random")}  style={{ ...outlineBtn, flex:1 }}>Try Random</button>
+                  </div>
+                  <button onClick={() => changeView("part-a")} style={{ marginTop:"10px", width:"100%", padding:"10px", borderRadius:"10px", border:"none", background:"none", color:"var(--t3)", fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>← Back to Quizzes</button>
+                </div>
+              ) : (
+                <>
+                  <div className="quiz-question-card mc-question-card" key={quizPos}>
+                    <div className="quiz-class-label">IALA BUOYAGE</div>
+                    <div className="mc-question-text" style={{ fontSize:"20px", fontWeight:700 }}>{item.q}</div>
+                    <div style={{ fontSize:"12px", color:"var(--t3)", marginTop:"6px" }}>Select all correct characteristics in each category</div>
+                  </div>
+
+                  {/* Category grids */}
+                  {CATS.map(cat => (
+                    <div key={cat} style={{ marginBottom:"14px" }}>
+                      <div style={{ fontSize:"11px", fontFamily:"'Space Mono',monospace", letterSpacing:"1.5px", textTransform:"uppercase", color: catLabelColor(cat), marginBottom:"8px", fontWeight:600, transition:"color 0.2s" }}>
+                        {IALA_CAT_LABELS[cat]}
+                        {buoyFeedback && (() => {
+                          const cSet = new Set(item.correct[cat]);
+                          const sArr = buoySelected[cat] || [];
+                          const ok = sArr.length === cSet.size && sArr.every(x => cSet.has(x));
+                          return <span style={{ marginLeft:"8px" }}>{ok ? "✓" : "✗"}</span>;
+                        })()}
+                      </div>
+                      <div style={{ display:"flex", flexWrap:"wrap", gap:"7px" }}>
+                        {IALA_OPTIONS[cat].map(opt => (
+                          <button key={opt} style={chipStyle(cat, opt)} onClick={() => buoyToggle(cat, opt)} disabled={!!buoyFeedback}>
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                  {!buoyFeedback && (
+                    <button onClick={buoySubmit} disabled={!canSubmit}
+                      style={{ marginTop:"8px", ...accentBtn, width:"100%", opacity: canSubmit ? 1 : 0.4 }}>
+                      {canSubmit ? "Check Answers" : "Select at least one option in each category"}
+                    </button>
+                  )}
+
+                  {buoyFeedback && (
+                    <>
+                      <div className={`quiz-feedback ${buoyFeedback}`}>
+                        <div className="quiz-feedback-icon">{buoyFeedback === "correct" ? "✅" : "❌"}</div>
+                        <div style={{ fontWeight:600, color: buoyFeedback === "correct" ? "var(--confident)" : "#ef4444" }}>
+                          {buoyFeedback === "correct" ? "Correct!" : "Not quite — orange = missed, red = wrong selection"}
+                        </div>
+                      </div>
+                      <button className="quiz-next-btn" onClick={buoyNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
