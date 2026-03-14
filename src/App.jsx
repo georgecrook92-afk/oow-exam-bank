@@ -1983,7 +1983,7 @@ export default function App() {
     .tag-dot.review { background:var(--review); }
     /* === PART A QUIZ === */
     .quiz-page { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:32px 20px 60px; position:relative; z-index:1; }
-    .quiz-selection-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; width:100%; max-width:680px; margin-top:8px; }
+    .quiz-selection-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; width:100%; margin-top:8px; }
     .quiz-selection-card { background:var(--card); border:1.5px solid var(--border); border-radius:14px; padding:18px 18px 16px; cursor:pointer; display:flex; flex-direction:column; gap:0; transition:all 0.2s; position:relative; overflow:hidden; }
     .quiz-selection-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 28px rgba(32,192,200,0.12); }
     .quiz-sel-icon { font-size:24px; margin-bottom:10px; }
