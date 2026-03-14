@@ -2356,13 +2356,13 @@ export default function App() {
             <h1 style={{ fontSize:"clamp(24px,4vw,36px)", fontWeight:700, marginBottom:"6px", color:"var(--t1)", alignSelf:"flex-start" }}>Quizzes</h1>
             <p style={{ color:"var(--t2)", fontSize:"14px", marginBottom:"20px", alignSelf:"flex-start" }}>Select a quiz and choose your mode to begin.</p>
 
-            {/* Hero controls row */}
-            <div style={{ alignSelf:"stretch", display:"flex", gap:"12px", alignItems:"stretch", flexWrap:"wrap", marginBottom:"28px" }}>
-              <button onClick={() => setShowPartAInfo(true)} style={{ background:"var(--accent)", color:"#fff", border:"none", borderRadius:"12px", padding:"11px 20px", fontSize:"14px", fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", gap:"8px", boxShadow:"0 4px 16px rgba(32,192,200,0.3)", letterSpacing:"0.2px", whiteSpace:"nowrap" }}>
-                <span style={{ fontSize:"16px" }}>❓</span> What is Part A?
-              </button>
-              <div style={{ background:"var(--card)", border:"1.5px solid var(--border)", borderRadius:"12px", padding:"10px 16px", display:"flex", alignItems:"center", gap:"8px" }}>
-                <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700, whiteSpace:"nowrap" }}>Mode</div>
+            {/* Hero controls */}
+            <button onClick={() => setShowPartAInfo(true)} style={{ alignSelf:"flex-start", marginBottom:"14px", background:"var(--accent)", color:"#fff", border:"none", borderRadius:"12px", padding:"11px 20px", fontSize:"14px", fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", gap:"8px", boxShadow:"0 4px 16px rgba(32,192,200,0.3)" }}>
+              <span style={{ fontSize:"16px" }}>❓</span> What is Part A?
+            </button>
+            <div style={{ alignSelf:"flex-start", display:"flex", gap:"10px", alignItems:"center", marginBottom:"28px", flexWrap:"wrap" }}>
+              <div style={{ background:"var(--card)", border:"1.5px solid var(--border)", borderRadius:"12px", padding:"10px 16px", display:"flex", alignItems:"center", gap:"10px" }}>
+                <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700 }}>Mode</div>
                 <div className="quiz-mode-row" style={{ marginTop:0 }}>
                   <button className={`quiz-mode-btn${quizSelectedMode==="ordered" && quizSelectedId!=="solas-numbers" && quizSelectedId!=="flags"?" active":""}`}
                     onClick={() => setQuizSelectedMode("ordered")}
@@ -2372,7 +2372,7 @@ export default function App() {
                     onClick={() => setQuizSelectedMode("random")}>Random</button>
                 </div>
               </div>
-              <button className="quiz-start-btn" style={{ flex:1, minWidth:"140px", margin:0 }}
+              <button className="quiz-start-btn" style={{ margin:0 }}
                 onClick={() => startQuiz(quizSelectedId, (quizSelectedId==="solas-numbers" || quizSelectedId==="flags") ? "random" : quizSelectedMode)}>
                 Start Quiz →
               </button>
