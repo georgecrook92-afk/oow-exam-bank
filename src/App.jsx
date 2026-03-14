@@ -2357,22 +2357,24 @@ export default function App() {
             <p style={{ color:"var(--t2)", fontSize:"14px", marginBottom:"20px", alignSelf:"flex-start" }}>Select a quiz and choose your mode to begin.</p>
 
             {/* Hero controls */}
-            <button onClick={() => setShowPartAInfo(true)} style={{ alignSelf:"flex-start", marginBottom:"14px", background:"var(--accent)", color:"#fff", border:"none", borderRadius:"12px", padding:"11px 20px", fontSize:"14px", fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", gap:"8px", boxShadow:"0 4px 16px rgba(32,192,200,0.3)" }}>
-              <span style={{ fontSize:"16px" }}>❓</span> What is Part A?
+            <button onClick={() => setShowPartAInfo(true)} style={{ alignSelf:"center", marginBottom:"20px", background:"var(--accent)", color:"#fff", border:"none", borderRadius:"12px", padding:"13px 24px", fontSize:"15px", fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", gap:"8px", boxShadow:"0 4px 16px rgba(32,192,200,0.3)" }}>
+              <span style={{ fontSize:"17px" }}>❓</span> What is Part A?
             </button>
-            <div style={{ alignSelf:"flex-start", display:"flex", gap:"10px", alignItems:"center", marginBottom:"28px", flexWrap:"wrap" }}>
-              <div style={{ background:"var(--card)", border:"1.5px solid var(--border)", borderRadius:"12px", padding:"10px 16px", display:"flex", alignItems:"center", gap:"10px" }}>
+            <div style={{ alignSelf:"center", display:"flex", gap:"12px", alignItems:"center", marginBottom:"32px", flexWrap:"wrap", justifyContent:"center" }}>
+              <div style={{ background:"var(--card)", border:"1.5px solid var(--border)", borderRadius:"14px", padding:"13px 20px", display:"flex", alignItems:"center", gap:"12px" }}>
                 <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700 }}>Mode</div>
                 <div className="quiz-mode-row" style={{ marginTop:0 }}>
                   <button className={`quiz-mode-btn${quizSelectedMode==="ordered" && quizSelectedId!=="solas-numbers" && quizSelectedId!=="flags"?" active":""}`}
                     onClick={() => setQuizSelectedMode("ordered")}
                     disabled={quizSelectedId==="solas-numbers" || quizSelectedId==="flags"}
+                    style={{ padding:"10px 18px", fontSize:"14px" }}
                     title={quizSelectedId==="solas-numbers" || quizSelectedId==="flags" ? "This quiz is always randomised" : ""}>In Order</button>
                   <button className={`quiz-mode-btn${quizSelectedMode==="random" || quizSelectedId==="solas-numbers" || quizSelectedId==="flags"?" active":""}`}
-                    onClick={() => setQuizSelectedMode("random")}>Random</button>
+                    onClick={() => setQuizSelectedMode("random")}
+                    style={{ padding:"10px 18px", fontSize:"14px" }}>Random</button>
                 </div>
               </div>
-              <button className="quiz-start-btn" style={{ margin:0 }}
+              <button className="quiz-start-btn" style={{ margin:0, padding:"16px 32px", fontSize:"16px" }}
                 onClick={() => startQuiz(quizSelectedId, (quizSelectedId==="solas-numbers" || quizSelectedId==="flags") ? "random" : quizSelectedMode)}>
                 Start Quiz →
               </button>
