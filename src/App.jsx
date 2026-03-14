@@ -1071,6 +1071,7 @@ function getQuizData(id) {
   if (id === "pilot")         return PILOT_LADDER_QUIZ;
   if (id === "marpol")        return MARPOL_ANNEX1;
   if (id === "iala-buoyage")  return IALA_BUOYAGE;
+  if (id === "flags")         return FLAG_DATA;
   return [];
 }
 
@@ -1081,7 +1082,38 @@ const QUIZ_CONFIG = {
   pilot:          { label:"PILOT LADDER",   question:"",                              placeholder:"",                        backLabel:"← PILOT",  doneText:"All questions nailed!",     type:"mc"     },
   marpol:         { label:"MARPOL ANNEX 1", question:"",                              placeholder:"",                        backLabel:"← MARPOL", doneText:"MARPOL Annex 1 complete!",  type:"marpol" },
   "iala-buoyage": { label:"IALA BUOYAGE",   question:"",                              placeholder:"",                        backLabel:"← Buoyage", doneText:"IALA Buoyage complete!",    type:"buoy"   },
+  "flags":        { label:"CODE FLAGS",     question:"",                              placeholder:"",                        backLabel:"← Flags",   doneText:"All flags complete!",       type:"flags"  },
 };
+
+// ── Maritime Code Flags ──────────────────────────────────────────────────────
+const FLAG_DATA = [
+  { id:"alpha",    letter:"A", name:"Alpha",    img:"/quiz-images/flags/01_Alpha.png",    meaning:"I have a diver down; keep well clear at slow speed." },
+  { id:"bravo",    letter:"B", name:"Bravo",    img:"/quiz-images/flags/02_Bravo.png",    meaning:"I am taking in, discharging, or carrying dangerous cargo." },
+  { id:"charlie",  letter:"C", name:"Charlie",  img:"/quiz-images/flags/03_Charlie.png",  meaning:'"Yes" or "Affirmative".' },
+  { id:"delta",    letter:"D", name:"Delta",    img:"/quiz-images/flags/04_Delta.png",    meaning:"Keep clear of me; I am manoeuvring with difficulty." },
+  { id:"echo",     letter:"E", name:"Echo",     img:"/quiz-images/flags/05_Echo.png",     meaning:"I am altering my course to starboard." },
+  { id:"foxtrot",  letter:"F", name:"Foxtrot",  img:"/quiz-images/flags/06_Foxtrot.png",  meaning:"I am disabled; communicate with me." },
+  { id:"golf",     letter:"G", name:"Golf",     img:"/quiz-images/flags/07_Golf.png",     meaning:"I require a pilot." },
+  { id:"hotel",    letter:"H", name:"Hotel",    img:"/quiz-images/flags/08_Hotel.png",    meaning:"I have a pilot on board." },
+  { id:"india",    letter:"I", name:"India",    img:"/quiz-images/flags/09_India.png",    meaning:"I am altering my course to port." },
+  { id:"juliet",   letter:"J", name:"Juliet",   img:"/quiz-images/flags/10_Juliet.png",   meaning:"I am on fire and have dangerous cargo; keep clear." },
+  { id:"kilo",     letter:"K", name:"Kilo",     img:"/quiz-images/flags/11_Kilo.png",     meaning:"I wish to communicate with you." },
+  { id:"lima",     letter:"L", name:"Lima",     img:"/quiz-images/flags/12_Lima.png",     meaning:"You should stop your vessel immediately." },
+  { id:"mike",     letter:"M", name:"Mike",     img:"/quiz-images/flags/13_Mike.png",     meaning:"My vessel is stopped and making no way." },
+  { id:"november", letter:"N", name:"November", img:"/quiz-images/flags/14_November.png", meaning:'"No" or "Negative".' },
+  { id:"oscar",    letter:"O", name:"Oscar",    img:"/quiz-images/flags/15_Oscar.png",    meaning:"Man overboard." },
+  { id:"papa",     letter:"P", name:"Papa",     img:"/quiz-images/flags/16_Papa.png",     meaning:"All personnel return to ship; about to proceed to sea." },
+  { id:"quebec",   letter:"Q", name:"Quebec",   img:"/quiz-images/flags/17_Quebec.png",   meaning:"Ship meets health regulations; request clearance into port." },
+  { id:"romeo",    letter:"R", name:"Romeo",    img:"/quiz-images/flags/18_Romeo.png",    meaning:"Preparing to replenish at sea." },
+  { id:"sierra",   letter:"S", name:"Sierra",   img:"/quiz-images/flags/19_Sierra.png",   meaning:"Moving astern." },
+  { id:"tango",    letter:"T", name:"Tango",    img:"/quiz-images/flags/20_Tango.png",    meaning:"Keep clear; engaged in trawling." },
+  { id:"uniform",  letter:"U", name:"Uniform",  img:"/quiz-images/flags/21_Uniform.png",  meaning:"You are running into danger." },
+  { id:"victor",   letter:"V", name:"Victor",   img:"/quiz-images/flags/22_Victor.png",   meaning:"I require assistance." },
+  { id:"whiskey",  letter:"W", name:"Whiskey",  img:"/quiz-images/flags/23_Whiskey.png",  meaning:"I require medical assistance." },
+  { id:"xray",     letter:"X", name:"X-ray",    img:"/quiz-images/flags/24_Xray.png",     meaning:"Stop carrying out your intentions and watch for my signals." },
+  { id:"yankee",   letter:"Y", name:"Yankee",   img:"/quiz-images/flags/25_Yankee.png",   meaning:"I am dragging my anchor." },
+  { id:"zulu",     letter:"Z", name:"Zulu",     img:"/quiz-images/flags/26_Zulu.png",     meaning:"I require a tug." },
+];
 
 const PART_A_QUIZZES = [
   // ── SOLAS
@@ -1096,6 +1128,8 @@ const PART_A_QUIZZES = [
   // ── Practical & Navigation
   { id:"pilot",         title:"IMPA Pilot Ladder",         count:20, icon:"🪜", desc:"Multiple choice questions on pilot ladder regulations" },
   { id:"iala-buoyage",  title:"IALA Buoyage",              count:11, icon:"🚢", desc:"Identify shape, colour, light pattern and top mark for all IALA marks", comingSoon:true },
+  // ── Flags
+  { id:"flags",         title:"Code Flags",                count:26, icon:"🚩", desc:"Identify each International Code of Signals flag by letter or meaning" },
 ];
 
 function QuizProgressWheel({ pct, size = 52 }) {
@@ -1188,6 +1222,13 @@ export default function App() {
   const [buoyScore, setBuoyScore] = useState({ correct:0, total:0 });
   const buoyScoreRef = useRef({ correct:0, total:0 });
   const [showPartAInfo, setShowPartAInfo] = useState(false);
+  // Code Flags state
+  const [flagsType, setFlagsType]         = useState(null); // "letter" | "meaning"
+  const [flagsAnswer, setFlagsAnswer]     = useState(null);
+  const [flagsFeedback, setFlagsFeedback] = useState(null); // true | false
+  const [flagsScore, setFlagsScore]       = useState({ correct:0, total:0 });
+  const flagsScoreRef                     = useRef({ correct:0, total:0 });
+  const [flagsMCOptions, setFlagsMCOptions] = useState([]);
   // MARPOL-specific state
   const [marpolFlipped, setMarpolFlipped] = useState(false);
   const [marpolSelected, setMarpolSelected] = useState([]);
@@ -1306,6 +1347,12 @@ export default function App() {
     setMarpolFeedback(null);
     setMarpolScore({ correct:0, total:0 });
     marpolScoreRef.current = { correct:0, total:0 };
+    setFlagsType(null);
+    setFlagsAnswer(null);
+    setFlagsFeedback(null);
+    setFlagsScore({ correct:0, total:0 });
+    flagsScoreRef.current = { correct:0, total:0 };
+    setFlagsMCOptions([]);
     setViewKey(k => k + 1);
     setView("part-a-quiz");
     setTimeout(() => quizInputRef.current?.focus(), 150);
@@ -1417,6 +1464,50 @@ export default function App() {
     setBuoySelected({ shape:[], colour:[], lightColour:[], lightPattern:[], topMark:[] });
     setBuoyFeedback(null);
   }, [quizPos, quizOrder]);
+
+  // Code Flags handlers
+  const flagsPickAnswer = useCallback((answer) => {
+    if (flagsFeedback !== null) return;
+    const flag = FLAG_DATA[quizOrder[quizPos]];
+    const isCorrect = flagsType === "letter" ? answer === flag.letter : answer === flag.meaning;
+    flagsScoreRef.current = { correct: flagsScoreRef.current.correct + (isCorrect ? 1 : 0), total: flagsScoreRef.current.total + 1 };
+    setFlagsScore({ ...flagsScoreRef.current });
+    setFlagsAnswer(answer);
+    setFlagsFeedback(isCorrect);
+  }, [flagsFeedback, flagsType, quizOrder, quizPos]);
+
+  const flagsNext = useCallback(() => {
+    const nextPos = quizPos + 1;
+    if (nextPos >= quizOrder.length) {
+      setQuizDone(true);
+      setQuizHistory(prev => {
+        const sc = flagsScoreRef.current;
+        const updated = { ...prev, flags: { correct: sc.correct, total: sc.total } };
+        try { localStorage.setItem("oow-quiz-history", JSON.stringify(updated)); } catch {}
+        return updated;
+      });
+      return;
+    }
+    // Pre-generate 4 MC options for the next meaning question
+    if (flagsType === "meaning") {
+      const nextFlag = FLAG_DATA[quizOrder[nextPos]];
+      const others = FLAG_DATA.filter(f => f.id !== nextFlag.id).map(f => f.meaning).sort(() => Math.random() - 0.5).slice(0, 3);
+      setFlagsMCOptions([nextFlag.meaning, ...others].sort(() => Math.random() - 0.5));
+    }
+    setQuizPos(nextPos);
+    setFlagsAnswer(null);
+    setFlagsFeedback(null);
+  }, [quizPos, quizOrder, flagsType]);
+
+  const flagsStartType = useCallback((type) => {
+    setFlagsType(type);
+    // Pre-generate first meaning options
+    if (type === "meaning") {
+      const firstFlag = FLAG_DATA[quizOrder[0]];
+      const others = FLAG_DATA.filter(f => f.id !== firstFlag.id).map(f => f.meaning).sort(() => Math.random() - 0.5).slice(0, 3);
+      setFlagsMCOptions([firstFlag.meaning, ...others].sort(() => Math.random() - 0.5));
+    }
+  }, [quizOrder]);
 
   const marpolSelectMC = useCallback((opt) => {
     if (marpolFeedback) return;
@@ -2364,6 +2455,136 @@ export default function App() {
               </div>
             </div>
           )}
+        </div>
+      </>
+    );
+  }
+
+  // PART A — Code Flags quiz
+  if (view === "part-a-quiz" && quizId === "flags") {
+    const flag    = quizDone ? null : FLAG_DATA[quizOrder[quizPos]];
+    const pct     = quizDone ? 100 : Math.round((quizPos / quizOrder.length) * 100);
+    const accentBtn  = { padding:"12px 20px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
+    const outlineBtn = { padding:"12px 20px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
+
+    return (
+      <>
+        <style>{styles}</style>
+        <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
+          {themeToggle}
+          <div className="dark-pattern"/><div className="light-pattern"/>
+          <div key={viewKey} className="quiz-page view-enter" style={{ paddingTop:"40px" }}>
+            <div className="quiz-container">
+              <div className="quiz-header">
+                <button onClick={() => changeView("part-a")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
+                  onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+                  ← Flags
+                </button>
+                {!quizDone && flagsType && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
+                <div className="quiz-score-label">{flagsScore.correct} / {flagsScore.total} correct</div>
+              </div>
+              {!quizDone && flagsType && <div className="quiz-progress-bar"><div className="quiz-progress-fill" style={{ width:`${pct}%` }}/></div>}
+
+              {/* ── Done screen ── */}
+              {quizDone && (
+                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"16px", paddingTop:"40px" }}>
+                  <div style={{ fontSize:"48px" }}>🚩</div>
+                  <h2 style={{ fontSize:"22px", fontWeight:700, color:"var(--t1)" }}>All flags complete!</h2>
+                  <p style={{ color:"var(--t2)", fontSize:"15px" }}>You scored <strong style={{ color:"var(--accent)" }}>{flagsScore.correct} / {flagsScore.total}</strong></p>
+                  <button style={accentBtn} onClick={() => changeView("part-a")}>← Back to Part A</button>
+                </div>
+              )}
+
+              {/* ── Type selection ── */}
+              {!quizDone && !flagsType && (
+                <div style={{ display:"flex", flexDirection:"column", gap:"12px", paddingTop:"32px" }}>
+                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--accent)", marginBottom:"4px", fontWeight:700 }}>CODE FLAGS</div>
+                  <h2 style={{ fontSize:"22px", fontWeight:700, color:"var(--t1)", marginBottom:"8px" }}>Choose a mode</h2>
+                  <button onClick={() => flagsStartType("letter")} style={{ ...outlineBtn, textAlign:"left", padding:"18px 22px", display:"flex", flexDirection:"column", gap:"4px", borderRadius:"14px" }}>
+                    <span style={{ fontWeight:700, fontSize:"15px", color:"var(--t1)" }}>🔤 Guess the Letter</span>
+                    <span style={{ fontWeight:400, fontSize:"13px", color:"var(--t2)" }}>See a flag — select the correct letter from the full alphabet</span>
+                  </button>
+                  <button onClick={() => flagsStartType("meaning")} style={{ ...outlineBtn, textAlign:"left", padding:"18px 22px", display:"flex", flexDirection:"column", gap:"4px", borderRadius:"14px" }}>
+                    <span style={{ fontWeight:700, fontSize:"15px", color:"var(--t1)" }}>💬 Guess the Meaning</span>
+                    <span style={{ fontWeight:400, fontSize:"13px", color:"var(--t2)" }}>See a flag — choose the correct signal meaning from 4 options</span>
+                  </button>
+                </div>
+              )}
+
+              {/* ── Question ── */}
+              {!quizDone && flagsType && flag && (
+                <div style={{ display:"flex", flexDirection:"column", gap:"20px" }}>
+                  {/* Flag image */}
+                  <div style={{ display:"flex", justifyContent:"center" }}>
+                    <img src={flag.img} alt={`Flag ${flag.letter}`} style={{ maxHeight:"220px", maxWidth:"100%", objectFit:"contain", borderRadius:"8px", border:"1px solid var(--border)" }} />
+                  </div>
+
+                  <p style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", textAlign:"center", fontWeight:700 }}>
+                    {flagsType === "letter" ? "Which flag is this?" : "What does this flag mean?"}
+                  </p>
+
+                  {/* ── Mode: Guess the Letter — 26-button grid ── */}
+                  {flagsType === "letter" && (
+                    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(72px,1fr))", gap:"8px" }}>
+                      {FLAG_DATA.map(f => {
+                        const isSelected = flagsAnswer === f.letter;
+                        const isCorrect  = f.letter === flag.letter;
+                        let bg = "var(--card)", border = "1.5px solid var(--border)", color = "var(--t1)";
+                        if (flagsFeedback !== null) {
+                          if (isCorrect)            { bg="#22c55e15"; border="1.5px solid #22c55e"; color="#22c55e"; }
+                          else if (isSelected)      { bg="#ef444415"; border="1.5px solid #ef4444"; color="#ef4444"; }
+                        } else if (isSelected) {
+                          bg="color-mix(in srgb,var(--accent) 12%,transparent)"; border="1.5px solid var(--accent)"; color="var(--accent)";
+                        }
+                        return (
+                          <button key={f.letter} onClick={() => flagsPickAnswer(f.letter)}
+                            style={{ background:bg, border, color, borderRadius:"10px", padding:"8px 4px", fontSize:"12px", fontWeight:700, cursor: flagsFeedback!==null?"default":"pointer", fontFamily:"'Space Mono',monospace", transition:"all 0.1s", display:"flex", flexDirection:"column", alignItems:"center", gap:"2px" }}>
+                            <span style={{ fontSize:"14px" }}>{f.letter}</span>
+                            <span style={{ fontSize:"9px", fontWeight:400, opacity:0.7 }}>{f.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* ── Mode: Guess the Meaning — 4 MC options ── */}
+                  {flagsType === "meaning" && (
+                    <div style={{ display:"flex", flexDirection:"column", gap:"10px" }}>
+                      {flagsMCOptions.map((opt, i) => {
+                        const isSelected = flagsAnswer === opt;
+                        const isCorrect  = opt === flag.meaning;
+                        let bg = "var(--card)", border = "1.5px solid var(--border)", color = "var(--t1)";
+                        if (flagsFeedback !== null) {
+                          if (isCorrect)            { bg="#22c55e15"; border="1.5px solid #22c55e"; color="#22c55e"; }
+                          else if (isSelected)      { bg="#ef444415"; border="1.5px solid #ef4444"; color="#ef4444"; }
+                        } else if (isSelected) {
+                          bg="color-mix(in srgb,var(--accent) 12%,transparent)"; border="1.5px solid var(--accent)"; color="var(--accent)";
+                        }
+                        return (
+                          <button key={i} onClick={() => flagsPickAnswer(opt)}
+                            style={{ background:bg, border, color, borderRadius:"12px", padding:"14px 16px", fontSize:"14px", fontWeight:500, cursor: flagsFeedback!==null?"default":"pointer", fontFamily:"'DM Sans',sans-serif", textAlign:"left", transition:"all 0.1s", lineHeight:1.4 }}>
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Feedback + Next */}
+                  {flagsFeedback !== null && (
+                    <div style={{ display:"flex", flexDirection:"column", gap:"12px" }}>
+                      <div style={{ padding:"14px 16px", borderRadius:"12px", background: flagsFeedback?"#22c55e15":"#ef444415", border:`1.5px solid ${flagsFeedback?"#22c55e":"#ef4444"}`, color: flagsFeedback?"#22c55e":"#ef4444", fontWeight:600, fontSize:"14px" }}>
+                        {flagsFeedback ? "✓ Correct!" : `✗ It was ${flag.name} (${flag.letter}) — ${flag.meaning}`}
+                      </div>
+                      <button style={accentBtn} onClick={flagsNext}>
+                        {quizPos + 1 >= quizOrder.length ? "See results" : "Next →"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </>
     );
