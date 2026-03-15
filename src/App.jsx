@@ -1073,6 +1073,7 @@ function getQuizData(id) {
   if (id === "iala-buoyage")  return IALA_BUOYAGE;
   if (id === "flags")         return FLAG_DATA;
   if (id === "met")           return MET_QUIZ;
+  if (id === "colregs-lights") return COLREGS_LIGHTS;
   return [];
 }
 
@@ -1085,7 +1086,323 @@ const QUIZ_CONFIG = {
   "iala-buoyage": { label:"IALA BUOYAGE",   question:"",                              placeholder:"",                        backLabel:"← Buoyage", doneText:"IALA Buoyage complete!",    type:"buoy"   },
   "flags":        { label:"CODE FLAGS",     question:"",                              placeholder:"",                        backLabel:"← Flags",   doneText:"All flags complete!",       type:"flags"  },
   "met":          { label:"METEOROLOGY",    question:"",                              placeholder:"",                        backLabel:"← Met",     doneText:"Meteorology complete!",     type:"marpol" },
+  "colregs-lights":{ label:"COLREGS LIGHTS", question:"",                             placeholder:"",                        backLabel:"← COLREGS", doneText:"All configurations identified!", type:"lights" },
 };
+
+// ── COLREGS Vessel Lights Quiz ───────────────────────────────────────────────
+// Light colours
+const W = "#f5f0d8", R = "#ef4444", G = "#22c55e", Y = "#facc15";
+// Coordinate helpers — 100×100 viewBox, "from ahead" orientation
+// Masthead(s): cx=50, cy stacked from ~16 down
+// Sidelights:  red cx=20 cy=60, green cx=80 cy=60
+// All-round:   cx=50, evenly spaced vertically
+const COLREGS_LIGHTS = [
+  // 1 — PDV ≥50m, from ahead
+  {
+    id:"pdv-50m", viewLabel:"From Ahead",
+    lights:[
+      { cx:50, cy:17, r:4, fill:W },
+      { cx:50, cy:30, r:4, fill:W },
+      { cx:20, cy:60, r:4, fill:R },
+      { cx:80, cy:60, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Power-driven vessel underway — 50m or more in length",
+    options:[
+      "Power-driven vessel underway — 50m or more in length",
+      "Power-driven vessel underway — less than 50m in length",
+      "Vessel not under command, making way",
+      "Vessel towing, tow length over 200m",
+    ],
+    explanation:"Two white masthead lights (forward lower, aft higher) plus red and green sidelights = PDV ≥50m. A vessel <50m need only carry one masthead light."
+  },
+  // 2 — PDV <50m, from ahead
+  {
+    id:"pdv-u50m", viewLabel:"From Ahead",
+    lights:[
+      { cx:50, cy:24, r:4, fill:W },
+      { cx:20, cy:60, r:4, fill:R },
+      { cx:80, cy:60, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Power-driven vessel underway — less than 50m in length",
+    options:[
+      "Power-driven vessel underway — less than 50m in length",
+      "Power-driven vessel underway — 50m or more in length",
+      "Sailing vessel underway",
+      "Pilot vessel on duty",
+    ],
+    explanation:"One white masthead light plus red/green sidelights = PDV <50m. A vessel ≥50m must carry two masthead lights."
+  },
+  // 3 — Sailing vessel underway, from ahead
+  {
+    id:"sail-ahead", viewLabel:"From Ahead",
+    lights:[
+      { cx:20, cy:50, r:4, fill:R },
+      { cx:80, cy:50, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Sailing vessel underway",
+    options:[
+      "Sailing vessel underway",
+      "Power-driven vessel underway — less than 50m in length",
+      "Vessel not under command, not making way",
+      "Vessel at anchor",
+    ],
+    explanation:"Sidelights only (no masthead light) = sailing vessel underway. The absence of a white masthead is the key distinguishing feature. A vessel under sail and power must show a masthead light."
+  },
+  // 4 — NUC not making way
+  {
+    id:"nuc-stopped", viewLabel:"Not Making Way",
+    lights:[
+      { cx:50, cy:30, r:5, fill:R, allRound:true },
+      { cx:50, cy:55, r:5, fill:R, allRound:true },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Vessel not under command — not making way",
+    options:[
+      "Vessel not under command — not making way",
+      "Vessel restricted in ability to manoeuvre — not making way",
+      "Vessel aground",
+      "Vessel constrained by her draught",
+    ],
+    explanation:"Two all-round red lights in a vertical line, no sidelights = NUC not making way (Rule 27a). When making way, NUC also shows sidelights and sternlight."
+  },
+  // 5 — NUC making way, from ahead
+  {
+    id:"nuc-making-way", viewLabel:"From Ahead",
+    lights:[
+      { cx:50, cy:22, r:5, fill:R, allRound:true },
+      { cx:50, cy:40, r:5, fill:R, allRound:true },
+      { cx:20, cy:65, r:4, fill:R },
+      { cx:80, cy:65, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Vessel not under command — making way through the water",
+    options:[
+      "Vessel not under command — making way through the water",
+      "Vessel not under command — not making way",
+      "Vessel restricted in ability to manoeuvre — making way",
+      "Power-driven vessel with defective steering",
+    ],
+    explanation:"Two all-round red lights plus sidelights = NUC making way (Rule 27a). No masthead lights are shown — this distinguishes NUC from RAM making way."
+  },
+  // 6 — RAM not making way
+  {
+    id:"ram-stopped", viewLabel:"Not Making Way",
+    lights:[
+      { cx:50, cy:22, r:5, fill:R, allRound:true },
+      { cx:50, cy:40, r:5, fill:W, allRound:true },
+      { cx:50, cy:58, r:5, fill:R, allRound:true },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Vessel restricted in ability to manoeuvre — not making way",
+    options:[
+      "Vessel restricted in ability to manoeuvre — not making way",
+      "Vessel not under command — not making way",
+      "Vessel constrained by her draught",
+      "Vessel engaged in minesweeping",
+    ],
+    explanation:"Red–White–Red all-round lights in a vertical line = RAM not making way (Rule 27b). When making way, RAM also shows masthead lights and sidelights."
+  },
+  // 7 — RAM making way, from ahead
+  {
+    id:"ram-making-way", viewLabel:"From Ahead",
+    lights:[
+      { cx:50, cy:12, r:4, fill:W },
+      { cx:50, cy:24, r:4, fill:W },
+      { cx:50, cy:37, r:5, fill:R, allRound:true },
+      { cx:50, cy:52, r:5, fill:W, allRound:true },
+      { cx:50, cy:67, r:5, fill:R, allRound:true },
+      { cx:18, cy:80, r:4, fill:R },
+      { cx:82, cy:80, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Vessel restricted in ability to manoeuvre — making way",
+    options:[
+      "Vessel restricted in ability to manoeuvre — making way",
+      "Vessel constrained by her draught, underway",
+      "Vessel not under command — making way",
+      "Power-driven vessel towing, tow over 200m",
+    ],
+    explanation:"Two masthead lights + Red–White–Red all-round + sidelights = RAM making way (Rule 27b). The R-W-R pattern distinguishes RAM from NUC (which shows only two reds)."
+  },
+  // 8 — Vessel constrained by draught, from ahead
+  {
+    id:"cbd", viewLabel:"From Ahead",
+    lights:[
+      { cx:50, cy:12, r:4, fill:W },
+      { cx:50, cy:24, r:4, fill:W },
+      { cx:50, cy:37, r:5, fill:R, allRound:true },
+      { cx:50, cy:52, r:5, fill:R, allRound:true },
+      { cx:50, cy:67, r:5, fill:R, allRound:true },
+      { cx:18, cy:80, r:4, fill:R },
+      { cx:82, cy:80, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Vessel constrained by her draught, underway",
+    options:[
+      "Vessel constrained by her draught, underway",
+      "Vessel restricted in ability to manoeuvre — making way",
+      "Power-driven vessel underway, 50m or more",
+      "Vessel not under command — making way",
+    ],
+    explanation:"Three all-round red lights in a vertical line plus normal PDV underway lights = vessel constrained by draught (Rule 28). The three reds distinguish it from RAM (R-W-R)."
+  },
+  // 9 — Trawling, from ahead
+  {
+    id:"trawling", viewLabel:"From Ahead",
+    lights:[
+      { cx:50, cy:20, r:4, fill:W },
+      { cx:50, cy:37, r:5, fill:G, allRound:true },
+      { cx:50, cy:55, r:5, fill:W, allRound:true },
+      { cx:18, cy:72, r:4, fill:R },
+      { cx:82, cy:72, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Vessel engaged in trawling, making way",
+    options:[
+      "Vessel engaged in trawling, making way",
+      "Vessel fishing (other than trawling), making way",
+      "Pilot vessel on duty, making way",
+      "Vessel restricted in ability to manoeuvre — making way",
+    ],
+    explanation:"Green over white all-round lights = trawling (Rule 26b). A masthead light abaft and higher than the fishing lights is required for vessels ≥50m. Fishing (not trawling) shows red over white."
+  },
+  // 10 — Fishing not trawling, from ahead
+  {
+    id:"fishing", viewLabel:"From Ahead",
+    lights:[
+      { cx:50, cy:33, r:5, fill:R, allRound:true },
+      { cx:50, cy:53, r:5, fill:W, allRound:true },
+      { cx:18, cy:72, r:4, fill:R },
+      { cx:82, cy:72, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Vessel fishing (other than trawling), making way",
+    options:[
+      "Vessel fishing (other than trawling), making way",
+      "Vessel engaged in trawling, making way",
+      "Pilot vessel on duty, making way",
+      "Vessel not under command — making way",
+    ],
+    explanation:"Red over white all-round lights = fishing other than trawling (Rule 26c). No masthead required unless ≥50m. Trawling shows green over white."
+  },
+  // 11 — Pilot vessel on duty, from ahead
+  {
+    id:"pilot", viewLabel:"From Ahead",
+    lights:[
+      { cx:50, cy:15, r:4, fill:W },
+      { cx:50, cy:33, r:5, fill:W, allRound:true },
+      { cx:50, cy:53, r:5, fill:R, allRound:true },
+      { cx:18, cy:70, r:4, fill:R },
+      { cx:82, cy:70, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Pilot vessel on duty, making way",
+    options:[
+      "Pilot vessel on duty, making way",
+      "Vessel fishing (other than trawling), making way",
+      "Vessel engaged in trawling, making way",
+      "Vessel restricted in ability to manoeuvre — making way",
+    ],
+    explanation:"White over red all-round lights = pilot vessel on duty (Rule 29). When making way also shows a masthead light, sidelights and sternlight. When at anchor substitutes sternlight for anchor light."
+  },
+  // 12 — Towing >200m, from ahead
+  {
+    id:"towing-long", viewLabel:"From Ahead",
+    lights:[
+      { cx:50, cy:12, r:4, fill:W },
+      { cx:50, cy:24, r:4, fill:W },
+      { cx:50, cy:36, r:4, fill:W },
+      { cx:18, cy:62, r:4, fill:R },
+      { cx:82, cy:62, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Power-driven vessel towing — tow length over 200m",
+    options:[
+      "Power-driven vessel towing — tow length over 200m",
+      "Power-driven vessel underway — 50m or more in length",
+      "Power-driven vessel towing — tow length 200m or less",
+      "Vessel restricted in ability to manoeuvre — making way",
+    ],
+    explanation:"Three white masthead lights plus sidelights = towing vessel with tow exceeding 200m (Rule 24a). Two mastheads indicate tow ≤200m. The yellow towing light (above sternlight) is visible from astern only."
+  },
+  // 13 — At anchor <50m
+  {
+    id:"anchor-small", viewLabel:"At Anchor",
+    lights:[
+      { cx:50, cy:45, r:5, fill:W, allRound:true },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Vessel at anchor — less than 50m in length",
+    options:[
+      "Vessel at anchor — less than 50m in length",
+      "Vessel at anchor — 50m or more in length",
+      "Vessel aground",
+      "Sailing vessel underway",
+    ],
+    explanation:"One all-round white light where best seen = vessel at anchor <50m (Rule 30a). A vessel ≥50m must additionally show a second all-round white light at the stern, lower than the forward one."
+  },
+  // 14 — At anchor ≥50m
+  {
+    id:"anchor-large", viewLabel:"At Anchor",
+    lights:[
+      { cx:38, cy:30, r:5, fill:W, allRound:true },
+      { cx:62, cy:60, r:5, fill:W, allRound:true },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Vessel at anchor — 50m or more in length",
+    options:[
+      "Vessel at anchor — 50m or more in length",
+      "Vessel at anchor — less than 50m in length",
+      "Vessel aground",
+      "Power-driven vessel underway — less than 50m",
+    ],
+    explanation:"Two all-round white lights (forward higher, aft lower) = vessel at anchor ≥50m (Rule 30b). May also illuminate decks. Vessels <50m only require one all-round white light."
+  },
+  // 15 — Aground
+  {
+    id:"aground", viewLabel:"Aground",
+    lights:[
+      { cx:50, cy:28, r:5, fill:W, allRound:true },
+      { cx:50, cy:48, r:5, fill:R, allRound:true },
+      { cx:50, cy:68, r:5, fill:R, allRound:true },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Vessel aground",
+    options:[
+      "Vessel aground",
+      "Vessel not under command — not making way",
+      "Vessel at anchor — less than 50m",
+      "Vessel restricted in ability to manoeuvre — not making way",
+    ],
+    explanation:"Anchor light(s) plus two all-round red lights in a vertical line = vessel aground (Rule 30d). The two reds are in addition to the required anchor lights, distinguishing aground from merely at anchor."
+  },
+  // 16 — Air cushion vessel (hovercraft) in non-displacement mode
+  {
+    id:"acv", viewLabel:"From Ahead",
+    lights:[
+      { cx:50, cy:17, r:4, fill:W },
+      { cx:50, cy:38, r:5, fill:Y, allRound:true },
+      { cx:18, cy:65, r:4, fill:R },
+      { cx:82, cy:65, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this light configuration?",
+    correct:"Air cushion vessel operating in non-displacement mode",
+    options:[
+      "Air cushion vessel operating in non-displacement mode",
+      "Power-driven vessel underway — less than 50m",
+      "Vessel restricted in ability to manoeuvre — making way",
+      "Pilot vessel on duty, making way",
+    ],
+    explanation:"Normal PDV lights plus an all-round flashing yellow light = air cushion vessel (hovercraft) in non-displacement mode (Rule 23b). The flashing yellow is the distinctive identifying feature."
+  },
+];
+(function shuffleColregsOptions() {
+  function fy(arr) { for (let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} }
+  COLREGS_LIGHTS.forEach(item => { if (item.options) fy(item.options); });
+})();
 
 // ── Meteorology Quiz ─────────────────────────────────────────────────────────
 const MET_QUIZ = [
@@ -1277,6 +1594,10 @@ const FLAG_DATA = [
 ];
 
 const PART_A_QUIZZES = [
+  // ── COLREGS (Q1–3, 90% pass mark)
+  { id:"colregs-lights", title:"COLREGS — Vessel Lights",  count:16, icon:"🚦", desc:"Identify the vessel type from its navigation light configuration" },
+  // ── IALA Buoyage (Q4–6, 90% pass mark)
+  { id:"iala-buoyage",  title:"IALA Buoyage",              count:11, icon:"🚢", desc:"Identify shape, colour, light pattern and top mark for all IALA marks" },
   // ── SOLAS
   { id:"solas",         title:"SOLAS Chapter Titles",      count:17, icon:"⚓",  desc:"Name each SOLAS chapter from its roman numeral" },
   { id:"solas-numbers", title:"SOLAS Numbers Game",        count:17, icon:"🔢", desc:"Match each chapter title to its roman numeral" },
@@ -1288,12 +1609,38 @@ const PART_A_QUIZZES = [
   { id:"imdg",          title:"IMDG Classes",              count:18, icon:"☢️",  desc:"Name each IMDG dangerous goods class from its number" },
   // ── Practical & Navigation
   { id:"pilot",         title:"IMPA Pilot Ladder",         count:20, icon:"🪜", desc:"Multiple choice questions on pilot ladder regulations" },
-  { id:"iala-buoyage",  title:"IALA Buoyage",              count:11, icon:"🚢", desc:"Identify shape, colour, light pattern and top mark for all IALA marks", comingSoon:true },
   // ── Flags
   { id:"flags",         title:"Code Flags",                count:26, icon:"🚩", desc:"Identify each International Code of Signals flag by letter or meaning" },
   // ── Meteorology
   { id:"met",           title:"Meteorology",               count:15, icon:"🌦️", desc:"Buys Ballot, TRS, fronts, fog and weather instruments" },
 ];
+
+function VesselLightDiagram({ lights, viewLabel = "" }) {
+  const W = "#f5f0d8", R = "#ef4444", G = "#22c55e", Y = "#facc15";
+  return (
+    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"6px" }}>
+      <svg viewBox="0 0 100 100" style={{ background:"#0d1117", borderRadius:12, width:"100%", maxWidth:200, display:"block" }}>
+        <defs>
+          <filter id="lg-w" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="lg-r" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="lg-g" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="lg-y" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        {lights.map((l, i) => {
+          const fid = l.fill === W ? "lg-w" : l.fill === R ? "lg-r" : l.fill === G ? "lg-g" : "lg-y";
+          return (
+            <g key={i} filter={`url(#${fid})`}>
+              {l.allRound && <circle cx={l.cx} cy={l.cy} r={(l.r||4)+8} fill="none" stroke={l.fill} strokeWidth={0.8} opacity={0.35}/>}
+              <circle cx={l.cx} cy={l.cy} r={(l.r||4)+5} fill={l.fill} opacity={0.1}/>
+              <circle cx={l.cx} cy={l.cy} r={l.r||4} fill={l.fill}/>
+            </g>
+          );
+        })}
+      </svg>
+      {viewLabel && <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"9px", letterSpacing:"1.5px", color:"var(--t3)", textTransform:"uppercase" }}>{viewLabel}</div>}
+    </div>
+  );
+}
 
 function QuizProgressWheel({ pct, size = 52 }) {
   const strokeW = 4;
@@ -3175,7 +3522,47 @@ export default function App() {
                 </div>
               ) : (
                 <>
-                  {cfg.type === "mc" ? (
+                  {cfg.type === "lights" ? (
+                    /* ── COLREGS LIGHTS MODE ── */
+                    <>
+                      <div className="quiz-question-card mc-question-card" key={quizPos}>
+                        <div className="quiz-class-label">{cfg.label}</div>
+                        <VesselLightDiagram lights={currentItem.lights} viewLabel={currentItem.viewLabel} />
+                        <div className="mc-question-text" style={{ marginTop:14 }}>{currentItem.q}</div>
+                      </div>
+                      <div className="mc-options">
+                        {currentItem.options.map((opt, i) => {
+                          let state = "idle";
+                          if (quizFeedback) {
+                            if (opt === currentItem.correct) state = "correct";
+                            else if (opt === quizAnswer)      state = "wrong";
+                          }
+                          return (
+                            <button key={i} className={`mc-option mc-option-${state}`}
+                              onClick={() => selectMCOption(opt)}
+                              disabled={!!quizFeedback}>
+                              <span className="mc-letter">{["A","B","C","D"][i]}</span>
+                              <span className="mc-opt-text">{opt}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {quizFeedback && (
+                        <>
+                          <div className={`quiz-feedback ${quizFeedback}`}>
+                            <div className="quiz-feedback-icon">{quizFeedback==="correct" ? "✅" : "❌"}</div>
+                            <div className="quiz-feedback-answer" style={{ color: quizFeedback==="correct" ? "var(--confident)" : "#ef4444", fontWeight:600 }}>
+                              {quizFeedback==="correct" ? "Correct!" : `Incorrect — ${currentItem.correct}`}
+                            </div>
+                            {currentItem.explanation && <div style={{ fontSize:"13px", color:"var(--t2)", marginTop:4 }}>{currentItem.explanation}</div>}
+                          </div>
+                          <button className="quiz-next-btn" onClick={nextQuizQuestion}>
+                            {quizPos + 1 >= quizOrder.length ? "See Results →" : "Next →"}
+                          </button>
+                        </>
+                      )}
+                    </>
+                  ) : cfg.type === "mc" ? (
                     /* ── MULTIPLE CHOICE MODE ── */
                     <>
                       {quizId === "pilot" && (
