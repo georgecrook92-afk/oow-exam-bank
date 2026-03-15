@@ -1595,7 +1595,7 @@ const FLAG_DATA = [
 
 const PART_A_QUIZZES = [
   // ── COLREGS (Q1–3, 90% pass mark)
-  { id:"colregs-lights", title:"COLREGS — Vessel Lights",  count:16, icon:"🚦", desc:"Identify the vessel type from its navigation light configuration" },
+  { id:"colregs-lights", title:"COLREGS — Vessel Lights",  count:16, icon:"🚦", desc:"Identify the vessel type from its navigation light configuration", comingSoon:true },
   // ── IALA Buoyage (Q4–6, 90% pass mark)
   { id:"iala-buoyage",  title:"IALA Buoyage",              count:11, icon:"🚢", desc:"Identify shape, colour, light pattern and top mark for all IALA marks" },
   // ── SOLAS
