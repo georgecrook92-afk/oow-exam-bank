@@ -1615,6 +1615,15 @@ const PART_A_QUIZZES = [
   { id:"met",           title:"Meteorology",               count:15, icon:"🌦️", desc:"Buys Ballot, TRS, fronts, fog and weather instruments" },
 ];
 
+const PART_A_QUIZ_GROUPS = [
+  { label:"COLREGS",        mark:"90%", ids:["colregs-lights"] },
+  { label:"IALA BUOYAGE",   mark:"90%", ids:["iala-buoyage"]  },
+  { label:"SOLAS",          mark:"",    ids:["solas","solas-numbers"] },
+  { label:"MARPOL",         mark:"",    ids:["marpol","marpol-4","marpol-5"] },
+  { label:"CARGO & SAFETY", mark:"",    ids:["imdg"] },
+  { label:"OPERATIONS",     mark:"",    ids:["pilot","flags","met"] },
+];
+
 function VesselLightDiagram({ lights, viewLabel = "" }) {
   const W = "#f5f0d8", R = "#ef4444", G = "#22c55e", Y = "#facc15";
   return (
@@ -1719,6 +1728,7 @@ export default function App() {
   const quizInputRef = useRef(null);
   const [quizSelectedId, setQuizSelectedId] = useState(PART_A_QUIZZES[0].id);
   const [quizSelectedMode, setQuizSelectedMode] = useState("ordered");
+  const [quizRunning, setQuizRunning] = useState(false);
   const quizFeedbackTimeRef = useRef(0);
   const [quizHistory, setQuizHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem("oow-quiz-history") || "{}"); } catch { return {}; }
@@ -1864,8 +1874,15 @@ export default function App() {
     flagsScoreRef.current = { correct:0, total:0 };
     setFlagsMCOptions([]);
     setViewKey(k => k + 1);
-    setView("part-a-quiz");
+    setQuizRunning(true);
     setTimeout(() => quizInputRef.current?.focus(), 150);
+  }, []);
+
+  const stopQuiz = useCallback(() => {
+    setQuizRunning(false);
+    setQuizId(null);
+    setQuizDone(false);
+    setViewKey(k => k + 1);
   }, []);
 
   const submitQuizAnswer = useCallback(() => {
@@ -2535,6 +2552,32 @@ export default function App() {
     .quiz-done-card { background:var(--card); border:1.5px solid var(--border); border-radius:20px; padding:40px 32px; text-align:center; }
     .quiz-done-score { font-size:clamp(48px,10vw,72px); font-weight:700; color:var(--accent); font-family:'Space Mono',monospace; line-height:1; margin:16px 0 8px; }
 
+    /* === PART A SHELL LAYOUT === */
+    .part-a-shell { display:flex; min-height:100vh; position:relative; z-index:1; }
+    .part-a-sidebar { width:240px; flex-shrink:0; border-right:1px solid var(--border); background:var(--card); display:flex; flex-direction:column; padding:0 0 40px; position:sticky; top:0; height:100vh; overflow-y:auto; }
+    .part-a-sidebar-header { padding:24px 20px 16px; border-bottom:1px solid var(--border); margin-bottom:8px; }
+    .part-a-sidebar-group { padding:14px 20px 4px; font-family:'Space Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--t3); font-weight:700; display:flex; align-items:center; gap:6px; }
+    .part-a-sidebar-item { display:flex; align-items:center; gap:10px; padding:9px 20px; cursor:pointer; transition:background 0.12s; position:relative; }
+    .part-a-sidebar-item:hover { background:var(--card-h); }
+    .part-a-sidebar-item.active { background:color-mix(in srgb, var(--accent) 10%, transparent); }
+    .part-a-sidebar-item.active::before { content:''; position:absolute; left:0; top:4px; bottom:4px; width:3px; border-radius:0 3px 3px 0; background:var(--accent); }
+    .part-a-sidebar-item.cs { opacity:0.38; cursor:default; pointer-events:none; }
+    .part-a-sidebar-item-title { font-size:13px; font-weight:500; color:var(--t2); flex:1; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .part-a-sidebar-item.active .part-a-sidebar-item-title { color:var(--accent); font-weight:600; }
+    .part-a-main { flex:1; min-width:0; padding:40px 40px 80px; display:flex; flex-direction:column; align-items:center; }
+    .part-a-setup { width:100%; max-width:520px; animation:viewEnter 0.35s cubic-bezier(0.22,1,0.36,1) both; }
+    @media (max-width:767px) {
+      .part-a-shell { flex-direction:column; }
+      .part-a-sidebar { width:100%; height:auto; position:static; border-right:none; border-bottom:1px solid var(--border); flex-direction:row; overflow-x:auto; overflow-y:hidden; padding:12px 0 0; scrollbar-width:none; }
+      .part-a-sidebar::-webkit-scrollbar { display:none; }
+      .part-a-sidebar-header { display:none; }
+      .part-a-sidebar-group { display:none; }
+      .part-a-sidebar-item { flex-direction:column; padding:6px 12px 10px; min-width:72px; text-align:center; gap:3px; flex-shrink:0; }
+      .part-a-sidebar-item.active::before { left:8px; right:8px; top:auto; bottom:0; width:auto; height:2px; border-radius:2px 2px 0 0; }
+      .part-a-sidebar-item-title { font-size:10px; white-space:normal; text-align:center; overflow:visible; max-width:64px; }
+      .part-a-main { padding:24px 16px 60px; }
+    }
+
     /* Multiple-choice styles */
     .mc-question-card { padding:28px 24px 24px; }
     .mc-section-label { font-size:11px; font-weight:600; font-family:'Space Mono',monospace; letter-spacing:0.5px; color:var(--accent); background:var(--accent)15; border:1px solid var(--accent)30; border-radius:20px; padding:3px 10px; display:inline-block; margin:6px auto 2px; }
@@ -2847,8 +2890,58 @@ export default function App() {
     );
   }
 
-  // PART A — quiz selection
+  // PART A — sidebar shell
   if (view === "part-a") {
+    // pre-compute renderer vars
+    const _accentBtn  = { padding:"12px 20px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
+    const _outlineBtn = { padding:"12px 20px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
+    const _pct = quizDone ? 100 : quizOrder.length > 0 ? Math.round((quizPos / quizOrder.length) * 100) : 0;
+
+    // Flags
+    const _flagItem = quizRunning && quizId === "flags" && !quizDone && quizOrder.length > 0 ? FLAG_DATA[quizOrder[quizPos]] : null;
+
+    // Buoyage
+    const CATS = ["shape","colour","lightColour","lightPattern","topMark"];
+    const _buoyItem = quizRunning && quizId === "iala-buoyage" && !quizDone && quizOrder.length > 0 ? IALA_BUOYAGE[quizOrder[quizPos]] : null;
+    const _canSubmit = !buoyFeedback && CATS.every(c => (buoySelected[c] || []).length > 0);
+    const _chipStyle = (cat, opt) => {
+      const sel = (buoySelected[cat] || []).includes(opt);
+      const isCorrectOpt = _buoyItem && _buoyItem.correct[cat].includes(opt);
+      if (!buoyFeedback) {
+        return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:500, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", transition:"all 0.12s", border: sel ? "1.5px solid var(--accent)" : "1.5px solid var(--border)", background: sel ? "color-mix(in srgb, var(--accent) 12%, transparent)" : "var(--card)", color: sel ? "var(--accent)" : "var(--t1)" };
+      }
+      if (isCorrectOpt && sel)  return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:600, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid #22c55e", background:"#22c55e15", color:"#22c55e" };
+      if (isCorrectOpt && !sel) return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:600, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid #f59e0b", background:"#f59e0b15", color:"#f59e0b" };
+      if (!isCorrectOpt && sel) return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:600, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid #ef4444", background:"#ef444415", color:"#ef4444" };
+      return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:400, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t3)", opacity:0.5 };
+    };
+    const _catLabelColor = (cat) => {
+      if (!buoyFeedback || !_buoyItem) return "var(--t3)";
+      const cSet = new Set(_buoyItem.correct[cat]);
+      const sArr = buoySelected[cat] || [];
+      return sArr.length === cSet.size && sArr.every(x => cSet.has(x)) ? "#22c55e" : "#ef4444";
+    };
+
+    // MARPOL
+    const _marpolData = quizRunning && QUIZ_CONFIG[quizId]?.type === "marpol" ? getQuizData(quizId) : null;
+    const _marpolCfg  = _marpolData ? QUIZ_CONFIG[quizId] : null;
+    const _marpolItem = _marpolData && !quizDone && quizOrder.length > 0 ? _marpolData[quizOrder[quizPos]] : null;
+    const _allSortAssigned = _marpolItem?.type === "sort" ? _marpolItem.items.every((_, i) => marpolSortState[i] !== undefined) : false;
+    const _renderFeedbackBar = (fbk, correctLabel, item) => (
+      <div className={`quiz-feedback ${fbk}`}>
+        <div className="quiz-feedback-icon">{fbk === "correct" ? "✅" : "❌"}</div>
+        <div className="quiz-feedback-answer" style={{ color: fbk === "correct" ? "var(--confident)" : "#ef4444", fontWeight:600, marginBottom: correctLabel ? 6 : 0 }}>
+          {fbk === "correct" ? "Correct!" : correctLabel ? `Incorrect — ${correctLabel}` : "Not quite — correct answers highlighted above."}
+        </div>
+        {item?.explanation && <div style={{ fontSize:"13px", color:"var(--t2)", lineHeight:1.55, marginTop:4 }}>{item.explanation}</div>}
+      </div>
+    );
+
+    // Generic (IMDG, SOLAS, Pilot, Met, etc.)
+    const _genData = quizRunning && quizId && quizId !== "flags" && quizId !== "iala-buoyage" && QUIZ_CONFIG[quizId]?.type !== "marpol" && QUIZ_CONFIG[quizId] ? getQuizData(quizId) : null;
+    const _genCfg  = _genData ? (QUIZ_CONFIG[quizId] || QUIZ_CONFIG.imdg) : null;
+    const _genItem = _genData && !quizDone && quizOrder.length > 0 ? _genData[quizOrder[quizPos]] : null;
+
     return (
       <>
         <style>{styles}</style>
@@ -2857,71 +2950,728 @@ export default function App() {
           <div style={{ position:"fixed",inset:0,opacity:0.03,zIndex:0, backgroundImage:`radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0)`, backgroundSize:"32px 32px" }}/>
           <div className="dark-pattern"/><div className="light-pattern"/>
           <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme==="light"?`radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)`:`radial-gradient(ellipse at 50% -20%,rgba(32,192,200,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
-          <div key={viewKey} className="quiz-page view-enter">
-            <button onClick={() => changeView("landing")} style={{ alignSelf:"flex-start", background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:"0 0 24px 0", transition:"color 0.15s" }}
-              onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
-              ← PART A
-            </button>
-            <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"4px", textTransform:"uppercase", color:"var(--accent)", marginBottom:"8px", fontWeight:700, alignSelf:"flex-start" }}>PART A</div>
-            <h1 style={{ fontSize:"clamp(24px,4vw,36px)", fontWeight:700, marginBottom:"6px", color:"var(--t1)", alignSelf:"flex-start" }}>Quizzes</h1>
-            <p style={{ color:"var(--t2)", fontSize:"14px", marginBottom:"20px", alignSelf:"flex-start" }}>Select a quiz and choose your mode to begin.</p>
 
-            {/* Hero controls */}
-            <button onClick={() => setShowPartAInfo(true)} style={{ alignSelf:"center", marginBottom:"20px", background:"var(--accent)", color:"#fff", border:"none", borderRadius:"12px", padding:"13px 24px", fontSize:"15px", fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", gap:"8px", boxShadow:"0 4px 16px rgba(32,192,200,0.3)" }}>
-              <span style={{ fontSize:"17px" }}>❓</span> What is Part A?
-            </button>
-            <div style={{ alignSelf:"center", display:"flex", gap:"12px", alignItems:"center", marginBottom:"32px", flexWrap:"wrap", justifyContent:"center" }}>
-              <div style={{ background:"var(--card)", border:"1.5px solid var(--border)", borderRadius:"14px", padding:"13px 20px", display:"flex", alignItems:"center", gap:"12px" }}>
-                <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700 }}>Mode</div>
-                <div className="quiz-mode-row" style={{ marginTop:0 }}>
-                  <button className={`quiz-mode-btn${quizSelectedMode==="ordered" && quizSelectedId!=="solas-numbers" && quizSelectedId!=="flags"?" active":""}`}
-                    onClick={() => setQuizSelectedMode("ordered")}
-                    disabled={quizSelectedId==="solas-numbers" || quizSelectedId==="flags"}
-                    style={{ padding:"10px 18px", fontSize:"14px" }}
-                    title={quizSelectedId==="solas-numbers" || quizSelectedId==="flags" ? "This quiz is always randomised" : ""}>In Order</button>
-                  <button className={`quiz-mode-btn${quizSelectedMode==="random" || quizSelectedId==="solas-numbers" || quizSelectedId==="flags"?" active":""}`}
-                    onClick={() => setQuizSelectedMode("random")}
-                    style={{ padding:"10px 18px", fontSize:"14px" }}>Random</button>
-                </div>
+          <div className="part-a-shell">
+            {/* ── SIDEBAR ── */}
+            <div className="part-a-sidebar">
+              <div className="part-a-sidebar-header">
+                <button onClick={() => changeView("landing")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, marginBottom:"10px", transition:"color 0.15s", display:"block" }}
+                  onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+                  ← Landing
+                </button>
+                <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"9px", letterSpacing:"2.5px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700 }}>PART A / QUIZZES</div>
               </div>
-              <button className="quiz-start-btn" style={{ margin:0, padding:"16px 32px", fontSize:"16px" }}
-                onClick={() => startQuiz(quizSelectedId, (quizSelectedId==="solas-numbers" || quizSelectedId==="flags") ? "random" : quizSelectedMode)}>
-                Start Quiz →
-              </button>
+
+              {/* What is Part A? */}
+              <div className="part-a-sidebar-item" onClick={() => setShowPartAInfo(true)}>
+                <span style={{ fontSize:"17px" }}>❓</span>
+                <span className="part-a-sidebar-item-title">What is Part A?</span>
+              </div>
+
+              {/* Quiz groups */}
+              {PART_A_QUIZ_GROUPS.map(group => (
+                <div key={group.label}>
+                  <div className="part-a-sidebar-group">
+                    {group.label}
+                    {group.mark && <span style={{ fontSize:"8px", background:"var(--accent)22", color:"var(--accent)", borderRadius:"4px", padding:"1px 5px" }}>{group.mark}</span>}
+                  </div>
+                  {group.ids.map(id => {
+                    const q = PART_A_QUIZZES.find(x => x.id === id);
+                    if (!q) return null;
+                    const cs = !!q.comingSoon;
+                    const isActive = quizSelectedId === id;
+                    const hist = quizHistory[id];
+                    const histPct = hist ? Math.round((hist.correct / hist.total) * 100) : null;
+                    return (
+                      <div key={id}
+                        className={`part-a-sidebar-item${isActive ? " active" : ""}${cs ? " cs" : ""}`}
+                        onClick={() => { if (cs) return; setQuizSelectedId(id); if (quizRunning) stopQuiz(); }}>
+                        <span style={{ fontSize:"18px", flexShrink:0 }}>{q.icon}</span>
+                        <span className="part-a-sidebar-item-title">{q.title}</span>
+                        {cs && <span style={{ fontSize:"8px", background:"var(--border)", color:"var(--t3)", borderRadius:"4px", padding:"1px 5px", flexShrink:0, fontFamily:"'Space Mono',monospace", letterSpacing:"0.5px" }}>Soon</span>}
+                        {!cs && histPct !== null && (
+                          <span style={{ fontSize:"10px", fontFamily:"'Space Mono',monospace", color: histPct>=80?"var(--confident)":histPct>=50?"var(--review)":"#ef4444", flexShrink:0 }}>{histPct}%</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
 
-            <div className="quiz-selection-grid">
-              {PART_A_QUIZZES.map((quiz, i) => {
-                const hist = quizHistory[quiz.id];
-                const histPct = hist ? Math.round((hist.correct / hist.total) * 100) : null;
-                const sel = quizSelectedId === quiz.id;
-                const cs = !!quiz.comingSoon;
-                return (
-                  <div key={quiz.id} className="quiz-selection-card"
-                    onClick={() => !cs && setQuizSelectedId(quiz.id)}
-                    style={{ borderColor: cs ? "var(--border)" : sel ? "var(--accent)" : "var(--border)", boxShadow: sel ? "0 4px 20px rgba(32,192,200,0.15)" : "none", animation:`fadeIn 0.4s ease ${i*0.04}s both`, opacity: cs ? 0.6 : 1, cursor: cs ? "default" : "pointer" }}>
-                    {cs && <div style={{ position:"absolute", top:"10px", right:"12px", background:"var(--border)", color:"var(--t3)", fontSize:"9px", fontFamily:"'Space Mono',monospace", letterSpacing:"1.5px", textTransform:"uppercase", fontWeight:700, padding:"3px 7px", borderRadius:"5px" }}>Coming Soon</div>}
-                    {sel && !cs && <div style={{ position:"absolute", top:"12px", right:"14px", width:"20px", height:"20px", borderRadius:"6px", background:"var(--accent)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"11px", color:"#fff", fontWeight:700 }}>✓</div>}
-                    <div className="quiz-sel-icon">{quiz.icon}</div>
-                    {!cs && <div className="quiz-sel-count">{quiz.count} Questions</div>}
-                    <div className="quiz-sel-title">{quiz.title}</div>
-                    <div className="quiz-sel-desc">{quiz.desc}</div>
-                    {!cs && histPct !== null && (
-                      <div style={{ marginTop:"10px", display:"flex", alignItems:"center", gap:"8px" }}>
-                        <div style={{ flex:1, height:"3px", borderRadius:"2px", background:"var(--border)", overflow:"hidden" }}>
-                          <div style={{ width:`${histPct}%`, height:"100%", background: histPct>=80?"var(--confident)":histPct>=50?"var(--review)":"#ef4444", borderRadius:"2px", transition:"width 0.3s" }}/>
+            {/* ── MAIN ── */}
+            <div className="part-a-main">
+              {!quizRunning ? (
+                /* ── SETUP PANEL ── */
+                <div className="part-a-setup">
+                  {(() => {
+                    const selQuiz = PART_A_QUIZZES.find(q => q.id === quizSelectedId);
+                    if (!selQuiz) return null;
+                    if (selQuiz.comingSoon) {
+                      return (
+                        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"16px", paddingTop:"60px", textAlign:"center" }}>
+                          <div style={{ fontSize:"48px" }}>{selQuiz.icon}</div>
+                          <h2 style={{ fontSize:"22px", fontWeight:700, color:"var(--t1)" }}>{selQuiz.title}</h2>
+                          <div style={{ background:"var(--border)", color:"var(--t3)", fontSize:"10px", fontFamily:"'Space Mono',monospace", letterSpacing:"2px", textTransform:"uppercase", fontWeight:700, padding:"5px 12px", borderRadius:"8px" }}>Coming Soon</div>
+                          <p style={{ color:"var(--t3)", fontSize:"14px", maxWidth:"320px", lineHeight:1.6 }}>This quiz is being developed and will be available soon.</p>
                         </div>
-                        <span style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", color:"var(--t3)", whiteSpace:"nowrap" }}>{histPct}%</span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                      );
+                    }
+                    const hist = quizHistory[selQuiz.id];
+                    const histPct = hist ? Math.round((hist.correct / hist.total) * 100) : null;
+                    const forceRandom = selQuiz.id === "solas-numbers" || selQuiz.id === "flags";
+                    return (
+                      <>
+                        <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--accent)", marginBottom:"8px", fontWeight:700 }}>
+                          {selQuiz.icon}&nbsp; {selQuiz.count} Questions
+                        </div>
+                        <h2 style={{ fontSize:"clamp(22px,3vw,30px)", fontWeight:700, marginBottom:"8px", color:"var(--t1)", lineHeight:1.2 }}>{selQuiz.title}</h2>
+                        <p style={{ color:"var(--t2)", fontSize:"14px", marginBottom:"20px", lineHeight:1.6 }}>{selQuiz.desc}</p>
+                        {histPct !== null && (
+                          <div style={{ marginBottom:"20px" }}>
+                            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:"6px" }}>
+                              <span style={{ fontSize:"12px", color:"var(--t3)" }}>Best score</span>
+                              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:"12px", color: histPct>=80?"var(--confident)":histPct>=50?"var(--review)":"#ef4444" }}>{histPct}%</span>
+                            </div>
+                            <div style={{ height:"4px", borderRadius:"2px", background:"var(--border)", overflow:"hidden" }}>
+                              <div style={{ width:`${histPct}%`, height:"100%", background: histPct>=80?"var(--confident)":histPct>=50?"var(--review)":"#ef4444", borderRadius:"2px", transition:"width 0.3s" }}/>
+                            </div>
+                          </div>
+                        )}
+                        <div className="quiz-mode-row" style={{ marginBottom:"16px" }}>
+                          <button className={`quiz-mode-btn${!forceRandom && quizSelectedMode==="ordered"?" active":""}`}
+                            onClick={() => setQuizSelectedMode("ordered")}
+                            disabled={forceRandom}
+                            style={{ padding:"10px 18px", fontSize:"14px" }}
+                            title={forceRandom ? "This quiz is always randomised" : ""}>In Order</button>
+                          <button className={`quiz-mode-btn${forceRandom || quizSelectedMode==="random"?" active":""}`}
+                            onClick={() => setQuizSelectedMode("random")}
+                            style={{ padding:"10px 18px", fontSize:"14px" }}>Random</button>
+                        </div>
+                        <button className="quiz-start-btn" style={{ margin:0, width:"100%" }}
+                          onClick={() => startQuiz(selQuiz.id, forceRandom ? "random" : quizSelectedMode)}>
+                          Start Quiz →
+                        </button>
+                      </>
+                    );
+                  })()}
+                </div>
+              ) : (
+                /* ── RUNNING QUIZ ── */
+                <div key={viewKey} className="view-enter" style={{ width:"100%", maxWidth:"600px" }}>
 
+                  {/* ── FLAGS ── */}
+                  {quizId === "flags" && (
+                    <div className="quiz-container">
+                      <div className="quiz-header">
+                        <button onClick={stopQuiz} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
+                          onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+                          ← Flags
+                        </button>
+                        {!quizDone && flagsType && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
+                        <div className="quiz-score-label">{flagsScore.correct} / {flagsScore.total} correct</div>
+                      </div>
+                      {!quizDone && flagsType && <div className="quiz-progress-bar"><div className="quiz-progress-fill" style={{ width:`${_pct}%` }}/></div>}
+
+                      {quizDone && (
+                        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"16px", paddingTop:"40px" }}>
+                          <div style={{ fontSize:"48px" }}>🚩</div>
+                          <h2 style={{ fontSize:"22px", fontWeight:700, color:"var(--t1)" }}>All flags complete!</h2>
+                          <p style={{ color:"var(--t2)", fontSize:"15px" }}>You scored <strong style={{ color:"var(--accent)" }}>{flagsScore.correct} / {flagsScore.total}</strong></p>
+                          <button style={_accentBtn} onClick={stopQuiz}>← Back to Quizzes</button>
+                        </div>
+                      )}
+
+                      {!quizDone && !flagsType && (
+                        <div style={{ display:"flex", flexDirection:"column", gap:"12px", paddingTop:"32px" }}>
+                          <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--accent)", marginBottom:"4px", fontWeight:700 }}>CODE FLAGS</div>
+                          <h2 style={{ fontSize:"22px", fontWeight:700, color:"var(--t1)", marginBottom:"8px" }}>Choose a mode</h2>
+                          <button onClick={() => flagsStartType("letter")} style={{ ..._outlineBtn, textAlign:"left", padding:"18px 22px", display:"flex", flexDirection:"column", gap:"4px", borderRadius:"14px" }}>
+                            <span style={{ fontWeight:700, fontSize:"15px", color:"var(--t1)" }}>🔤 Guess the Letter</span>
+                            <span style={{ fontWeight:400, fontSize:"13px", color:"var(--t2)" }}>See a flag — select the correct letter from the full alphabet</span>
+                          </button>
+                          <button onClick={() => flagsStartType("meaning")} style={{ ..._outlineBtn, textAlign:"left", padding:"18px 22px", display:"flex", flexDirection:"column", gap:"4px", borderRadius:"14px" }}>
+                            <span style={{ fontWeight:700, fontSize:"15px", color:"var(--t1)" }}>💬 Guess the Meaning</span>
+                            <span style={{ fontWeight:400, fontSize:"13px", color:"var(--t2)" }}>See a flag — choose the correct signal meaning from 4 options</span>
+                          </button>
+                        </div>
+                      )}
+
+                      {!quizDone && flagsType && _flagItem && (
+                        <div style={{ display:"flex", flexDirection:"column", gap:"20px" }}>
+                          <div style={{ display:"flex", justifyContent:"center" }}>
+                            <img src={_flagItem.img} alt={`Flag ${_flagItem.letter}`} style={{ maxHeight:"220px", maxWidth:"100%", objectFit:"contain", borderRadius:"8px", border:"1px solid var(--border)" }} />
+                          </div>
+                          <p style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", textAlign:"center", fontWeight:700 }}>
+                            {flagsType === "letter" ? "Which flag is this?" : "What does this flag mean?"}
+                          </p>
+                          {flagsType === "letter" && (
+                            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(72px,1fr))", gap:"8px" }}>
+                              {FLAG_DATA.map(f => {
+                                const isSelected = flagsAnswer === f.letter;
+                                const isCorrect  = f.letter === _flagItem.letter;
+                                let bg = "var(--card)", border = "1.5px solid var(--border)", color = "var(--t1)";
+                                if (flagsFeedback !== null) {
+                                  if (isCorrect)            { bg="#22c55e15"; border="1.5px solid #22c55e"; color="#22c55e"; }
+                                  else if (isSelected)      { bg="#ef444415"; border="1.5px solid #ef4444"; color="#ef4444"; }
+                                } else if (isSelected) {
+                                  bg="color-mix(in srgb,var(--accent) 12%,transparent)"; border="1.5px solid var(--accent)"; color="var(--accent)";
+                                }
+                                return (
+                                  <button key={f.letter} onClick={() => flagsPickAnswer(f.letter)}
+                                    style={{ background:bg, border, color, borderRadius:"10px", padding:"8px 4px", fontSize:"12px", fontWeight:700, cursor: flagsFeedback!==null?"default":"pointer", fontFamily:"'Space Mono',monospace", transition:"all 0.1s", display:"flex", flexDirection:"column", alignItems:"center", gap:"2px" }}>
+                                    <span style={{ fontSize:"14px" }}>{f.letter}</span>
+                                    <span style={{ fontSize:"9px", fontWeight:400, opacity:0.7 }}>{f.name}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                          {flagsType === "meaning" && (
+                            <div style={{ display:"flex", flexDirection:"column", gap:"10px" }}>
+                              {flagsMCOptions.map((opt, i) => {
+                                const isSelected = flagsAnswer === opt;
+                                const isCorrect  = opt === _flagItem.meaning;
+                                let bg = "var(--card)", border = "1.5px solid var(--border)", color = "var(--t1)";
+                                if (flagsFeedback !== null) {
+                                  if (isCorrect)            { bg="#22c55e15"; border="1.5px solid #22c55e"; color="#22c55e"; }
+                                  else if (isSelected)      { bg="#ef444415"; border="1.5px solid #ef4444"; color="#ef4444"; }
+                                } else if (isSelected) {
+                                  bg="color-mix(in srgb,var(--accent) 12%,transparent)"; border="1.5px solid var(--accent)"; color="var(--accent)";
+                                }
+                                return (
+                                  <button key={i} onClick={() => flagsPickAnswer(opt)}
+                                    style={{ background:bg, border, color, borderRadius:"12px", padding:"14px 16px", fontSize:"14px", fontWeight:500, cursor: flagsFeedback!==null?"default":"pointer", fontFamily:"'DM Sans',sans-serif", textAlign:"left", transition:"all 0.1s", lineHeight:1.4 }}>
+                                    {opt}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                          {flagsFeedback !== null && (
+                            <div style={{ display:"flex", flexDirection:"column", gap:"12px" }}>
+                              <div style={{ padding:"14px 16px", borderRadius:"12px", background: flagsFeedback?"#22c55e15":"#ef444415", border:`1.5px solid ${flagsFeedback?"#22c55e":"#ef4444"}`, color: flagsFeedback?"#22c55e":"#ef4444", fontWeight:600, fontSize:"14px" }}>
+                                {flagsFeedback ? "✓ Correct!" : `✗ It was ${_flagItem.name} (${_flagItem.letter}) — ${_flagItem.meaning}`}
+                              </div>
+                              <button style={_accentBtn} onClick={flagsNext}>
+                                {quizPos + 1 >= quizOrder.length ? "See results" : "Next →"}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ── IALA BUOYAGE ── */}
+                  {quizId === "iala-buoyage" && (
+                    <div className="quiz-container">
+                      <div className="quiz-header">
+                        <button onClick={stopQuiz} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
+                          onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+                          ← Buoyage
+                        </button>
+                        {!quizDone && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
+                        <div className="quiz-score-label">{buoyScore.correct} / {buoyScore.total} correct</div>
+                      </div>
+                      {!quizDone && <div className="quiz-progress-bar"><div className="quiz-progress-fill" style={{ width:`${_pct}%` }}/></div>}
+
+                      {quizDone ? (
+                        <div className="quiz-done-card" style={{ animation:"examSetupEnter 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
+                          <div style={{ fontSize:"36px", marginBottom:"8px" }}>{buoyScore.correct === buoyScore.total ? "🎉" : buoyScore.correct >= buoyScore.total * 0.7 ? "👍" : "📖"}</div>
+                          <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--t3)", marginBottom:"4px" }}>Final Score</div>
+                          <div className="quiz-done-score">{buoyScore.correct}<span style={{ fontSize:"0.5em", color:"var(--t2)" }}>/{buoyScore.total}</span></div>
+                          <div style={{ color:"var(--t2)", marginBottom:"28px", fontSize:"14px" }}>
+                            {buoyScore.correct === buoyScore.total ? "Perfect — all marks identified!" : `${Math.round((buoyScore.correct/buoyScore.total)*100)}% correct`}
+                          </div>
+                          <div style={{ display:"flex", gap:"10px" }}>
+                            <button onClick={() => startQuiz("iala-buoyage","ordered")} style={{ ..._accentBtn, flex:1 }}>Try Again</button>
+                            <button onClick={() => startQuiz("iala-buoyage","random")}  style={{ ..._outlineBtn, flex:1 }}>Try Random</button>
+                          </div>
+                          <button onClick={stopQuiz} style={{ marginTop:"10px", width:"100%", padding:"10px", borderRadius:"10px", border:"none", background:"none", color:"var(--t3)", fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>← Back to Quizzes</button>
+                        </div>
+                      ) : _buoyItem ? (
+                        <>
+                          <div className="quiz-question-card mc-question-card" key={quizPos}>
+                            <div className="quiz-class-label">IALA BUOYAGE</div>
+                            <div className="mc-question-text" style={{ fontSize:"20px", fontWeight:700 }}>{_buoyItem.q}</div>
+                            <div style={{ fontSize:"12px", color:"var(--t3)", marginTop:"6px" }}>Select all correct characteristics in each category</div>
+                          </div>
+                          {CATS.map(cat => (
+                            <div key={cat} style={{ marginBottom:"14px" }}>
+                              <div style={{ fontSize:"11px", fontFamily:"'Space Mono',monospace", letterSpacing:"1.5px", textTransform:"uppercase", color: _catLabelColor(cat), marginBottom:"8px", fontWeight:600, transition:"color 0.2s" }}>
+                                {IALA_CAT_LABELS[cat]}
+                                {buoyFeedback && (() => {
+                                  const cSet = new Set(_buoyItem.correct[cat]);
+                                  const sArr = buoySelected[cat] || [];
+                                  const ok = sArr.length === cSet.size && sArr.every(x => cSet.has(x));
+                                  return <span style={{ marginLeft:"8px" }}>{ok ? "✓" : "✗"}</span>;
+                                })()}
+                              </div>
+                              <div style={{ display:"flex", flexWrap:"wrap", gap:"7px" }}>
+                                {IALA_OPTIONS[cat].map(opt => (
+                                  <button key={opt} style={_chipStyle(cat, opt)} onClick={() => buoyToggle(cat, opt)} disabled={!!buoyFeedback}>
+                                    {opt}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                          {!buoyFeedback && (
+                            <button onClick={buoySubmit} disabled={!_canSubmit}
+                              style={{ marginTop:"8px", ..._accentBtn, width:"100%", opacity: _canSubmit ? 1 : 0.4 }}>
+                              {_canSubmit ? "Check Answers" : "Select at least one option in each category"}
+                            </button>
+                          )}
+                          {buoyFeedback && (
+                            <>
+                              <div className={`quiz-feedback ${buoyFeedback}`}>
+                                <div className="quiz-feedback-icon">{buoyFeedback === "correct" ? "✅" : "❌"}</div>
+                                <div style={{ fontWeight:600, color: buoyFeedback === "correct" ? "var(--confident)" : "#ef4444" }}>
+                                  {buoyFeedback === "correct" ? "Correct!" : "Not quite — orange = missed, red = wrong selection"}
+                                </div>
+                              </div>
+                              <button className="quiz-next-btn" onClick={buoyNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button>
+                            </>
+                          )}
+                        </>
+                      ) : null}
+                    </div>
+                  )}
+
+                  {/* ── MARPOL ── */}
+                  {QUIZ_CONFIG[quizId]?.type === "marpol" && _marpolData && (
+                    <div className="quiz-container">
+                      <div className="quiz-header">
+                        <button onClick={stopQuiz} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
+                          onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+                          {_marpolCfg.backLabel}
+                        </button>
+                        {!quizDone && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
+                        <div className="quiz-score-label">{marpolScore.correct} / {marpolScore.total} correct</div>
+                      </div>
+                      {!quizDone && <div className="quiz-progress-bar"><div className="quiz-progress-fill" style={{ width:`${_pct}%` }}/></div>}
+
+                      {quizDone ? (
+                        <div className="quiz-done-card" style={{ animation:"examSetupEnter 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
+                          <div style={{ fontSize:"36px", marginBottom:"8px" }}>{marpolScore.correct === marpolScore.total ? "🎉" : marpolScore.correct >= marpolScore.total * 0.7 ? "👍" : "📖"}</div>
+                          <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--t3)", marginBottom:"4px" }}>Final Score</div>
+                          <div className="quiz-done-score">{marpolScore.correct}<span style={{ fontSize:"0.5em", color:"var(--t2)" }}>/{marpolScore.total}</span></div>
+                          <div style={{ color:"var(--t2)", marginBottom:"28px", fontSize:"14px" }}>
+                            {marpolScore.total === 0 ? "All flashcards reviewed!" : marpolScore.correct === marpolScore.total ? `Perfect — ${_marpolCfg.doneText}` : `${Math.round((marpolScore.correct/marpolScore.total)*100)}% correct`}
+                          </div>
+                          <div style={{ display:"flex", gap:"10px" }}>
+                            <button onClick={() => startQuiz(quizId,"ordered")} style={{ ..._accentBtn, flex:1 }}>Try Again</button>
+                            <button onClick={() => startQuiz(quizId,"random")}  style={{ ..._outlineBtn, flex:1 }}>Try Random</button>
+                          </div>
+                          <button onClick={stopQuiz} style={{ marginTop:"10px", width:"100%", padding:"10px", borderRadius:"10px", border:"none", background:"none", color:"var(--t3)", fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>← Back to Quizzes</button>
+                        </div>
+                      ) : _marpolItem ? (
+                        <>
+                          {_marpolItem.type === "flashcard" && (
+                            <>
+                              <div className="quiz-question-card" key={quizPos} style={{ minHeight:"170px", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", textAlign:"center", gap:"14px" }}>
+                                <div className="quiz-class-label">FLASHCARD</div>
+                                {!marpolFlipped ? (
+                                  <>
+                                    <div style={{ fontSize:"17px", fontWeight:600, lineHeight:1.55, color:"var(--t1)", padding:"0 8px" }}>{_marpolItem.front}</div>
+                                    <button onClick={() => setMarpolFlipped(true)} style={{ padding:"9px 22px", borderRadius:"10px", border:"1.5px solid var(--accent)", background:"transparent", color:"var(--accent)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
+                                      Reveal Answer
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div style={{ fontSize:"12px", color:"var(--t3)", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", textTransform:"uppercase" }}>Answer</div>
+                                    <div style={{ fontSize:"15px", fontWeight:600, lineHeight:1.65, color:"var(--confident)", padding:"0 8px" }}>{_marpolItem.back}</div>
+                                  </>
+                                )}
+                              </div>
+                              {marpolFlipped && <button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button>}
+                            </>
+                          )}
+
+                          {_marpolItem.type === "mc" && (
+                            <>
+                              <div className="quiz-question-card mc-question-card" key={quizPos}>
+                                <div className="quiz-class-label">{_marpolCfg.label}</div>
+                                <div className="mc-question-text">{_marpolItem.q}</div>
+                              </div>
+                              <div className="mc-options">
+                                {_marpolItem.options.map((opt,i) => {
+                                  let state = "idle";
+                                  if (marpolFeedback) { if (opt === _marpolItem.correct) state = "correct"; else if (opt === marpolSelected[0]) state = "wrong"; }
+                                  return (
+                                    <button key={i} className={`mc-option mc-option-${state}`} onClick={() => marpolSelectMC(opt)} disabled={!!marpolFeedback}>
+                                      <span className="mc-letter">{["A","B","C","D"][i]}</span>
+                                      <span className="mc-opt-text">{opt}</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              {marpolFeedback && <>{_renderFeedbackBar(marpolFeedback, null, _marpolItem)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
+                            </>
+                          )}
+
+                          {_marpolItem.type === "tf" && (
+                            <>
+                              <div className="quiz-question-card mc-question-card" key={quizPos}>
+                                <div className="quiz-class-label">TRUE OR FALSE</div>
+                                <div className="mc-question-text">{_marpolItem.q}</div>
+                              </div>
+                              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px" }}>
+                                {[{ label:"True", val:true },{ label:"False", val:false }].map(({ label, val }) => {
+                                  let state = "idle";
+                                  if (marpolFeedback) { if (val === _marpolItem.correct) state = "correct"; else if (marpolSelected[0] === label) state = "wrong"; }
+                                  return (
+                                    <button key={label} className={`mc-option mc-option-${state}`} onClick={() => marpolSelectTF(label, val)} disabled={!!marpolFeedback} style={{ justifyContent:"center", fontSize:"16px", fontWeight:700 }}>
+                                      {label}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              {marpolFeedback && <>{_renderFeedbackBar(marpolFeedback, `the answer is ${_marpolItem.correct ? "True" : "False"}.`, _marpolItem)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
+                            </>
+                          )}
+
+                          {_marpolItem.type === "multi" && (
+                            <>
+                              <div className="quiz-question-card mc-question-card" key={quizPos}>
+                                <div className="quiz-class-label">SELECT {_marpolItem.correct.length}</div>
+                                <div className="mc-question-text">{_marpolItem.q}</div>
+                              </div>
+                              <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
+                                {_marpolItem.options.map((opt,i) => {
+                                  const sel = marpolSelected.includes(opt);
+                                  const isCorrectOpt = _marpolItem.correct.includes(opt);
+                                  let bc = sel ? "var(--accent)" : "var(--border)";
+                                  let bg = sel ? "color-mix(in srgb, var(--accent) 12%, transparent)" : "var(--card)";
+                                  let tc = sel ? "var(--accent)" : "var(--t1)";
+                                  if (marpolFeedback) { if (isCorrectOpt) { bc="#22c55e"; bg="#22c55e15"; tc="#22c55e"; } else if (sel) { bc="#ef4444"; bg="#ef444415"; tc="#ef4444"; } else { bc="var(--border)"; bg="var(--card)"; tc="var(--t2)"; } }
+                                  return (
+                                    <button key={i} onClick={() => { if (marpolFeedback) return; setMarpolSelected(p => p.includes(opt) ? p.filter(x=>x!==opt) : [...p,opt]); }} disabled={!!marpolFeedback}
+                                      style={{ padding:"12px 16px", borderRadius:"10px", border:`1.5px solid ${bc}`, background:bg, color:tc, fontWeight:500, fontSize:"14px", cursor:"pointer", textAlign:"left", fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", gap:"10px", transition:"all 0.15s" }}>
+                                      <span style={{ width:"18px", height:"18px", borderRadius:"4px", border:`2px solid ${bc}`, display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0, background: sel ? bc : "transparent" }}>
+                                        {sel && <span style={{ color:"#fff", fontSize:"11px", lineHeight:1 }}>✓</span>}
+                                      </span>
+                                      {opt}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              {!marpolFeedback && (
+                                <button onClick={marpolSubmitMulti} disabled={marpolSelected.length !== _marpolItem.correct.length}
+                                  style={{ marginTop:"12px", ..._accentBtn, width:"100%", opacity: marpolSelected.length !== _marpolItem.correct.length ? 0.45 : 1 }}>
+                                  {marpolSelected.length === _marpolItem.correct.length ? "Check Answers" : `Select ${_marpolItem.correct.length - marpolSelected.length} more`}
+                                </button>
+                              )}
+                              {marpolFeedback && <>{_renderFeedbackBar(marpolFeedback, null, _marpolItem)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
+                            </>
+                          )}
+
+                          {_marpolItem.type === "select-all" && (
+                            <>
+                              <div className="quiz-question-card mc-question-card" key={quizPos}>
+                                <div className="quiz-class-label">SELECT ALL THAT APPLY</div>
+                                <div className="mc-question-text">{_marpolItem.q}</div>
+                              </div>
+                              <div style={{ display:"flex", flexWrap:"wrap", gap:"8px" }}>
+                                {_marpolItem.options.map((opt,i) => {
+                                  const sel = marpolSelected.includes(opt);
+                                  const isCorrectOpt = _marpolItem.correct.includes(opt);
+                                  let bc = sel ? "var(--accent)" : "var(--border)";
+                                  let bg = sel ? "color-mix(in srgb, var(--accent) 12%, transparent)" : "var(--card)";
+                                  let tc = sel ? "var(--accent)" : "var(--t1)";
+                                  if (marpolFeedback) { if (isCorrectOpt) { bc="#22c55e"; bg="#22c55e15"; tc="#22c55e"; } else if (sel) { bc="#ef4444"; bg="#ef444415"; tc="#ef4444"; } else { bc="var(--border)"; bg="var(--card)"; tc="var(--t2)"; } }
+                                  return (
+                                    <button key={i} onClick={() => { if (marpolFeedback) return; setMarpolSelected(p => p.includes(opt) ? p.filter(x=>x!==opt) : [...p,opt]); }} disabled={!!marpolFeedback}
+                                      style={{ padding:"8px 14px", borderRadius:"8px", border:`1.5px solid ${bc}`, background:bg, color:tc, fontWeight:500, fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif", transition:"all 0.15s" }}>
+                                      {opt}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              {!marpolFeedback && (
+                                <button onClick={marpolSubmitSelectAll} disabled={marpolSelected.length === 0}
+                                  style={{ marginTop:"12px", ..._accentBtn, width:"100%", opacity: marpolSelected.length === 0 ? 0.45 : 1 }}>
+                                  {marpolSelected.length === 0 ? "Tap options to select" : `Check ${marpolSelected.length} selected`}
+                                </button>
+                              )}
+                              {marpolFeedback && (
+                                <>
+                                  {_renderFeedbackBar(marpolFeedback, null, _marpolItem)}
+                                  {marpolFeedback === "incorrect" && (
+                                    <div style={{ fontSize:"12px", color:"var(--t3)", marginTop:"-6px", marginBottom:"8px" }}>Green = correct answer &nbsp;·&nbsp; Red = wrong selection</div>
+                                  )}
+                                  <button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button>
+                                </>
+                              )}
+                            </>
+                          )}
+
+                          {_marpolItem.type === "sort" && (
+                            <>
+                              <div className="quiz-question-card mc-question-card" key={quizPos}>
+                                <div className="quiz-class-label">SORT IT</div>
+                                <div className="mc-question-text">{_marpolItem.q}</div>
+                              </div>
+                              <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
+                                {_marpolItem.items.map((si, i) => {
+                                  const assigned = marpolSortState[i];
+                                  let cardBorder = assigned ? "var(--accent)" : "var(--border)";
+                                  if (marpolFeedback) cardBorder = assigned === si.cat ? "#22c55e" : "#ef4444";
+                                  return (
+                                    <div key={i} style={{ padding:"12px 14px", borderRadius:"10px", border:`1.5px solid ${cardBorder}`, background:"var(--card)", transition:"border-color 0.15s" }}>
+                                      <div style={{ fontSize:"13px", fontWeight:500, color:"var(--t1)", marginBottom: marpolFeedback ? 6 : 8 }}>{si.text}</div>
+                                      {!marpolFeedback ? (
+                                        <div style={{ display:"flex", gap:"6px" }}>
+                                          {_marpolItem.categories.map(cat => (
+                                            <button key={cat} onClick={() => setMarpolSortState(p => ({ ...p, [i]:cat }))}
+                                              style={{ flex:1, padding:"5px 8px", borderRadius:"7px", border:"none", background: assigned===cat ? "var(--accent)" : "var(--border)", color: assigned===cat ? "#fff" : "var(--t2)", fontSize:"12px", fontWeight:600, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", transition:"all 0.15s" }}>
+                                              {cat}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      ) : (
+                                        <div style={{ fontSize:"12px", fontWeight:600, color: assigned===si.cat ? "#22c55e" : "#ef4444" }}>
+                                          {assigned===si.cat ? `✓ ${assigned}` : `✗ ${assigned || "unassigned"} → correct: ${si.cat}`}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              {!marpolFeedback && (
+                                <button onClick={marpolSubmitSort} disabled={!_allSortAssigned}
+                                  style={{ marginTop:"12px", ..._accentBtn, width:"100%", opacity: _allSortAssigned ? 1 : 0.45 }}>
+                                  {_allSortAssigned ? "Check Answers" : "Assign all items to continue"}
+                                </button>
+                              )}
+                              {marpolFeedback && <>{_renderFeedbackBar(marpolFeedback, null, _marpolItem)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
+                            </>
+                          )}
+                        </>
+                      ) : null}
+                    </div>
+                  )}
+
+                  {/* ── GENERIC (IMDG, SOLAS, Pilot, Met, etc.) ── */}
+                  {quizId && quizId !== "flags" && quizId !== "iala-buoyage" && QUIZ_CONFIG[quizId]?.type !== "marpol" && _genData && (
+                    <div className="quiz-container">
+                      <div className="quiz-header">
+                        <button onClick={stopQuiz} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
+                          onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+                          {_genCfg.backLabel}
+                        </button>
+                        {!quizDone && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
+                        <div className="quiz-score-label">{quizScore.correct} / {quizScore.total} correct</div>
+                      </div>
+                      {!quizDone && (
+                        <div className="quiz-progress-bar">
+                          <div className="quiz-progress-fill" style={{ width:`${_pct}%` }}/>
+                        </div>
+                      )}
+
+                      {quizDone ? (
+                        <div className="quiz-done-card" style={{ animation:"examSetupEnter 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
+                          <div style={{ fontSize:"36px", marginBottom:"8px" }}>{quizScore.correct === quizScore.total ? "🎉" : quizScore.correct >= quizScore.total * 0.7 ? "👍" : "📖"}</div>
+                          <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--t3)", marginBottom:"4px" }}>Final Score</div>
+                          <div className="quiz-done-score">{quizScore.correct}<span style={{ fontSize:"0.5em", color:"var(--t2)" }}>/{quizScore.total}</span></div>
+                          <div style={{ color:"var(--t2)", marginBottom:"28px", fontSize:"14px" }}>
+                            {quizScore.correct === quizScore.total ? `Perfect — ${_genCfg.doneText}` : `${Math.round((quizScore.correct/quizScore.total)*100)}% correct`}
+                          </div>
+                          <div style={{ display:"flex", gap:"10px" }}>
+                            <button onClick={() => startQuiz(quizId, quizMode)} style={{ flex:1, padding:"12px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>Try Again</button>
+                            {quizId !== "solas-numbers" && (
+                              <button onClick={() => startQuiz(quizId, quizMode==="ordered"?"random":"ordered")} style={{ flex:1, padding:"12px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
+                                {quizMode==="ordered" ? "Try Random" : "Try In Order"}
+                              </button>
+                            )}
+                          </div>
+                          <button onClick={stopQuiz} style={{ marginTop:"10px", width:"100%", padding:"10px", borderRadius:"10px", border:"none", background:"none", color:"var(--t3)", fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>← Back to Quizzes</button>
+                        </div>
+                      ) : _genItem ? (
+                        <>
+                          {_genCfg.type === "lights" ? (
+                            <>
+                              <div className="quiz-question-card mc-question-card" key={quizPos}>
+                                <div className="quiz-class-label">{_genCfg.label}</div>
+                                <VesselLightDiagram lights={_genItem.lights} viewLabel={_genItem.viewLabel} />
+                                <div className="mc-question-text" style={{ marginTop:14 }}>{_genItem.q}</div>
+                              </div>
+                              <div className="mc-options">
+                                {_genItem.options.map((opt, i) => {
+                                  let state = "idle";
+                                  if (quizFeedback) {
+                                    if (opt === _genItem.correct) state = "correct";
+                                    else if (opt === quizAnswer)  state = "wrong";
+                                  }
+                                  return (
+                                    <button key={i} className={`mc-option mc-option-${state}`}
+                                      onClick={() => selectMCOption(opt)}
+                                      disabled={!!quizFeedback}>
+                                      <span className="mc-letter">{["A","B","C","D"][i]}</span>
+                                      <span className="mc-opt-text">{opt}</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              {quizFeedback && (
+                                <>
+                                  <div className={`quiz-feedback ${quizFeedback}`}>
+                                    <div className="quiz-feedback-icon">{quizFeedback==="correct" ? "✅" : "❌"}</div>
+                                    <div className="quiz-feedback-answer" style={{ color: quizFeedback==="correct" ? "var(--confident)" : "#ef4444", fontWeight:600 }}>
+                                      {quizFeedback==="correct" ? "Correct!" : `Incorrect — ${_genItem.correct}`}
+                                    </div>
+                                    {_genItem.explanation && <div style={{ fontSize:"13px", color:"var(--t2)", marginTop:4 }}>{_genItem.explanation}</div>}
+                                  </div>
+                                  <button className="quiz-next-btn" onClick={nextQuizQuestion}>
+                                    {quizPos + 1 >= quizOrder.length ? "See Results →" : "Next →"}
+                                  </button>
+                                </>
+                              )}
+                            </>
+                          ) : _genCfg.type === "mc" ? (
+                            <>
+                              {quizId === "pilot" && (
+                                <div style={{ textAlign:"center", marginBottom:"10px" }}>
+                                  <button className="poster-btn" onClick={() => setShowPoster(true)}>
+                                    📋 Show IMPA Poster
+                                  </button>
+                                </div>
+                              )}
+                              <div className="quiz-question-card mc-question-card" key={quizPos}>
+                                <div className="quiz-class-label">{_genCfg.label}</div>
+                                {_genItem.section && (
+                                  <div className="mc-section-label">{_genItem.section}</div>
+                                )}
+                                <div className="mc-question-text">{_genItem.q}</div>
+                              </div>
+                              {quizId === "solas-numbers" ? (
+                                <div className="solas-num-grid">
+                                  {_genItem.options.map((opt, i) => {
+                                    let cls = "solas-num-btn";
+                                    if (quizFeedback) {
+                                      if (opt === _genItem.correct) cls += " solas-num-btn-correct";
+                                      else if (opt === quizAnswer)  cls += " solas-num-btn-wrong";
+                                    }
+                                    return (
+                                      <button key={i} className={cls}
+                                        onClick={() => selectMCOption(opt)}
+                                        disabled={!!quizFeedback}>
+                                        {opt}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              ) : (
+                                <div className="mc-options">
+                                  {_genItem.options.map((opt, i) => {
+                                    let state = "idle";
+                                    if (quizFeedback) {
+                                      if (opt === _genItem.correct) state = "correct";
+                                      else if (opt === quizAnswer)  state = "wrong";
+                                    }
+                                    return (
+                                      <button key={i} className={`mc-option mc-option-${state}`}
+                                        onClick={() => selectMCOption(opt)}
+                                        disabled={!!quizFeedback}>
+                                        <span className="mc-letter">{["A","B","C","D"][i]}</span>
+                                        <span className="mc-opt-text">{opt}</span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                              {quizFeedback && (
+                                <>
+                                  <div className={`quiz-feedback ${quizFeedback}`}>
+                                    <div className="quiz-feedback-icon">{quizFeedback==="correct" ? "✅" : "❌"}</div>
+                                    <div className="quiz-feedback-answer" style={{ color: quizFeedback==="correct" ? "var(--confident)" : "#ef4444", fontWeight:600 }}>
+                                      {quizFeedback==="correct" ? "Correct!" : "Not quite — the correct answer is highlighted above."}
+                                    </div>
+                                  </div>
+                                  <button className="quiz-next-btn" onClick={nextQuizQuestion}>
+                                    {quizPos + 1 >= quizOrder.length ? "See Results →" : "Next →"}
+                                  </button>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <div className="quiz-question-card" key={quizPos}>
+                                <div className="quiz-class-label">{_genCfg.label}</div>
+                                <div className="quiz-class-number">{_genItem.id}</div>
+                                {_genItem.img && (
+                                  <img src={_genItem.img} alt={`Class ${_genItem.id} placard`} className="quiz-class-img" />
+                                )}
+                                <div className="quiz-class-question">{_genCfg.question}</div>
+                              </div>
+                              {_genItem.hint && !quizFeedback && (
+                                <div style={{ textAlign:"center", marginBottom:"10px" }}>
+                                  <button className="hint-btn" onClick={() => setShowHint(h => !h)}>
+                                    {showHint ? "🙈 Hide Hint" : "💡 Show Hint"}
+                                  </button>
+                                </div>
+                              )}
+                              {showHint && _genItem.hint && !quizFeedback && (
+                                <div className="hint-card">
+                                  {_genItem.hint.split(/(\{[^}]+\})/).map((part, i) => {
+                                    if (part.startsWith("{") && part.endsWith("}")) {
+                                      const word = part.slice(1, -1);
+                                      return <span key={i} className="hint-blank">{"_".repeat(word.length)}</span>;
+                                    }
+                                    return <span key={i}>{part}</span>;
+                                  })}
+                                </div>
+                              )}
+                              {quizFeedback && (
+                                <div className={`quiz-feedback ${quizFeedback}`}>
+                                  <div className="quiz-feedback-icon">{quizFeedback==="correct" ? "✅" : "❌"}</div>
+                                  <div className="quiz-feedback-answer" style={{ color: quizFeedback==="correct" ? "var(--confident)" : "#ef4444", fontWeight:600, marginBottom:quizFeedback==="incorrect"?6:0 }}>
+                                    {quizFeedback==="correct" ? "Correct!" : "Not quite."}
+                                  </div>
+                                  {quizFeedback==="incorrect" && (
+                                    <div style={{ fontSize:"14px", color:"var(--t1)", lineHeight:1.55 }}>
+                                      <span style={{ color:"var(--t3)", fontSize:"12px" }}>Correct answer: </span><br/>
+                                      <strong>{_genItem.name}</strong>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              {!quizFeedback ? (
+                                <>
+                                  <input
+                                    ref={quizInputRef}
+                                    className="quiz-input"
+                                    type="text"
+                                    placeholder={_genCfg.placeholder}
+                                    value={quizAnswer}
+                                    onChange={e => setQuizAnswer(e.target.value)}
+                                    onKeyDown={e => { if (e.key === "Enter") submitQuizAnswer(); }}
+                                    autoFocus
+                                  />
+                                  <button className="quiz-submit-btn" onClick={submitQuizAnswer} disabled={!quizAnswer.trim()}>
+                                    Submit
+                                  </button>
+                                </>
+                              ) : (
+                                <button className="quiz-next-btn" onClick={nextQuizQuestion}>
+                                  {quizPos + 1 >= quizOrder.length ? "See Results →" : "Next →"}
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </>
+                      ) : null}
+                    </div>
+                  )}
+
+                </div>
+              )}
             </div>
           </div>
 
-          {/* What is Part A? — right-side panel (inside data-theme for CSS vars) */}
+          {/* ── What is Part A? overlay ── */}
           {showPartAInfo && (
             <div onClick={() => setShowPartAInfo(false)} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.5)", display:"flex", justifyContent:"flex-end" }}>
               <div onClick={e => e.stopPropagation()} style={{ background:"var(--card)", borderLeft:"1px solid var(--border)", width:"min(460px, 92vw)", height:"100%", overflowY:"auto", padding:"28px 24px 40px", position:"relative", display:"flex", flexDirection:"column" }}>
@@ -2952,7 +3702,7 @@ export default function App() {
                   <li><strong style={{ color:"var(--t1)" }}>COLREGS</strong> — light configurations, day shapes, vessel classifications (NUC, CBD, RAM, PDV, trawling), rules of the road, sound signals, restricted visibility (Rule 19)</li>
                   <li><strong style={{ color:"var(--t1)" }}>IALA Buoyage</strong> — all mark types, topmarks, light colours, light patterns, Region A vs B lateral marks</li>
                   <li><strong style={{ color:"var(--t1)" }}>Maritime Flags</strong> — match flag to meaning (Alpha, Bravo, Hotel, Oscar, November, NC, etc.)</li>
-                  <li><strong style={{ color:"var(--t1)" }}>MARPOL</strong> — Annex I & V discharge criteria, special areas, record book requirements</li>
+                  <li><strong style={{ color:"var(--t1)" }}>MARPOL</strong> — Annex I &amp; V discharge criteria, special areas, record book requirements</li>
                   <li><strong style={{ color:"var(--t1)" }}>ARPA / Radar</strong> — performance standards, safe speed factors, plotting limitations</li>
                   <li><strong style={{ color:"var(--t1)" }}>ECDIS</strong> — mandatory alarms, safety contour, datum, ENC update procedures</li>
                   <li><strong style={{ color:"var(--t1)" }}>Meteorology</strong> — Buys Ballot's law, TRS signs, fronts, instruments</li>
@@ -2967,747 +3717,6 @@ export default function App() {
               </div>
             </div>
           )}
-        </div>
-      </>
-    );
-  }
-
-  // PART A — Code Flags quiz
-  if (view === "part-a-quiz" && quizId === "flags") {
-    const flag    = quizDone ? null : FLAG_DATA[quizOrder[quizPos]];
-    const pct     = quizDone ? 100 : Math.round((quizPos / quizOrder.length) * 100);
-    const accentBtn  = { padding:"12px 20px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
-    const outlineBtn = { padding:"12px 20px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
-
-    return (
-      <>
-        <style>{styles}</style>
-        <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
-          {themeToggle}
-          <div className="dark-pattern"/><div className="light-pattern"/>
-          <div key={viewKey} className="quiz-page view-enter" style={{ paddingTop:"40px" }}>
-            <div className="quiz-container">
-              <div className="quiz-header">
-                <button onClick={() => changeView("part-a")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
-                  onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
-                  ← Flags
-                </button>
-                {!quizDone && flagsType && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
-                <div className="quiz-score-label">{flagsScore.correct} / {flagsScore.total} correct</div>
-              </div>
-              {!quizDone && flagsType && <div className="quiz-progress-bar"><div className="quiz-progress-fill" style={{ width:`${pct}%` }}/></div>}
-
-              {/* ── Done screen ── */}
-              {quizDone && (
-                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"16px", paddingTop:"40px" }}>
-                  <div style={{ fontSize:"48px" }}>🚩</div>
-                  <h2 style={{ fontSize:"22px", fontWeight:700, color:"var(--t1)" }}>All flags complete!</h2>
-                  <p style={{ color:"var(--t2)", fontSize:"15px" }}>You scored <strong style={{ color:"var(--accent)" }}>{flagsScore.correct} / {flagsScore.total}</strong></p>
-                  <button style={accentBtn} onClick={() => changeView("part-a")}>← Back to Part A</button>
-                </div>
-              )}
-
-              {/* ── Type selection ── */}
-              {!quizDone && !flagsType && (
-                <div style={{ display:"flex", flexDirection:"column", gap:"12px", paddingTop:"32px" }}>
-                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--accent)", marginBottom:"4px", fontWeight:700 }}>CODE FLAGS</div>
-                  <h2 style={{ fontSize:"22px", fontWeight:700, color:"var(--t1)", marginBottom:"8px" }}>Choose a mode</h2>
-                  <button onClick={() => flagsStartType("letter")} style={{ ...outlineBtn, textAlign:"left", padding:"18px 22px", display:"flex", flexDirection:"column", gap:"4px", borderRadius:"14px" }}>
-                    <span style={{ fontWeight:700, fontSize:"15px", color:"var(--t1)" }}>🔤 Guess the Letter</span>
-                    <span style={{ fontWeight:400, fontSize:"13px", color:"var(--t2)" }}>See a flag — select the correct letter from the full alphabet</span>
-                  </button>
-                  <button onClick={() => flagsStartType("meaning")} style={{ ...outlineBtn, textAlign:"left", padding:"18px 22px", display:"flex", flexDirection:"column", gap:"4px", borderRadius:"14px" }}>
-                    <span style={{ fontWeight:700, fontSize:"15px", color:"var(--t1)" }}>💬 Guess the Meaning</span>
-                    <span style={{ fontWeight:400, fontSize:"13px", color:"var(--t2)" }}>See a flag — choose the correct signal meaning from 4 options</span>
-                  </button>
-                </div>
-              )}
-
-              {/* ── Question ── */}
-              {!quizDone && flagsType && flag && (
-                <div style={{ display:"flex", flexDirection:"column", gap:"20px" }}>
-                  {/* Flag image */}
-                  <div style={{ display:"flex", justifyContent:"center" }}>
-                    <img src={flag.img} alt={`Flag ${flag.letter}`} style={{ maxHeight:"220px", maxWidth:"100%", objectFit:"contain", borderRadius:"8px", border:"1px solid var(--border)" }} />
-                  </div>
-
-                  <p style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"2px", textTransform:"uppercase", color:"var(--t3)", textAlign:"center", fontWeight:700 }}>
-                    {flagsType === "letter" ? "Which flag is this?" : "What does this flag mean?"}
-                  </p>
-
-                  {/* ── Mode: Guess the Letter — 26-button grid ── */}
-                  {flagsType === "letter" && (
-                    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(72px,1fr))", gap:"8px" }}>
-                      {FLAG_DATA.map(f => {
-                        const isSelected = flagsAnswer === f.letter;
-                        const isCorrect  = f.letter === flag.letter;
-                        let bg = "var(--card)", border = "1.5px solid var(--border)", color = "var(--t1)";
-                        if (flagsFeedback !== null) {
-                          if (isCorrect)            { bg="#22c55e15"; border="1.5px solid #22c55e"; color="#22c55e"; }
-                          else if (isSelected)      { bg="#ef444415"; border="1.5px solid #ef4444"; color="#ef4444"; }
-                        } else if (isSelected) {
-                          bg="color-mix(in srgb,var(--accent) 12%,transparent)"; border="1.5px solid var(--accent)"; color="var(--accent)";
-                        }
-                        return (
-                          <button key={f.letter} onClick={() => flagsPickAnswer(f.letter)}
-                            style={{ background:bg, border, color, borderRadius:"10px", padding:"8px 4px", fontSize:"12px", fontWeight:700, cursor: flagsFeedback!==null?"default":"pointer", fontFamily:"'Space Mono',monospace", transition:"all 0.1s", display:"flex", flexDirection:"column", alignItems:"center", gap:"2px" }}>
-                            <span style={{ fontSize:"14px" }}>{f.letter}</span>
-                            <span style={{ fontSize:"9px", fontWeight:400, opacity:0.7 }}>{f.name}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {/* ── Mode: Guess the Meaning — 4 MC options ── */}
-                  {flagsType === "meaning" && (
-                    <div style={{ display:"flex", flexDirection:"column", gap:"10px" }}>
-                      {flagsMCOptions.map((opt, i) => {
-                        const isSelected = flagsAnswer === opt;
-                        const isCorrect  = opt === flag.meaning;
-                        let bg = "var(--card)", border = "1.5px solid var(--border)", color = "var(--t1)";
-                        if (flagsFeedback !== null) {
-                          if (isCorrect)            { bg="#22c55e15"; border="1.5px solid #22c55e"; color="#22c55e"; }
-                          else if (isSelected)      { bg="#ef444415"; border="1.5px solid #ef4444"; color="#ef4444"; }
-                        } else if (isSelected) {
-                          bg="color-mix(in srgb,var(--accent) 12%,transparent)"; border="1.5px solid var(--accent)"; color="var(--accent)";
-                        }
-                        return (
-                          <button key={i} onClick={() => flagsPickAnswer(opt)}
-                            style={{ background:bg, border, color, borderRadius:"12px", padding:"14px 16px", fontSize:"14px", fontWeight:500, cursor: flagsFeedback!==null?"default":"pointer", fontFamily:"'DM Sans',sans-serif", textAlign:"left", transition:"all 0.1s", lineHeight:1.4 }}>
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {/* Feedback + Next */}
-                  {flagsFeedback !== null && (
-                    <div style={{ display:"flex", flexDirection:"column", gap:"12px" }}>
-                      <div style={{ padding:"14px 16px", borderRadius:"12px", background: flagsFeedback?"#22c55e15":"#ef444415", border:`1.5px solid ${flagsFeedback?"#22c55e":"#ef4444"}`, color: flagsFeedback?"#22c55e":"#ef4444", fontWeight:600, fontSize:"14px" }}>
-                        {flagsFeedback ? "✓ Correct!" : `✗ It was ${flag.name} (${flag.letter}) — ${flag.meaning}`}
-                      </div>
-                      <button style={accentBtn} onClick={flagsNext}>
-                        {quizPos + 1 >= quizOrder.length ? "See results" : "Next →"}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  // PART A — IALA Buoyage quiz
-  if (view === "part-a-quiz" && quizId === "iala-buoyage") {
-    const item   = quizDone ? null : IALA_BUOYAGE[quizOrder[quizPos]];
-    const pct    = quizDone ? 100 : Math.round((quizPos / quizOrder.length) * 100);
-    const CATS   = ["shape","colour","lightColour","lightPattern","topMark"];
-    const accentBtn = { padding:"12px 20px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
-    const outlineBtn = { padding:"12px 20px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
-
-    // All 5 categories must have ≥1 selection to enable submit
-    const canSubmit = !buoyFeedback && CATS.every(c => (buoySelected[c] || []).length > 0);
-
-    const chipStyle = (cat, opt) => {
-      const sel = (buoySelected[cat] || []).includes(opt);
-      const isCorrectOpt = item && item.correct[cat].includes(opt);
-      if (!buoyFeedback) {
-        return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:500, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", transition:"all 0.12s", border: sel ? "1.5px solid var(--accent)" : "1.5px solid var(--border)", background: sel ? "color-mix(in srgb, var(--accent) 12%, transparent)" : "var(--card)", color: sel ? "var(--accent)" : "var(--t1)" };
-      }
-      if (isCorrectOpt && sel)  return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:600, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid #22c55e", background:"#22c55e15", color:"#22c55e" };
-      if (isCorrectOpt && !sel) return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:600, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid #f59e0b", background:"#f59e0b15", color:"#f59e0b" };
-      if (!isCorrectOpt && sel) return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:600, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid #ef4444", background:"#ef444415", color:"#ef4444" };
-      return { padding:"7px 12px", borderRadius:"8px", fontSize:"13px", fontWeight:400, cursor:"default", fontFamily:"'DM Sans',sans-serif", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t3)", opacity:0.5 };
-    };
-
-    const catLabelColor = (cat) => {
-      if (!buoyFeedback || !item) return "var(--t3)";
-      const cSet = new Set(item.correct[cat]);
-      const sArr = buoySelected[cat] || [];
-      return sArr.length === cSet.size && sArr.every(x => cSet.has(x)) ? "#22c55e" : "#ef4444";
-    };
-
-    return (
-      <>
-        <style>{styles}</style>
-        <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
-          {themeToggle}
-          <div className="dark-pattern"/><div className="light-pattern"/>
-          <div key={viewKey} className="quiz-page view-enter" style={{ paddingTop:"40px" }}>
-            <div className="quiz-container">
-              <div className="quiz-header">
-                <button onClick={() => changeView("part-a")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
-                  onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
-                  ← Buoyage
-                </button>
-                {!quizDone && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
-                <div className="quiz-score-label">{buoyScore.correct} / {buoyScore.total} correct</div>
-              </div>
-              {!quizDone && <div className="quiz-progress-bar"><div className="quiz-progress-fill" style={{ width:`${pct}%` }}/></div>}
-
-              {quizDone ? (
-                <div className="quiz-done-card" style={{ animation:"examSetupEnter 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
-                  <div style={{ fontSize:"36px", marginBottom:"8px" }}>{buoyScore.correct === buoyScore.total ? "🎉" : buoyScore.correct >= buoyScore.total * 0.7 ? "👍" : "📖"}</div>
-                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--t3)", marginBottom:"4px" }}>Final Score</div>
-                  <div className="quiz-done-score">{buoyScore.correct}<span style={{ fontSize:"0.5em", color:"var(--t2)" }}>/{buoyScore.total}</span></div>
-                  <div style={{ color:"var(--t2)", marginBottom:"28px", fontSize:"14px" }}>
-                    {buoyScore.correct === buoyScore.total ? "Perfect — all marks identified!" : `${Math.round((buoyScore.correct/buoyScore.total)*100)}% correct`}
-                  </div>
-                  <div style={{ display:"flex", gap:"10px" }}>
-                    <button onClick={() => startQuiz("iala-buoyage","ordered")} style={{ ...accentBtn, flex:1 }}>Try Again</button>
-                    <button onClick={() => startQuiz("iala-buoyage","random")}  style={{ ...outlineBtn, flex:1 }}>Try Random</button>
-                  </div>
-                  <button onClick={() => changeView("part-a")} style={{ marginTop:"10px", width:"100%", padding:"10px", borderRadius:"10px", border:"none", background:"none", color:"var(--t3)", fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>← Back to Quizzes</button>
-                </div>
-              ) : (
-                <>
-                  <div className="quiz-question-card mc-question-card" key={quizPos}>
-                    <div className="quiz-class-label">IALA BUOYAGE</div>
-                    <div className="mc-question-text" style={{ fontSize:"20px", fontWeight:700 }}>{item.q}</div>
-                    <div style={{ fontSize:"12px", color:"var(--t3)", marginTop:"6px" }}>Select all correct characteristics in each category</div>
-                  </div>
-
-                  {/* Category grids */}
-                  {CATS.map(cat => (
-                    <div key={cat} style={{ marginBottom:"14px" }}>
-                      <div style={{ fontSize:"11px", fontFamily:"'Space Mono',monospace", letterSpacing:"1.5px", textTransform:"uppercase", color: catLabelColor(cat), marginBottom:"8px", fontWeight:600, transition:"color 0.2s" }}>
-                        {IALA_CAT_LABELS[cat]}
-                        {buoyFeedback && (() => {
-                          const cSet = new Set(item.correct[cat]);
-                          const sArr = buoySelected[cat] || [];
-                          const ok = sArr.length === cSet.size && sArr.every(x => cSet.has(x));
-                          return <span style={{ marginLeft:"8px" }}>{ok ? "✓" : "✗"}</span>;
-                        })()}
-                      </div>
-                      <div style={{ display:"flex", flexWrap:"wrap", gap:"7px" }}>
-                        {IALA_OPTIONS[cat].map(opt => (
-                          <button key={opt} style={chipStyle(cat, opt)} onClick={() => buoyToggle(cat, opt)} disabled={!!buoyFeedback}>
-                            {opt}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-
-                  {!buoyFeedback && (
-                    <button onClick={buoySubmit} disabled={!canSubmit}
-                      style={{ marginTop:"8px", ...accentBtn, width:"100%", opacity: canSubmit ? 1 : 0.4 }}>
-                      {canSubmit ? "Check Answers" : "Select at least one option in each category"}
-                    </button>
-                  )}
-
-                  {buoyFeedback && (
-                    <>
-                      <div className={`quiz-feedback ${buoyFeedback}`}>
-                        <div className="quiz-feedback-icon">{buoyFeedback === "correct" ? "✅" : "❌"}</div>
-                        <div style={{ fontWeight:600, color: buoyFeedback === "correct" ? "var(--confident)" : "#ef4444" }}>
-                          {buoyFeedback === "correct" ? "Correct!" : "Not quite — orange = missed, red = wrong selection"}
-                        </div>
-                      </div>
-                      <button className="quiz-next-btn" onClick={buoyNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  // PART A — QUIZ (generic: IMDG, SOLAS, etc.)
-  if (view === "part-a-quiz" && QUIZ_CONFIG[quizId]?.type === "marpol") {
-    const _marpolData = getQuizData(quizId);
-    const _marpolCfg  = QUIZ_CONFIG[quizId];
-    const item = quizDone ? null : _marpolData[quizOrder[quizPos]];
-    const pct  = quizDone ? 100 : Math.round((quizPos / quizOrder.length) * 100);
-    const allSortAssigned = item?.type === "sort" && item.items.every((_, i) => marpolSortState[i] !== undefined);
-    const accentBtn = { padding:"12px 20px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
-    const outlineBtn = { padding:"12px 20px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" };
-
-    const renderFeedbackBar = (fbk, correctLabel) => (
-      <div className={`quiz-feedback ${fbk}`}>
-        <div className="quiz-feedback-icon">{fbk === "correct" ? "✅" : "❌"}</div>
-        <div className="quiz-feedback-answer" style={{ color: fbk === "correct" ? "var(--confident)" : "#ef4444", fontWeight:600, marginBottom: correctLabel ? 6 : 0 }}>
-          {fbk === "correct" ? "Correct!" : correctLabel ? `Incorrect — ${correctLabel}` : "Not quite — correct answers highlighted above."}
-        </div>
-        {item?.explanation && <div style={{ fontSize:"13px", color:"var(--t2)", lineHeight:1.55, marginTop:4 }}>{item.explanation}</div>}
-      </div>
-    );
-
-    return (
-      <>
-        <style>{styles}</style>
-        <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
-          {themeToggle}
-          <div className="dark-pattern"/><div className="light-pattern"/>
-          <div key={viewKey} className="quiz-page view-enter" style={{ paddingTop:"40px" }}>
-            <div className="quiz-container">
-              <div className="quiz-header">
-                <button onClick={() => changeView("part-a")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
-                  onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
-                  {_marpolCfg.backLabel}
-                </button>
-                {!quizDone && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
-                <div className="quiz-score-label">{marpolScore.correct} / {marpolScore.total} correct</div>
-              </div>
-              {!quizDone && <div className="quiz-progress-bar"><div className="quiz-progress-fill" style={{ width:`${pct}%` }}/></div>}
-
-              {quizDone ? (
-                <div className="quiz-done-card" style={{ animation:"examSetupEnter 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
-                  <div style={{ fontSize:"36px", marginBottom:"8px" }}>{marpolScore.correct === marpolScore.total ? "🎉" : marpolScore.correct >= marpolScore.total * 0.7 ? "👍" : "📖"}</div>
-                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--t3)", marginBottom:"4px" }}>Final Score</div>
-                  <div className="quiz-done-score">{marpolScore.correct}<span style={{ fontSize:"0.5em", color:"var(--t2)" }}>/{marpolScore.total}</span></div>
-                  <div style={{ color:"var(--t2)", marginBottom:"28px", fontSize:"14px" }}>
-                    {marpolScore.total === 0 ? "All flashcards reviewed!" : marpolScore.correct === marpolScore.total ? `Perfect — ${_marpolCfg.doneText}` : `${Math.round((marpolScore.correct/marpolScore.total)*100)}% correct`}
-                  </div>
-                  <div style={{ display:"flex", gap:"10px" }}>
-                    <button onClick={() => startQuiz(quizId,"ordered")} style={{ ...accentBtn, flex:1 }}>Try Again</button>
-                    <button onClick={() => startQuiz(quizId,"random")}  style={{ ...outlineBtn, flex:1 }}>Try Random</button>
-                  </div>
-                  <button onClick={() => changeView("part-a")} style={{ marginTop:"10px", width:"100%", padding:"10px", borderRadius:"10px", border:"none", background:"none", color:"var(--t3)", fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>← Back to Quizzes</button>
-                </div>
-              ) : (
-                <>
-                  {/* ── FLASHCARD ── */}
-                  {item.type === "flashcard" && (
-                    <>
-                      <div className="quiz-question-card" key={quizPos} style={{ minHeight:"170px", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", textAlign:"center", gap:"14px" }}>
-                        <div className="quiz-class-label">FLASHCARD</div>
-                        {!marpolFlipped ? (
-                          <>
-                            <div style={{ fontSize:"17px", fontWeight:600, lineHeight:1.55, color:"var(--t1)", padding:"0 8px" }}>{item.front}</div>
-                            <button onClick={() => setMarpolFlipped(true)} style={{ padding:"9px 22px", borderRadius:"10px", border:"1.5px solid var(--accent)", background:"transparent", color:"var(--accent)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
-                              Reveal Answer
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <div style={{ fontSize:"12px", color:"var(--t3)", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", textTransform:"uppercase" }}>Answer</div>
-                            <div style={{ fontSize:"15px", fontWeight:600, lineHeight:1.65, color:"var(--confident)", padding:"0 8px" }}>{item.back}</div>
-                          </>
-                        )}
-                      </div>
-                      {marpolFlipped && <button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button>}
-                    </>
-                  )}
-
-                  {/* ── MULTIPLE CHOICE ── */}
-                  {item.type === "mc" && (
-                    <>
-                      <div className="quiz-question-card mc-question-card" key={quizPos}>
-                        <div className="quiz-class-label">{_marpolCfg.label}</div>
-                        <div className="mc-question-text">{item.q}</div>
-                      </div>
-                      <div className="mc-options">
-                        {item.options.map((opt,i) => {
-                          let state = "idle";
-                          if (marpolFeedback) { if (opt === item.correct) state = "correct"; else if (opt === marpolSelected[0]) state = "wrong"; }
-                          return (
-                            <button key={i} className={`mc-option mc-option-${state}`} onClick={() => marpolSelectMC(opt)} disabled={!!marpolFeedback}>
-                              <span className="mc-letter">{["A","B","C","D"][i]}</span>
-                              <span className="mc-opt-text">{opt}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                      {marpolFeedback && <>{renderFeedbackBar(marpolFeedback, null)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
-                    </>
-                  )}
-
-                  {/* ── TRUE / FALSE ── */}
-                  {item.type === "tf" && (
-                    <>
-                      <div className="quiz-question-card mc-question-card" key={quizPos}>
-                        <div className="quiz-class-label">TRUE OR FALSE</div>
-                        <div className="mc-question-text">{item.q}</div>
-                      </div>
-                      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px" }}>
-                        {[{ label:"True", val:true },{ label:"False", val:false }].map(({ label, val }) => {
-                          let state = "idle";
-                          if (marpolFeedback) { if (val === item.correct) state = "correct"; else if (marpolSelected[0] === label) state = "wrong"; }
-                          return (
-                            <button key={label} className={`mc-option mc-option-${state}`} onClick={() => marpolSelectTF(label, val)} disabled={!!marpolFeedback} style={{ justifyContent:"center", fontSize:"16px", fontWeight:700 }}>
-                              {label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      {marpolFeedback && <>{renderFeedbackBar(marpolFeedback, `the answer is ${item.correct ? "True" : "False"}.`)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
-                    </>
-                  )}
-
-                  {/* ── MULTI-SELECT (select exactly N) ── */}
-                  {item.type === "multi" && (
-                    <>
-                      <div className="quiz-question-card mc-question-card" key={quizPos}>
-                        <div className="quiz-class-label">SELECT {item.correct.length}</div>
-                        <div className="mc-question-text">{item.q}</div>
-                      </div>
-                      <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
-                        {item.options.map((opt,i) => {
-                          const sel = marpolSelected.includes(opt);
-                          const isCorrectOpt = item.correct.includes(opt);
-                          let bc = sel ? "var(--accent)" : "var(--border)";
-                          let bg = sel ? "color-mix(in srgb, var(--accent) 12%, transparent)" : "var(--card)";
-                          let tc = sel ? "var(--accent)" : "var(--t1)";
-                          if (marpolFeedback) { if (isCorrectOpt) { bc="#22c55e"; bg="#22c55e15"; tc="#22c55e"; } else if (sel) { bc="#ef4444"; bg="#ef444415"; tc="#ef4444"; } else { bc="var(--border)"; bg="var(--card)"; tc="var(--t2)"; } }
-                          return (
-                            <button key={i} onClick={() => { if (marpolFeedback) return; setMarpolSelected(p => p.includes(opt) ? p.filter(x=>x!==opt) : [...p,opt]); }} disabled={!!marpolFeedback}
-                              style={{ padding:"12px 16px", borderRadius:"10px", border:`1.5px solid ${bc}`, background:bg, color:tc, fontWeight:500, fontSize:"14px", cursor:"pointer", textAlign:"left", fontFamily:"'DM Sans',sans-serif", display:"flex", alignItems:"center", gap:"10px", transition:"all 0.15s" }}>
-                              <span style={{ width:"18px", height:"18px", borderRadius:"4px", border:`2px solid ${bc}`, display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0, background: sel ? bc : "transparent" }}>
-                                {sel && <span style={{ color:"#fff", fontSize:"11px", lineHeight:1 }}>✓</span>}
-                              </span>
-                              {opt}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      {!marpolFeedback && (
-                        <button onClick={marpolSubmitMulti} disabled={marpolSelected.length !== item.correct.length}
-                          style={{ marginTop:"12px", ...accentBtn, width:"100%", opacity: marpolSelected.length !== item.correct.length ? 0.45 : 1 }}>
-                          {marpolSelected.length === item.correct.length ? "Check Answers" : `Select ${item.correct.length - marpolSelected.length} more`}
-                        </button>
-                      )}
-                      {marpolFeedback && <>{renderFeedbackBar(marpolFeedback, null)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
-                    </>
-                  )}
-
-                  {/* ── SELECT ALL ── */}
-                  {item.type === "select-all" && (
-                    <>
-                      <div className="quiz-question-card mc-question-card" key={quizPos}>
-                        <div className="quiz-class-label">SELECT ALL THAT APPLY</div>
-                        <div className="mc-question-text">{item.q}</div>
-                      </div>
-                      <div style={{ display:"flex", flexWrap:"wrap", gap:"8px" }}>
-                        {item.options.map((opt,i) => {
-                          const sel = marpolSelected.includes(opt);
-                          const isCorrectOpt = item.correct.includes(opt);
-                          let bc = sel ? "var(--accent)" : "var(--border)";
-                          let bg = sel ? "color-mix(in srgb, var(--accent) 12%, transparent)" : "var(--card)";
-                          let tc = sel ? "var(--accent)" : "var(--t1)";
-                          if (marpolFeedback) { if (isCorrectOpt) { bc="#22c55e"; bg="#22c55e15"; tc="#22c55e"; } else if (sel) { bc="#ef4444"; bg="#ef444415"; tc="#ef4444"; } else { bc="var(--border)"; bg="var(--card)"; tc="var(--t2)"; } }
-                          return (
-                            <button key={i} onClick={() => { if (marpolFeedback) return; setMarpolSelected(p => p.includes(opt) ? p.filter(x=>x!==opt) : [...p,opt]); }} disabled={!!marpolFeedback}
-                              style={{ padding:"8px 14px", borderRadius:"8px", border:`1.5px solid ${bc}`, background:bg, color:tc, fontWeight:500, fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif", transition:"all 0.15s" }}>
-                              {opt}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      {!marpolFeedback && (
-                        <button onClick={marpolSubmitSelectAll} disabled={marpolSelected.length === 0}
-                          style={{ marginTop:"12px", ...accentBtn, width:"100%", opacity: marpolSelected.length === 0 ? 0.45 : 1 }}>
-                          {marpolSelected.length === 0 ? "Tap options to select" : `Check ${marpolSelected.length} selected`}
-                        </button>
-                      )}
-                      {marpolFeedback && (
-                        <>
-                          {renderFeedbackBar(marpolFeedback, null)}
-                          {marpolFeedback === "incorrect" && (
-                            <div style={{ fontSize:"12px", color:"var(--t3)", marginTop:"-6px", marginBottom:"8px" }}>Green = correct answer &nbsp;·&nbsp; Red = wrong selection</div>
-                          )}
-                          <button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button>
-                        </>
-                      )}
-                    </>
-                  )}
-
-                  {/* ── SORT ── */}
-                  {item.type === "sort" && (
-                    <>
-                      <div className="quiz-question-card mc-question-card" key={quizPos}>
-                        <div className="quiz-class-label">SORT IT</div>
-                        <div className="mc-question-text">{item.q}</div>
-                      </div>
-                      <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
-                        {item.items.map((si, i) => {
-                          const assigned = marpolSortState[i];
-                          let cardBorder = assigned ? "var(--accent)" : "var(--border)";
-                          if (marpolFeedback) cardBorder = assigned === si.cat ? "#22c55e" : "#ef4444";
-                          return (
-                            <div key={i} style={{ padding:"12px 14px", borderRadius:"10px", border:`1.5px solid ${cardBorder}`, background:"var(--card)", transition:"border-color 0.15s" }}>
-                              <div style={{ fontSize:"13px", fontWeight:500, color:"var(--t1)", marginBottom: marpolFeedback ? 6 : 8 }}>{si.text}</div>
-                              {!marpolFeedback ? (
-                                <div style={{ display:"flex", gap:"6px" }}>
-                                  {item.categories.map(cat => (
-                                    <button key={cat} onClick={() => setMarpolSortState(p => ({ ...p, [i]:cat }))}
-                                      style={{ flex:1, padding:"5px 8px", borderRadius:"7px", border:"none", background: assigned===cat ? "var(--accent)" : "var(--border)", color: assigned===cat ? "#fff" : "var(--t2)", fontSize:"12px", fontWeight:600, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", transition:"all 0.15s" }}>
-                                      {cat}
-                                    </button>
-                                  ))}
-                                </div>
-                              ) : (
-                                <div style={{ fontSize:"12px", fontWeight:600, color: assigned===si.cat ? "#22c55e" : "#ef4444" }}>
-                                  {assigned===si.cat ? `✓ ${assigned}` : `✗ ${assigned || "unassigned"} → correct: ${si.cat}`}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                      {!marpolFeedback && (
-                        <button onClick={marpolSubmitSort} disabled={!allSortAssigned}
-                          style={{ marginTop:"12px", ...accentBtn, width:"100%", opacity: allSortAssigned ? 1 : 0.45 }}>
-                          {allSortAssigned ? "Check Answers" : "Assign all items to continue"}
-                        </button>
-                      )}
-                      {marpolFeedback && <>{renderFeedbackBar(marpolFeedback, null)}<button className="quiz-next-btn" onClick={marpolNext}>{quizPos+1 >= quizOrder.length ? "See Results →" : "Next →"}</button></>}
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (view === "part-a-quiz") {
-    const data = getQuizData(quizId);
-    const cfg  = QUIZ_CONFIG[quizId] || QUIZ_CONFIG.imdg;
-    const currentItem = quizDone ? null : data[quizOrder[quizPos]];
-    const pct = quizDone ? 100 : Math.round((quizPos / quizOrder.length) * 100);
-    return (
-      <>
-        <style>{styles}</style>
-        <div data-theme={theme} style={{ fontFamily:"'DM Sans',sans-serif", background:"var(--bg)", minHeight:"100vh", color:"var(--t1)", position:"relative", overflow:"hidden", transition:"background 0.3s, color 0.3s" }}>
-          {themeToggle}
-          <div className="dark-pattern"/><div className="light-pattern"/>
-          <div key={viewKey} className="quiz-page view-enter" style={{ paddingTop:"40px" }}>
-            <div className="quiz-container">
-              {/* Header */}
-              <div className="quiz-header">
-                <button onClick={() => changeView("part-a")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, transition:"color 0.15s" }}
-                  onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
-                  {cfg.backLabel}
-                </button>
-                {!quizDone && <div className="quiz-progress-label">{quizPos + 1} / {quizOrder.length}</div>}
-                <div className="quiz-score-label">{quizScore.correct} / {quizScore.total} correct</div>
-              </div>
-
-              {/* Progress bar */}
-              {!quizDone && (
-                <div className="quiz-progress-bar">
-                  <div className="quiz-progress-fill" style={{ width:`${pct}%` }}/>
-                </div>
-              )}
-
-              {quizDone ? (
-                /* Results screen */
-                <div className="quiz-done-card" style={{ animation:"examSetupEnter 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
-                  <div style={{ fontSize:"36px", marginBottom:"8px" }}>{quizScore.correct === quizScore.total ? "🎉" : quizScore.correct >= quizScore.total * 0.7 ? "👍" : "📖"}</div>
-                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--t3)", marginBottom:"4px" }}>Final Score</div>
-                  <div className="quiz-done-score">{quizScore.correct}<span style={{ fontSize:"0.5em", color:"var(--t2)" }}>/{quizScore.total}</span></div>
-                  <div style={{ color:"var(--t2)", marginBottom:"28px", fontSize:"14px" }}>
-                    {quizScore.correct === quizScore.total ? `Perfect — ${cfg.doneText}` : `${Math.round((quizScore.correct/quizScore.total)*100)}% correct`}
-                  </div>
-                  <div style={{ display:"flex", gap:"10px" }}>
-                    <button onClick={() => startQuiz(quizId, quizMode)} style={{ flex:1, padding:"12px", borderRadius:"10px", border:"none", background:"var(--accent)", color:"#fff", fontWeight:700, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>Try Again</button>
-                    {quizId !== "solas-numbers" && (
-                      <button onClick={() => startQuiz(quizId, quizMode==="ordered"?"random":"ordered")} style={{ flex:1, padding:"12px", borderRadius:"10px", border:"1.5px solid var(--border)", background:"var(--card)", color:"var(--t1)", fontWeight:600, fontSize:"14px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>
-                        {quizMode==="ordered" ? "Try Random" : "Try In Order"}
-                      </button>
-                    )}
-                  </div>
-                  <button onClick={() => changeView("part-a")} style={{ marginTop:"10px", width:"100%", padding:"10px", borderRadius:"10px", border:"none", background:"none", color:"var(--t3)", fontSize:"13px", cursor:"pointer", fontFamily:"'DM Sans',sans-serif" }}>← Back to Quizzes</button>
-                </div>
-              ) : (
-                <>
-                  {cfg.type === "lights" ? (
-                    /* ── COLREGS LIGHTS MODE ── */
-                    <>
-                      <div className="quiz-question-card mc-question-card" key={quizPos}>
-                        <div className="quiz-class-label">{cfg.label}</div>
-                        <VesselLightDiagram lights={currentItem.lights} viewLabel={currentItem.viewLabel} />
-                        <div className="mc-question-text" style={{ marginTop:14 }}>{currentItem.q}</div>
-                      </div>
-                      <div className="mc-options">
-                        {currentItem.options.map((opt, i) => {
-                          let state = "idle";
-                          if (quizFeedback) {
-                            if (opt === currentItem.correct) state = "correct";
-                            else if (opt === quizAnswer)      state = "wrong";
-                          }
-                          return (
-                            <button key={i} className={`mc-option mc-option-${state}`}
-                              onClick={() => selectMCOption(opt)}
-                              disabled={!!quizFeedback}>
-                              <span className="mc-letter">{["A","B","C","D"][i]}</span>
-                              <span className="mc-opt-text">{opt}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                      {quizFeedback && (
-                        <>
-                          <div className={`quiz-feedback ${quizFeedback}`}>
-                            <div className="quiz-feedback-icon">{quizFeedback==="correct" ? "✅" : "❌"}</div>
-                            <div className="quiz-feedback-answer" style={{ color: quizFeedback==="correct" ? "var(--confident)" : "#ef4444", fontWeight:600 }}>
-                              {quizFeedback==="correct" ? "Correct!" : `Incorrect — ${currentItem.correct}`}
-                            </div>
-                            {currentItem.explanation && <div style={{ fontSize:"13px", color:"var(--t2)", marginTop:4 }}>{currentItem.explanation}</div>}
-                          </div>
-                          <button className="quiz-next-btn" onClick={nextQuizQuestion}>
-                            {quizPos + 1 >= quizOrder.length ? "See Results →" : "Next →"}
-                          </button>
-                        </>
-                      )}
-                    </>
-                  ) : cfg.type === "mc" ? (
-                    /* ── MULTIPLE CHOICE MODE ── */
-                    <>
-                      {quizId === "pilot" && (
-                        <div style={{ textAlign:"center", marginBottom:"10px" }}>
-                          <button className="poster-btn" onClick={() => setShowPoster(true)}>
-                            📋 Show IMPA Poster
-                          </button>
-                        </div>
-                      )}
-                      <div className="quiz-question-card mc-question-card" key={quizPos}>
-                        <div className="quiz-class-label">{cfg.label}</div>
-                        {currentItem.section && (
-                          <div className="mc-section-label">{currentItem.section}</div>
-                        )}
-                        <div className="mc-question-text">{currentItem.q}</div>
-                      </div>
-
-                      {quizId === "solas-numbers" ? (
-                        /* ── SOLAS Numbers: full 17-option grid ── */
-                        <div className="solas-num-grid">
-                          {currentItem.options.map((opt, i) => {
-                            let cls = "solas-num-btn";
-                            if (quizFeedback) {
-                              if (opt === currentItem.correct) cls += " solas-num-btn-correct";
-                              else if (opt === quizAnswer)     cls += " solas-num-btn-wrong";
-                            }
-                            return (
-                              <button key={i} className={cls}
-                                onClick={() => selectMCOption(opt)}
-                                disabled={!!quizFeedback}>
-                                {opt}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        /* ── Standard 4-option vertical list ── */
-                        <div className="mc-options">
-                          {currentItem.options.map((opt, i) => {
-                            let state = "idle";
-                            if (quizFeedback) {
-                              if (opt === currentItem.correct) state = "correct";
-                              else if (opt === quizAnswer)      state = "wrong";
-                            }
-                            return (
-                              <button key={i} className={`mc-option mc-option-${state}`}
-                                onClick={() => selectMCOption(opt)}
-                                disabled={!!quizFeedback}>
-                                <span className="mc-letter">{["A","B","C","D"][i]}</span>
-                                <span className="mc-opt-text">{opt}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {quizFeedback && (
-                        <>
-                          <div className={`quiz-feedback ${quizFeedback}`}>
-                            <div className="quiz-feedback-icon">{quizFeedback==="correct" ? "✅" : "❌"}</div>
-                            <div className="quiz-feedback-answer" style={{ color: quizFeedback==="correct" ? "var(--confident)" : "#ef4444", fontWeight:600 }}>
-                              {quizFeedback==="correct" ? "Correct!" : "Not quite — the correct answer is highlighted above."}
-                            </div>
-                          </div>
-                          <button className="quiz-next-btn" onClick={nextQuizQuestion}>
-                            {quizPos + 1 >= quizOrder.length ? "See Results →" : "Next →"}
-                          </button>
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    /* ── TEXT INPUT MODE ── */
-                    <>
-                      <div className="quiz-question-card" key={quizPos}>
-                        <div className="quiz-class-label">{cfg.label}</div>
-                        <div className="quiz-class-number">{currentItem.id}</div>
-                        {currentItem.img && (
-                          <img src={currentItem.img} alt={`Class ${currentItem.id} placard`} className="quiz-class-img" />
-                        )}
-                        <div className="quiz-class-question">{cfg.question}</div>
-                      </div>
-
-                      {/* Hint (SOLAS only) */}
-                      {currentItem.hint && !quizFeedback && (
-                        <div style={{ textAlign:"center", marginBottom:"10px" }}>
-                          <button className="hint-btn" onClick={() => setShowHint(h => !h)}>
-                            {showHint ? "🙈 Hide Hint" : "💡 Show Hint"}
-                          </button>
-                        </div>
-                      )}
-                      {showHint && currentItem.hint && !quizFeedback && (
-                        <div className="hint-card">
-                          {currentItem.hint.split(/(\{[^}]+\})/).map((part, i) => {
-                            if (part.startsWith("{") && part.endsWith("}")) {
-                              const word = part.slice(1, -1);
-                              return <span key={i} className="hint-blank">{"_".repeat(word.length)}</span>;
-                            }
-                            return <span key={i}>{part}</span>;
-                          })}
-                        </div>
-                      )}
-
-                      {/* Feedback */}
-                      {quizFeedback && (
-                        <div className={`quiz-feedback ${quizFeedback}`}>
-                          <div className="quiz-feedback-icon">{quizFeedback==="correct" ? "✅" : "❌"}</div>
-                          <div className="quiz-feedback-answer" style={{ color: quizFeedback==="correct" ? "var(--confident)" : "#ef4444", fontWeight:600, marginBottom:quizFeedback==="incorrect"?6:0 }}>
-                            {quizFeedback==="correct" ? "Correct!" : "Not quite."}
-                          </div>
-                          {quizFeedback==="incorrect" && (
-                            <div style={{ fontSize:"14px", color:"var(--t1)", lineHeight:1.55 }}>
-                              <span style={{ color:"var(--t3)", fontSize:"12px" }}>Correct answer: </span><br/>
-                              <strong>{currentItem.name}</strong>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {!quizFeedback ? (
-                        <>
-                          <input
-                            ref={quizInputRef}
-                            className="quiz-input"
-                            type="text"
-                            placeholder={cfg.placeholder}
-                            value={quizAnswer}
-                            onChange={e => setQuizAnswer(e.target.value)}
-                            onKeyDown={e => { if (e.key === "Enter") submitQuizAnswer(); }}
-                            autoFocus
-                          />
-                          <button className="quiz-submit-btn" onClick={submitQuizAnswer} disabled={!quizAnswer.trim()}>
-                            Submit
-                          </button>
-                        </>
-                      ) : (
-                        <button className="quiz-next-btn" onClick={nextQuizQuestion}>
-                          {quizPos + 1 >= quizOrder.length ? "See Results →" : "Next →"}
-                        </button>
-                      )}
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
 
           {/* ── IMPA Poster Overlay ── */}
           {showPoster && (
