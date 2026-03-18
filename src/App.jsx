@@ -2980,7 +2980,7 @@ export default function App() {
           <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme==="light" ? `radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)` : `radial-gradient(ellipse at 50% -20%,rgba(32,192,200,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
 
           <div key={viewKey} className="landing-container view-enter">
-            <div className="landing-title">MCA OOW Unlimited</div>
+            <div className="landing-title">Deck Cadet Study Map</div>
             <h1 className="landing-heading">Oral Exam Prep</h1>
             <p className="landing-sub">Select your exam part to begin studying.</p>
 
