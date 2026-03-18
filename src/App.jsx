@@ -1740,9 +1740,9 @@ const FLAG_DATA = [
 
 const PART_A_QUIZZES = [
   // ── COLREGS (Q1–3, 90% pass mark)
-  { id:"colregs-lights", title:"COLREGS — Vessel Lights",  count:24, icon:"🚦", desc:"Identify the vessel type from its navigation light configuration" },
+  { id:"colregs-lights", title:"COLREGS — Vessel Lights",  count:24, icon:"🚦", desc:"Identify the vessel type from its navigation light configuration", hidden:true },
   // ── IALA Buoyage (Q4–6, 90% pass mark)
-  { id:"iala-buoyage",  title:"IALA Buoyage",              count:11, icon:"🚢", desc:"Identify shape, colour, light pattern and top mark for all IALA marks" },
+  { id:"iala-buoyage",  title:"IALA Buoyage",              count:11, icon:"🚢", desc:"Identify shape, colour, light pattern and top mark for all IALA marks", hidden:true },
   // ── SOLAS
   { id:"solas",         title:"SOLAS Chapter Titles",      count:17, icon:"⚓",  desc:"Name each SOLAS chapter from its roman numeral" },
   { id:"solas-numbers", title:"SOLAS Numbers Game",        count:17, icon:"🔢", desc:"Match each chapter title to its roman numeral" },
@@ -1871,7 +1871,7 @@ export default function App() {
   const [quizScore, setQuizScore] = useState({ correct:0, total:0 });
   const [quizDone, setQuizDone] = useState(false);
   const quizInputRef = useRef(null);
-  const [quizSelectedId, setQuizSelectedId] = useState(PART_A_QUIZZES[0].id);
+  const [quizSelectedId, setQuizSelectedId] = useState((PART_A_QUIZZES.find(q => !q.hidden) || PART_A_QUIZZES[0]).id);
   const [quizSelectedMode, setQuizSelectedMode] = useState("ordered");
   const [quizRunning, setQuizRunning] = useState(false);
   const quizFeedbackTimeRef = useRef(0);
@@ -3115,7 +3115,7 @@ export default function App() {
 
               {/* Quiz grid */}
               <div className="quiz-selection-grid">
-                {PART_A_QUIZZES.map(quiz => {
+                {PART_A_QUIZZES.filter(q => !q.hidden).map(quiz => {
                   const sel = quizSelectedId === quiz.id;
                   const hist = quizHistory[quiz.id];
                   const histPct = hist ? Math.round((hist.correct / hist.total) * 100) : null;
