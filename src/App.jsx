@@ -1099,7 +1099,7 @@ const W = "#f5f0d8", R = "#ef4444", G = "#22c55e", Y = "#facc15";
 const COLREGS_LIGHTS = [
   // 1 — PDV ≥50m, from ahead
   {
-    id:"pdv-50m", viewLabel:"From Ahead",
+    id:"pdv-50m", viewLabel:"From Ahead", hull:"ahead",
     lights:[
       { cx:50, cy:17, r:4, fill:W },
       { cx:50, cy:30, r:4, fill:W },
@@ -1118,7 +1118,7 @@ const COLREGS_LIGHTS = [
   },
   // 2 — PDV <50m, from ahead
   {
-    id:"pdv-u50m", viewLabel:"From Ahead",
+    id:"pdv-u50m", viewLabel:"From Ahead", hull:"ahead",
     lights:[
       { cx:50, cy:24, r:4, fill:W },
       { cx:20, cy:60, r:4, fill:R },
@@ -1136,7 +1136,7 @@ const COLREGS_LIGHTS = [
   },
   // 3 — Sailing vessel underway, from ahead
   {
-    id:"sail-ahead", viewLabel:"From Ahead",
+    id:"sail-ahead", viewLabel:"From Ahead", hull:"ahead",
     lights:[
       { cx:20, cy:50, r:4, fill:R },
       { cx:80, cy:50, r:4, fill:G },
@@ -1153,7 +1153,7 @@ const COLREGS_LIGHTS = [
   },
   // 4 — NUC not making way
   {
-    id:"nuc-stopped", viewLabel:"Not Making Way",
+    id:"nuc-stopped", viewLabel:"Not Making Way", hull:"none",
     lights:[
       { cx:50, cy:30, r:5, fill:R, allRound:true },
       { cx:50, cy:55, r:5, fill:R, allRound:true },
@@ -1170,7 +1170,7 @@ const COLREGS_LIGHTS = [
   },
   // 5 — NUC making way, from ahead
   {
-    id:"nuc-making-way", viewLabel:"From Ahead",
+    id:"nuc-making-way", viewLabel:"From Ahead", hull:"ahead",
     lights:[
       { cx:50, cy:22, r:5, fill:R, allRound:true },
       { cx:50, cy:40, r:5, fill:R, allRound:true },
@@ -1189,7 +1189,7 @@ const COLREGS_LIGHTS = [
   },
   // 6 — RAM not making way
   {
-    id:"ram-stopped", viewLabel:"Not Making Way",
+    id:"ram-stopped", viewLabel:"Not Making Way", hull:"none",
     lights:[
       { cx:50, cy:22, r:5, fill:R, allRound:true },
       { cx:50, cy:40, r:5, fill:W, allRound:true },
@@ -1207,13 +1207,13 @@ const COLREGS_LIGHTS = [
   },
   // 7 — RAM making way, from ahead
   {
-    id:"ram-making-way", viewLabel:"From Ahead",
+    id:"ram-making-way", viewLabel:"From Ahead", hull:"ahead",
     lights:[
       { cx:50, cy:12, r:4, fill:W },
       { cx:50, cy:24, r:4, fill:W },
-      { cx:50, cy:37, r:5, fill:R, allRound:true },
-      { cx:50, cy:52, r:5, fill:W, allRound:true },
-      { cx:50, cy:67, r:5, fill:R, allRound:true },
+      { cx:38, cy:37, r:5, fill:R, allRound:true },
+      { cx:38, cy:52, r:5, fill:W, allRound:true },
+      { cx:38, cy:67, r:5, fill:R, allRound:true },
       { cx:18, cy:80, r:4, fill:R },
       { cx:82, cy:80, r:4, fill:G },
     ],
@@ -1229,13 +1229,13 @@ const COLREGS_LIGHTS = [
   },
   // 8 — Vessel constrained by draught, from ahead
   {
-    id:"cbd", viewLabel:"From Ahead",
+    id:"cbd", viewLabel:"From Ahead", hull:"ahead",
     lights:[
       { cx:50, cy:12, r:4, fill:W },
       { cx:50, cy:24, r:4, fill:W },
-      { cx:50, cy:37, r:5, fill:R, allRound:true },
-      { cx:50, cy:52, r:5, fill:R, allRound:true },
-      { cx:50, cy:67, r:5, fill:R, allRound:true },
+      { cx:38, cy:37, r:5, fill:R, allRound:true },
+      { cx:38, cy:52, r:5, fill:R, allRound:true },
+      { cx:38, cy:67, r:5, fill:R, allRound:true },
       { cx:18, cy:80, r:4, fill:R },
       { cx:82, cy:80, r:4, fill:G },
     ],
@@ -1251,7 +1251,7 @@ const COLREGS_LIGHTS = [
   },
   // 9 — Trawling, from ahead
   {
-    id:"trawling", viewLabel:"From Ahead",
+    id:"trawling", viewLabel:"From Ahead", hull:"ahead",
     lights:[
       { cx:50, cy:20, r:4, fill:W },
       { cx:50, cy:37, r:5, fill:G, allRound:true },
@@ -1271,7 +1271,7 @@ const COLREGS_LIGHTS = [
   },
   // 10 — Fishing not trawling, from ahead
   {
-    id:"fishing", viewLabel:"From Ahead",
+    id:"fishing", viewLabel:"From Ahead", hull:"ahead",
     lights:[
       { cx:50, cy:33, r:5, fill:R, allRound:true },
       { cx:50, cy:53, r:5, fill:W, allRound:true },
@@ -1290,7 +1290,7 @@ const COLREGS_LIGHTS = [
   },
   // 11 — Pilot vessel on duty, from ahead
   {
-    id:"pilot", viewLabel:"From Ahead",
+    id:"pilot", viewLabel:"From Ahead", hull:"ahead",
     lights:[
       { cx:50, cy:15, r:4, fill:W },
       { cx:50, cy:33, r:5, fill:W, allRound:true },
@@ -1310,7 +1310,7 @@ const COLREGS_LIGHTS = [
   },
   // 12 — Towing >200m, from ahead
   {
-    id:"towing-long", viewLabel:"From Ahead",
+    id:"towing-long", viewLabel:"From Ahead", hull:"ahead",
     lights:[
       { cx:50, cy:12, r:4, fill:W },
       { cx:50, cy:24, r:4, fill:W },
@@ -1330,7 +1330,7 @@ const COLREGS_LIGHTS = [
   },
   // 13 — At anchor <50m
   {
-    id:"anchor-small", viewLabel:"At Anchor",
+    id:"anchor-small", viewLabel:"At Anchor", hull:"none",
     lights:[
       { cx:50, cy:45, r:5, fill:W, allRound:true },
     ],
@@ -1346,7 +1346,7 @@ const COLREGS_LIGHTS = [
   },
   // 14 — At anchor ≥50m
   {
-    id:"anchor-large", viewLabel:"At Anchor",
+    id:"anchor-large", viewLabel:"At Anchor", hull:"none",
     lights:[
       { cx:38, cy:30, r:5, fill:W, allRound:true },
       { cx:62, cy:60, r:5, fill:W, allRound:true },
@@ -1363,7 +1363,7 @@ const COLREGS_LIGHTS = [
   },
   // 15 — Aground
   {
-    id:"aground", viewLabel:"Aground",
+    id:"aground", viewLabel:"Aground", hull:"none",
     lights:[
       { cx:50, cy:28, r:5, fill:W, allRound:true },
       { cx:50, cy:48, r:5, fill:R, allRound:true },
@@ -1381,7 +1381,7 @@ const COLREGS_LIGHTS = [
   },
   // 16 — Air cushion vessel (hovercraft) in non-displacement mode
   {
-    id:"acv", viewLabel:"From Ahead",
+    id:"acv", viewLabel:"From Ahead", hull:"ahead",
     lights:[
       { cx:50, cy:17, r:4, fill:W },
       { cx:50, cy:38, r:5, fill:Y, allRound:true },
@@ -1397,6 +1397,151 @@ const COLREGS_LIGHTS = [
       "Pilot vessel on duty, making way",
     ],
     explanation:"Normal PDV lights plus an all-round flashing yellow light = air cushion vessel (hovercraft) in non-displacement mode (Rule 23b). The flashing yellow is the distinctive identifying feature."
+  },
+
+  // 17 — PDV underway from astern (sternlight only)
+  {
+    id:"pdv-astern", viewLabel:"From Astern", hull:"astern",
+    lights:[ { cx:50, cy:52, r:5, fill:W } ],
+    q:"A vessel underway shows only this light from astern. What can you NOT determine from this view?",
+    correct:"Whether she is sailing or power-driven",
+    options:[
+      "Whether she is sailing or power-driven",
+      "She is underway and making way",
+      "She is not at anchor",
+      "Her sternlight is white",
+    ],
+    explanation:"Both a sailing vessel and a power-driven vessel show only a white sternlight from astern. To distinguish them you must observe from ahead — a PDV shows a masthead light, a sailing vessel does not."
+  },
+
+  // 18 — PDV ≥50m from starboard beam
+  {
+    id:"pdv-50m-starboard", viewLabel:"From Starboard", hull:"starboard",
+    lights:[
+      { cx:55, cy:30, r:4, fill:W },
+      { cx:36, cy:18, r:4, fill:W },
+      { cx:82, cy:65, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this configuration from the starboard side?",
+    correct:"Power-driven vessel underway — 50m or more in length",
+    options:[
+      "Power-driven vessel underway — 50m or more in length",
+      "Power-driven vessel underway — less than 50m",
+      "Vessel restricted in ability to manoeuvre, making way",
+      "Sailing vessel underway",
+    ],
+    explanation:"Two white masthead lights (forward lower, aft higher) plus a green sidelight at the bow = PDV ≥50m from the starboard side. A vessel <50m shows only one masthead. Sternlight is not visible from the beam."
+  },
+
+  // 19 — PDV <50m from starboard beam
+  {
+    id:"pdv-u50m-starboard", viewLabel:"From Starboard", hull:"starboard",
+    lights:[
+      { cx:50, cy:24, r:4, fill:W },
+      { cx:82, cy:65, r:4, fill:G },
+    ],
+    q:"What type of vessel shows this configuration from the starboard side?",
+    correct:"Power-driven vessel underway — less than 50m in length",
+    options:[
+      "Power-driven vessel underway — less than 50m in length",
+      "Power-driven vessel underway — 50m or more",
+      "Sailing vessel underway",
+      "Pilot vessel on duty",
+    ],
+    explanation:"One white masthead light plus green sidelight from the starboard beam = PDV <50m. A vessel ≥50m must carry two masthead lights, the aft one higher."
+  },
+
+  // 20 — Sailing vessel from starboard beam
+  {
+    id:"sail-starboard", viewLabel:"From Starboard", hull:"starboard",
+    lights:[
+      { cx:82, cy:65, r:4, fill:G },
+    ],
+    q:"A vessel shows only this light from the starboard side. What type of vessel is this?",
+    correct:"Sailing vessel underway",
+    options:[
+      "Sailing vessel underway",
+      "Power-driven vessel underway — less than 50m",
+      "Vessel not under command",
+      "Power-driven vessel underway — less than 7m",
+    ],
+    explanation:"A green sidelight with NO white masthead light from the starboard beam = sailing vessel underway (Rule 25). The absence of any masthead light is the definitive identifying feature. A PDV always shows at least one masthead light."
+  },
+
+  // 21 — Towing vessel from astern (yellow towing light)
+  {
+    id:"towing-astern", viewLabel:"From Astern", hull:"astern",
+    lights:[
+      { cx:50, cy:36, r:4, fill:Y },
+      { cx:50, cy:54, r:5, fill:W },
+    ],
+    q:"A vessel shows these two lights from astern. What type of vessel is this?",
+    correct:"Power-driven vessel towing another vessel",
+    options:[
+      "Power-driven vessel towing another vessel",
+      "Air cushion vessel, non-displacement mode",
+      "Pilot vessel on duty",
+      "Vessel restricted in ability to manoeuvre",
+    ],
+    explanation:"A yellow towing light above a white sternlight from astern = towing vessel (Rule 24). The yellow distinguishes towing vessels from all others when viewed from astern."
+  },
+
+  // 22 — NUC from astern (making way)
+  {
+    id:"nuc-astern", viewLabel:"From Astern", hull:"astern",
+    lights:[
+      { cx:50, cy:28, r:5, fill:R, allRound:true },
+      { cx:50, cy:48, r:5, fill:R, allRound:true },
+      { cx:50, cy:65, r:5, fill:W },
+    ],
+    q:"A vessel making way shows these lights from astern. What type of vessel is this?",
+    correct:"Vessel not under command",
+    options:[
+      "Vessel not under command",
+      "Vessel restricted in ability to manoeuvre",
+      "Vessel constrained by her draught",
+      "Vessel aground",
+    ],
+    explanation:"Two all-round red lights plus sternlight from astern = NUC making way (Rule 27a). RAM would show red-white-red (three lights). CBD would show three reds. The all-round signal lights remain visible from all directions."
+  },
+
+  // 23 — RAM not making way (R-W-R only)
+  {
+    id:"ram-astern", viewLabel:"Not Making Way", hull:"none",
+    lights:[
+      { cx:50, cy:25, r:5, fill:R, allRound:true },
+      { cx:50, cy:44, r:5, fill:W, allRound:true },
+      { cx:50, cy:63, r:5, fill:R, allRound:true },
+    ],
+    q:"A vessel not making way shows these three all-round lights. What type of vessel is this?",
+    correct:"Vessel restricted in ability to manoeuvre",
+    options:[
+      "Vessel restricted in ability to manoeuvre",
+      "Vessel not under command",
+      "Vessel constrained by her draught",
+      "Vessel aground",
+    ],
+    explanation:"Red-White-Red all-round lights (no sidelights or sternlight) = RAM not making way (Rule 27b). NUC shows two reds. CBD shows three reds. RAM's R-W-R pattern — sometimes remembered as 'Ram it White' — is the key identifier."
+  },
+
+  // 24 — CBD from astern (making way)
+  {
+    id:"cbd-astern", viewLabel:"From Astern", hull:"astern",
+    lights:[
+      { cx:50, cy:22, r:5, fill:R, allRound:true },
+      { cx:50, cy:40, r:5, fill:R, allRound:true },
+      { cx:50, cy:58, r:5, fill:R, allRound:true },
+      { cx:50, cy:74, r:5, fill:W },
+    ],
+    q:"A vessel shows three all-round red lights plus a sternlight from astern. What type of vessel is this?",
+    correct:"Vessel constrained by her draught",
+    options:[
+      "Vessel constrained by her draught",
+      "Vessel not under command, making way",
+      "Vessel restricted in ability to manoeuvre, making way",
+      "Vessel aground",
+    ],
+    explanation:"Three all-round red lights plus sternlight from astern = CBD making way (Rule 28). NUC shows two reds. RAM shows R-W-R (red-white-red). CBD's three reds remind you of the extreme care required when navigating in restricted depth."
   },
 ];
 (function shuffleColregsOptions() {
@@ -1595,7 +1740,7 @@ const FLAG_DATA = [
 
 const PART_A_QUIZZES = [
   // ── COLREGS (Q1–3, 90% pass mark)
-  { id:"colregs-lights", title:"COLREGS — Vessel Lights",  count:16, icon:"🚦", desc:"Identify the vessel type from its navigation light configuration", comingSoon:true },
+  { id:"colregs-lights", title:"COLREGS — Vessel Lights",  count:24, icon:"🚦", desc:"Identify the vessel type from its navigation light configuration" },
   // ── IALA Buoyage (Q4–6, 90% pass mark)
   { id:"iala-buoyage",  title:"IALA Buoyage",              count:11, icon:"🚢", desc:"Identify shape, colour, light pattern and top mark for all IALA marks" },
   // ── SOLAS
@@ -1615,17 +1760,16 @@ const PART_A_QUIZZES = [
   { id:"met",           title:"Meteorology",               count:15, icon:"🌦️", desc:"Buys Ballot, TRS, fronts, fog and weather instruments" },
 ];
 
-const PART_A_QUIZ_GROUPS = [
-  { label:"COLREGS",        mark:"90%", ids:["colregs-lights"] },
-  { label:"IALA BUOYAGE",   mark:"90%", ids:["iala-buoyage"]  },
-  { label:"SOLAS",          mark:"",    ids:["solas","solas-numbers"] },
-  { label:"MARPOL",         mark:"",    ids:["marpol","marpol-4","marpol-5"] },
-  { label:"CARGO & SAFETY", mark:"",    ids:["imdg"] },
-  { label:"OPERATIONS",     mark:"",    ids:["pilot","flags","met"] },
-];
 
-function VesselLightDiagram({ lights, viewLabel = "" }) {
+function VesselLightDiagram({ lights, viewLabel = "", hull = "ahead" }) {
   const W = "#f5f0d8", R = "#ef4444", G = "#22c55e", Y = "#facc15";
+  const hullShapes = {
+    ahead:     <path d="M50,14 L68,46 L68,80 L32,80 L32,46 Z" fill="#ffffff05" stroke="#ffffff22" strokeWidth="1.3" strokeLinejoin="round"/>,
+    astern:    <><path d="M28,14 L72,14 L72,60 Q72,82 50,86 Q28,82 28,60 Z" fill="#ffffff05" stroke="#ffffff22" strokeWidth="1.3"/><line x1="28" y1="14" x2="72" y2="14" stroke="#ffffff35" strokeWidth="1.8"/></>,
+    starboard: <><path d="M15,52 Q17,33 38,27 L62,27 Q80,30 86,52 Q80,73 62,76 L38,76 Q17,71 15,52 Z" fill="#ffffff05" stroke="#ffffff22" strokeWidth="1.3"/><path d="M82,46 L91,52 L82,58" fill="none" stroke="#ffffff35" strokeWidth="1.5"/></>,
+    port:      <><path d="M15,52 Q17,33 38,27 L62,27 Q80,30 86,52 Q80,73 62,76 L38,76 Q17,71 15,52 Z" fill="#ffffff05" stroke="#ffffff22" strokeWidth="1.3"/><path d="M18,46 L9,52 L18,58" fill="none" stroke="#ffffff35" strokeWidth="1.5"/></>,
+    none:      null,
+  };
   return (
     <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"6px" }}>
       <svg viewBox="0 0 100 100" style={{ background:"#0d1117", borderRadius:12, width:"100%", maxWidth:200, display:"block" }}>
@@ -1635,6 +1779,7 @@ function VesselLightDiagram({ lights, viewLabel = "" }) {
           <filter id="lg-g" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           <filter id="lg-y" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
+        {hullShapes[hull] ?? null}
         {lights.map((l, i) => {
           const fid = l.fill === W ? "lg-w" : l.fill === R ? "lg-r" : l.fill === G ? "lg-g" : "lg-y";
           return (
@@ -2552,32 +2697,6 @@ export default function App() {
     .quiz-done-card { background:var(--card); border:1.5px solid var(--border); border-radius:20px; padding:40px 32px; text-align:center; }
     .quiz-done-score { font-size:clamp(48px,10vw,72px); font-weight:700; color:var(--accent); font-family:'Space Mono',monospace; line-height:1; margin:16px 0 8px; }
 
-    /* === PART A SHELL LAYOUT === */
-    .part-a-shell { display:flex; min-height:100vh; position:relative; z-index:1; }
-    .part-a-sidebar { width:240px; flex-shrink:0; border-right:1px solid var(--border); background:var(--card); display:flex; flex-direction:column; padding:0 0 40px; position:sticky; top:0; height:100vh; overflow-y:auto; }
-    .part-a-sidebar-header { padding:24px 20px 16px; border-bottom:1px solid var(--border); margin-bottom:8px; }
-    .part-a-sidebar-group { padding:14px 20px 4px; font-family:'Space Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--t3); font-weight:700; display:flex; align-items:center; gap:6px; }
-    .part-a-sidebar-item { display:flex; align-items:center; gap:10px; padding:9px 20px; cursor:pointer; transition:background 0.12s; position:relative; }
-    .part-a-sidebar-item:hover { background:var(--card-h); }
-    .part-a-sidebar-item.active { background:color-mix(in srgb, var(--accent) 10%, transparent); }
-    .part-a-sidebar-item.active::before { content:''; position:absolute; left:0; top:4px; bottom:4px; width:3px; border-radius:0 3px 3px 0; background:var(--accent); }
-    .part-a-sidebar-item.cs { opacity:0.38; cursor:default; pointer-events:none; }
-    .part-a-sidebar-item-title { font-size:13px; font-weight:500; color:var(--t2); flex:1; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .part-a-sidebar-item.active .part-a-sidebar-item-title { color:var(--accent); font-weight:600; }
-    .part-a-main { flex:1; min-width:0; padding:40px 40px 80px; display:flex; flex-direction:column; align-items:center; }
-    .part-a-setup { width:100%; max-width:520px; animation:viewEnter 0.35s cubic-bezier(0.22,1,0.36,1) both; }
-    @media (max-width:767px) {
-      .part-a-shell { flex-direction:column; }
-      .part-a-sidebar { width:100%; height:auto; position:static; border-right:none; border-bottom:1px solid var(--border); flex-direction:row; overflow-x:auto; overflow-y:hidden; padding:12px 0 0; scrollbar-width:none; }
-      .part-a-sidebar::-webkit-scrollbar { display:none; }
-      .part-a-sidebar-header { display:none; }
-      .part-a-sidebar-group { display:none; }
-      .part-a-sidebar-item { flex-direction:column; padding:6px 12px 10px; min-width:72px; text-align:center; gap:3px; flex-shrink:0; }
-      .part-a-sidebar-item.active::before { left:8px; right:8px; top:auto; bottom:0; width:auto; height:2px; border-radius:2px 2px 0 0; }
-      .part-a-sidebar-item-title { font-size:10px; white-space:normal; text-align:center; overflow:visible; max-width:64px; }
-      .part-a-main { padding:24px 16px 60px; }
-    }
-
     /* Multiple-choice styles */
     .mc-question-card { padding:28px 24px 24px; }
     .mc-section-label { font-size:11px; font-weight:600; font-family:'Space Mono',monospace; letter-spacing:0.5px; color:var(--accent); background:var(--accent)15; border:1px solid var(--accent)30; border-radius:20px; padding:3px 10px; display:inline-block; margin:6px auto 2px; }
@@ -2951,114 +3070,85 @@ export default function App() {
           <div className="dark-pattern"/><div className="light-pattern"/>
           <div style={{ position:"fixed",top:0,left:0,right:0,height:"300px", background:theme==="light"?`radial-gradient(ellipse at 50% -20%,rgba(51,87,101,var(--glow-opacity)) 0%,transparent 70%)`:`radial-gradient(ellipse at 50% -20%,rgba(32,192,200,var(--glow-opacity)) 0%,transparent 70%)`, zIndex:0 }}/>
 
-          <div className="part-a-shell">
-            {/* ── SIDEBAR ── */}
-            <div className="part-a-sidebar">
-              <div className="part-a-sidebar-header">
-                <button onClick={() => changeView("landing")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:0, marginBottom:"10px", transition:"color 0.15s", display:"block" }}
-                  onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
-                  ← Landing
+          {!quizRunning ? (
+            /* ── SELECTION VIEW ── */
+            <div className="quiz-page view-enter">
+              <button onClick={() => changeView("landing")} style={{ background:"none", border:"none", color:"var(--t3)", fontSize:"12px", fontFamily:"'Space Mono',monospace", letterSpacing:"1px", cursor:"pointer", padding:"0 0 16px 0", transition:"color 0.15s" }}
+                onMouseOver={e=>e.currentTarget.style.color="var(--t2)"} onMouseOut={e=>e.currentTarget.style.color="var(--t3)"}>
+                ← PART A
+              </button>
+
+              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"11px", letterSpacing:"4px", textTransform:"uppercase", color:"var(--accent)", marginBottom:"6px", fontWeight:700 }}>PART A</div>
+              <h1 style={{ fontSize:"clamp(24px,4vw,36px)", fontWeight:700, marginBottom:"8px", color:"var(--t1)", lineHeight:1.2 }}>Quizzes</h1>
+              <p style={{ color:"var(--t2)", fontSize:"14px", marginBottom:"24px", lineHeight:1.6 }}>Select a quiz and choose your mode to begin.</p>
+
+              {/* Hero bar */}
+              <div style={{ display:"flex", gap:"12px", alignItems:"center", marginBottom:"28px", flexWrap:"wrap", width:"100%" }}>
+                <button onClick={() => setShowPartAInfo(true)} style={{ background:"none", border:"1.5px solid var(--border)", borderRadius:"10px", color:"var(--t2)", fontSize:"13px", fontWeight:600, cursor:"pointer", padding:"9px 16px", fontFamily:"'DM Sans',sans-serif", transition:"all 0.15s", flexShrink:0 }}
+                  onMouseOver={e=>e.currentTarget.style.borderColor="var(--t3)"} onMouseOut={e=>e.currentTarget.style.borderColor="var(--border)"}>
+                  ❓ What is Part A?
                 </button>
-                <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"9px", letterSpacing:"2.5px", textTransform:"uppercase", color:"var(--t3)", fontWeight:700 }}>PART A / QUIZZES</div>
-              </div>
-
-              {/* What is Part A? */}
-              <div className="part-a-sidebar-item" onClick={() => setShowPartAInfo(true)}>
-                <span style={{ fontSize:"17px" }}>❓</span>
-                <span className="part-a-sidebar-item-title">What is Part A?</span>
-              </div>
-
-              {/* Quiz groups */}
-              {PART_A_QUIZ_GROUPS.map(group => (
-                <div key={group.label}>
-                  <div className="part-a-sidebar-group">
-                    {group.label}
-                    {group.mark && <span style={{ fontSize:"8px", background:"var(--accent)22", color:"var(--accent)", borderRadius:"4px", padding:"1px 5px" }}>{group.mark}</span>}
-                  </div>
-                  {group.ids.map(id => {
-                    const q = PART_A_QUIZZES.find(x => x.id === id);
-                    if (!q) return null;
-                    const cs = !!q.comingSoon;
-                    const isActive = quizSelectedId === id;
-                    const hist = quizHistory[id];
-                    const histPct = hist ? Math.round((hist.correct / hist.total) * 100) : null;
-                    return (
-                      <div key={id}
-                        className={`part-a-sidebar-item${isActive ? " active" : ""}${cs ? " cs" : ""}`}
-                        onClick={() => { if (cs) return; setQuizSelectedId(id); if (quizRunning) stopQuiz(); }}>
-                        <span style={{ fontSize:"18px", flexShrink:0 }}>{q.icon}</span>
-                        <span className="part-a-sidebar-item-title">{q.title}</span>
-                        {cs && <span style={{ fontSize:"8px", background:"var(--border)", color:"var(--t3)", borderRadius:"4px", padding:"1px 5px", flexShrink:0, fontFamily:"'Space Mono',monospace", letterSpacing:"0.5px" }}>Soon</span>}
-                        {!cs && histPct !== null && (
-                          <span style={{ fontSize:"10px", fontFamily:"'Space Mono',monospace", color: histPct>=80?"var(--confident)":histPct>=50?"var(--review)":"#ef4444", flexShrink:0 }}>{histPct}%</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-
-            {/* ── MAIN ── */}
-            <div className="part-a-main">
-              {!quizRunning ? (
-                /* ── SETUP PANEL ── */
-                <div className="part-a-setup">
+                <div style={{ flex:1, display:"flex", gap:"10px", alignItems:"center", justifyContent:"flex-end", flexWrap:"wrap" }}>
                   {(() => {
                     const selQuiz = PART_A_QUIZZES.find(q => q.id === quizSelectedId);
-                    if (!selQuiz) return null;
-                    if (selQuiz.comingSoon) {
-                      return (
-                        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"16px", paddingTop:"60px", textAlign:"center" }}>
-                          <div style={{ fontSize:"48px" }}>{selQuiz.icon}</div>
-                          <h2 style={{ fontSize:"22px", fontWeight:700, color:"var(--t1)" }}>{selQuiz.title}</h2>
-                          <div style={{ background:"var(--border)", color:"var(--t3)", fontSize:"10px", fontFamily:"'Space Mono',monospace", letterSpacing:"2px", textTransform:"uppercase", fontWeight:700, padding:"5px 12px", borderRadius:"8px" }}>Coming Soon</div>
-                          <p style={{ color:"var(--t3)", fontSize:"14px", maxWidth:"320px", lineHeight:1.6 }}>This quiz is being developed and will be available soon.</p>
-                        </div>
-                      );
-                    }
-                    const hist = quizHistory[selQuiz.id];
-                    const histPct = hist ? Math.round((hist.correct / hist.total) * 100) : null;
-                    const forceRandom = selQuiz.id === "solas-numbers" || selQuiz.id === "flags";
+                    const forceRandom = selQuiz && (selQuiz.id === "solas-numbers" || selQuiz.id === "flags");
                     return (
                       <>
-                        <div style={{ fontFamily:"'Space Mono',monospace", fontSize:"10px", letterSpacing:"3px", textTransform:"uppercase", color:"var(--accent)", marginBottom:"8px", fontWeight:700 }}>
-                          {selQuiz.icon}&nbsp; {selQuiz.count} Questions
-                        </div>
-                        <h2 style={{ fontSize:"clamp(22px,3vw,30px)", fontWeight:700, marginBottom:"8px", color:"var(--t1)", lineHeight:1.2 }}>{selQuiz.title}</h2>
-                        <p style={{ color:"var(--t2)", fontSize:"14px", marginBottom:"20px", lineHeight:1.6 }}>{selQuiz.desc}</p>
-                        {histPct !== null && (
-                          <div style={{ marginBottom:"20px" }}>
-                            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:"6px" }}>
-                              <span style={{ fontSize:"12px", color:"var(--t3)" }}>Best score</span>
-                              <span style={{ fontFamily:"'Space Mono',monospace", fontSize:"12px", color: histPct>=80?"var(--confident)":histPct>=50?"var(--review)":"#ef4444" }}>{histPct}%</span>
-                            </div>
-                            <div style={{ height:"4px", borderRadius:"2px", background:"var(--border)", overflow:"hidden" }}>
-                              <div style={{ width:`${histPct}%`, height:"100%", background: histPct>=80?"var(--confident)":histPct>=50?"var(--review)":"#ef4444", borderRadius:"2px", transition:"width 0.3s" }}/>
-                            </div>
-                          </div>
-                        )}
-                        <div className="quiz-mode-row" style={{ marginBottom:"16px" }}>
+                        <div className="quiz-mode-row" style={{ marginTop:0 }}>
                           <button className={`quiz-mode-btn${!forceRandom && quizSelectedMode==="ordered"?" active":""}`}
                             onClick={() => setQuizSelectedMode("ordered")}
                             disabled={forceRandom}
-                            style={{ padding:"10px 18px", fontSize:"14px" }}
                             title={forceRandom ? "This quiz is always randomised" : ""}>In Order</button>
                           <button className={`quiz-mode-btn${forceRandom || quizSelectedMode==="random"?" active":""}`}
-                            onClick={() => setQuizSelectedMode("random")}
-                            style={{ padding:"10px 18px", fontSize:"14px" }}>Random</button>
+                            onClick={() => setQuizSelectedMode("random")}>Random</button>
                         </div>
-                        <button className="quiz-start-btn" style={{ margin:0, width:"100%" }}
-                          onClick={() => startQuiz(selQuiz.id, forceRandom ? "random" : quizSelectedMode)}>
+                        <button className="quiz-start-btn"
+                          disabled={!selQuiz || !!selQuiz.comingSoon}
+                          onClick={() => selQuiz && startQuiz(selQuiz.id, forceRandom ? "random" : quizSelectedMode)}>
                           Start Quiz →
                         </button>
                       </>
                     );
                   })()}
                 </div>
-              ) : (
-                /* ── RUNNING QUIZ ── */
-                <div key={viewKey} className="view-enter" style={{ width:"100%", maxWidth:"600px" }}>
+              </div>
+
+              {/* Quiz grid */}
+              <div className="quiz-selection-grid">
+                {PART_A_QUIZZES.map(quiz => {
+                  const sel = quizSelectedId === quiz.id;
+                  const hist = quizHistory[quiz.id];
+                  const histPct = hist ? Math.round((hist.correct / hist.total) * 100) : null;
+                  return (
+                    <div key={quiz.id} className="quiz-selection-card"
+                      onClick={() => !quiz.comingSoon && setQuizSelectedId(quiz.id)}
+                      style={{ borderColor: sel ? "var(--accent)" : undefined, boxShadow: sel ? "0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent)" : undefined, opacity: quiz.comingSoon ? 0.5 : 1, cursor: quiz.comingSoon ? "default" : "pointer" }}>
+                      {quiz.comingSoon && (
+                        <div style={{ position:"absolute", top:"10px", right:"10px", background:"var(--border)", color:"var(--t3)", fontSize:"8px", fontFamily:"'Space Mono',monospace", letterSpacing:"1.5px", textTransform:"uppercase", padding:"3px 7px", borderRadius:"5px", fontWeight:700 }}>Soon</div>
+                      )}
+                      {sel && !quiz.comingSoon && (
+                        <div style={{ position:"absolute", top:"10px", right:"10px", fontSize:"14px", color:"var(--accent)" }}>✓</div>
+                      )}
+                      <div className="quiz-sel-icon">{quiz.icon}</div>
+                      <div className="quiz-sel-count">{quiz.count} Questions</div>
+                      <div className="quiz-sel-title">{quiz.title}</div>
+                      <div className="quiz-sel-desc">{quiz.desc}</div>
+                      {histPct !== null && (
+                        <div style={{ marginTop:"10px" }}>
+                          <div style={{ height:"3px", borderRadius:"2px", background:"var(--border)", overflow:"hidden" }}>
+                            <div style={{ width:`${histPct}%`, height:"100%", background: histPct>=80?"var(--confident)":histPct>=50?"var(--review)":"#ef4444", borderRadius:"2px" }}/>
+                          </div>
+                          <div style={{ fontSize:"10px", fontFamily:"'Space Mono',monospace", color: histPct>=80?"var(--confident)":histPct>=50?"var(--review)":"#ef4444", marginTop:"4px" }}>{histPct}%</div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            /* ── RUNNING QUIZ (inline) ── */
+            <div key={viewKey} className="quiz-page view-enter" style={{ paddingTop:"40px" }}>
 
                   {/* ── FLAGS ── */}
                   {quizId === "flags" && (
@@ -3495,7 +3585,7 @@ export default function App() {
                             <>
                               <div className="quiz-question-card mc-question-card" key={quizPos}>
                                 <div className="quiz-class-label">{_genCfg.label}</div>
-                                <VesselLightDiagram lights={_genItem.lights} viewLabel={_genItem.viewLabel} />
+                                <VesselLightDiagram lights={_genItem.lights} viewLabel={_genItem.viewLabel} hull={_genItem.hull || "ahead"} />
                                 <div className="mc-question-text" style={{ marginTop:14 }}>{_genItem.q}</div>
                               </div>
                               <div className="mc-options">
@@ -3667,9 +3757,7 @@ export default function App() {
                   )}
 
                 </div>
-              )}
-            </div>
-          </div>
+          )}
 
           {/* ── What is Part A? overlay ── */}
           {showPartAInfo && (
